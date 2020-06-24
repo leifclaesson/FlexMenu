@@ -1,0 +1,22 @@
+{
+  "name":"FlexMenu",
+  "description":"Capable and highly extensible menu system for ESP8266/ESP32 and SSD1306 or SH1106 displays.",
+  "keywords":"esp8266,esp32,menu,oled,ssd1306,sh1106",
+  "authors":
+  {
+    "name": "Leif Claesson",
+    "maintainer": true
+  },
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/leifclaesson/FlexMenu.git"
+  },
+  "version": "0.0.1",
+  "license": "LGPL-3.0",
+  "frameworks": "arduino",
+  "platforms": "espressif8266","espressif32"
+  "build": {
+    "libCompatMode": 2
+  }  
+}
