@@ -1,4 +1,5 @@
 @echo off
+rem the FileToArray binary can be obtained from https://github.com/leifclaesson/UtilityBinaries/
 if exist icons.h del icons.h
 for %%f in (*.png) do call :one "%%f"
 rem call :one execute_12.png
