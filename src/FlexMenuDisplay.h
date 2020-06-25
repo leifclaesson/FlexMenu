@@ -16,7 +16,9 @@ public:
 
 	virtual bool OnNavigate(FlexMenuBase * pCurMenu, eFlexMenuNav direction, uint8_t accel)=0;	//return true to leave
 
-	virtual bool EditNeedsRefresh()=0;
+	virtual void OnEditMode(FlexMenuBase * pCurMenu, bool bEnable)=0;
+
+	virtual bool DisplayNeedsRefresh(FlexMenuBase * pCurMenu)=0;
 
 
 

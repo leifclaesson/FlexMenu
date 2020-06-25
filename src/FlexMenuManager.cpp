@@ -43,7 +43,7 @@ void FlexMenuManager::Display(bool bForce)
 
 	bool bNeedsRefresh=false;
 
-	if(pDisplay->EditNeedsRefresh()) bNeedsRefresh=true;
+	if(pDisplay->DisplayNeedsRefresh(pCurMenu)) bNeedsRefresh=true;
 
 
 	for(int i=0;i<pDisplay->GetVisibleItems();i++)
@@ -172,6 +172,12 @@ re_navigate:
 					pCurMenu=pCurItem;
 					pCurMenu->OnEnter();
 
+					pCurItem=pCurMenu->GetCurItemPtr();
+					if(pCurItem && pCurItem->GetScreenType()==eFlexMenuScreenType_Edit)
+					{
+						pDisplay->OnEditMode(pCurMenu, true);
+					}
+
 					nav=eFlexMenuNav_None;
 					goto re_navigate;
 
@@ -244,7 +250,12 @@ void FlexMenuManager::HandleRepeat()
 {
 	if(countRepeat>0)
 	{
-		uint32_t thresh=countRepeat>1?100:500;
+		uint32_t thresh=500;
+
+		if(countRepeat>1) thresh=100;
+		if(countRepeat>10) thresh=70;
+		if(countRepeat>20) thresh=50;
+
 		if(millis()-timestampRepeat>thresh)
 		{
 			if(countRepeat<255)
@@ -268,7 +279,15 @@ void FlexMenuManager::DoLeave()
 {
 	if(pCurMenu->CanLeave() && menustack_count>0 )
 	{
+
 		pCurMenu->OnLeave();
+
+		FlexMenuBase * pCurItem=pCurMenu->GetCurItemPtr();
+		if(pCurItem && pCurItem->GetScreenType()==eFlexMenuScreenType_Edit)
+		{
+			pDisplay->OnEditMode(pCurMenu, false);
+		}
+
 		pCurMenu=*menustack.begin();
 		menustack.pop_front();
 		menustack_count--;

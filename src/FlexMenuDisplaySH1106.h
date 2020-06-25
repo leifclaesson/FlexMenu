@@ -11,11 +11,12 @@
 #include <Arduino.h>
 #include "FlexMenuDisplay.h"
 #include "FlexMenuBase.h"
+#include "FlexMenuEditScreen.h"
 
 class OLEDDisplay;
 class FlexMenuItemEdit;
 
-class FlexMenuDisplay_SH1106 : public FlexMenuDisplay
+class FlexMenuDisplay_SH1106 : public FlexMenuDisplay, public FlexMenuEditScreen
 {
 public:
 	FlexMenuDisplay_SH1106();
@@ -31,7 +32,6 @@ public:
 
 	const uint8_t * pFont=NULL;
 	const uint8_t * pFontSlider=NULL;
-	const uint8_t * pFontEdit=NULL;
 
 	int iScreenCX=128;
 	int iScreenCY=64;
@@ -48,67 +48,13 @@ public:
 
 	virtual void DrawSliderScreen(FlexMenuBase * pCurMenu,FlexMenuBase * pCurItem);
 
-
-
-	virtual void DrawEditScreen(FlexMenuBase * pCurMenu,FlexMenuBase * pCurItem);
-
-	virtual bool OnNavigate(FlexMenuBase * pCurMenu, eFlexMenuNav direction, uint8_t accel) override;
-
-
-	uint8_t * osk_table;
-
-
-	int osk_width;
-	int osk_height;
-	int num_control_chars;
-
-	int position=0;
-	int osk_table_length;
-
-	int scroll_y=0;
-	int last_scroll_y=0;
-
-	int iNudge=0;
-	int iLastDirection=0;
-
-	bool bCursorMode=false;
-
-	FlexMenuBase * pLastCurItem=0;
-
-	void InitEdit(FlexMenuItemEdit * pItemEdit);
-	int iCursor=0;
-
-	String strEdit;
-
-	bool EditNeedsRefresh() override;
-
-	uint32_t cursor_millis=0;
-
-	bool bDrawCursor=false;
-	bool bLastDrawCursor=false;
-
-	int iMaxCharsX=0;
-
-	int iScrollX=0;
-
-	int iEditTextShiftX=0;
-
-	int iIconShiftY=0;
-
-	void CursorNav(int iDirection);
-
-	void DoScrollKeyboard(int iDirection);
-
-	uint8_t ReadOskTable(int position);
-
-	void HandleOskInsert(char osk_cur);
-
-	void HandleOskErase(char osk_cur);
-
 	uint16_t getCharsForWidth(const uint8_t * pFont,const char* text, uint16_t length, uint16_t desiredWidth);
 
-	bool EditHandlePush(FlexMenuBase * pCurMenu, eFlexMenuNav direction, uint8_t accel);
+	virtual bool OnNavigate(FlexMenuBase * pCurMenu, eFlexMenuNav direction, uint8_t accel) override;	//return true to leave
 
+	void OnEditMode(FlexMenuBase * pCurMenu, bool bEnable) override;
+
+	virtual bool DisplayNeedsRefresh(FlexMenuBase * pCurMenu) override;
 
 };
 
