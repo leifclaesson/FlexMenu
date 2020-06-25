@@ -15,8 +15,10 @@ enum eFlexMenuNav
 	eFlexMenuNav_None,
 	eFlexMenuNav_Prev,
 	eFlexMenuNav_Next,
-	eFlexMenuNav_Enter,
+	eFlexMenuNav_Push,
+	eFlexMenuNav_Release,
 	eFlexMenuNav_Back,
+	eFlexMenuNav_Repeat,
 };
 
 
@@ -48,8 +50,8 @@ enum eFlexMenuEdit
 	eFlexMenuEdit_INVALID,
 	eFlexMenuEdit_CaptureCursor,
 	eFlexMenuEdit_Space,
-	eFlexMenuEdit_Backspace,
 	eFlexMenuEdit_Delete,
+	eFlexMenuEdit_Backspace,
 	eFlexMenuEdit_Cancel,
 	eFlexMenuEdit_OK,
 };
@@ -65,7 +67,7 @@ public:
 	virtual bool CanEnter() { return false; };
 	virtual bool CanLeave() { return true; };
 	virtual bool IsLeave() { return false; };
-	virtual bool CanNavigate(eFlexMenuNav direction, uint8_t accel) { return true; }
+	virtual bool CanNavigate(eFlexMenuNav direction, uint8_t accel) { (void)(direction); (void)(accel); return true; }
 
 	virtual void OnEnter();
 	virtual void OnReturn();
@@ -74,7 +76,7 @@ public:
 	virtual bool AllowLand() { return true; };
 
 	virtual int GetNumSubItems() { return 0; };
-	virtual FlexMenuBase * GetSubItem(int idx) { return 0; };
+	virtual FlexMenuBase * GetSubItem(int idx) { (void)(idx); return 0; };
 
 	virtual int GetScrollPos() { return 0; };
 	virtual int GetCurItem() { return 0; };
@@ -86,9 +88,9 @@ public:
 		}
 		return 0;
 	}
+virtual void SetScrollPos( int iNewScrollPos ) { (void)(iNewScrollPos); };
 
-	virtual void SetScrollPos( int iNewScrollPos ) {};
-	virtual void SetCurItem( int iNewCurItem ) {};
+	virtual void SetCurItem( int iNewCurItem ) { (void)(iNewCurItem); };
 
 	virtual void GetTitleText(String & strTitleDestination)=0;
 	virtual void GetValueText(String & strValueDestination) { strValueDestination=""; }
@@ -111,7 +113,7 @@ public:
 
 	virtual void UpdateStatus();
 
-	virtual void SetManager(FlexMenuManager * pManager) {};
+	virtual void SetManager(FlexMenuManager * pManager) { (void)(pManager); };
 
 
 private:

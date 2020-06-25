@@ -91,11 +91,24 @@ public:
 
 	int iScrollX=0;
 
-	int iEditTextX=0;
+	int iEditTextShiftX=0;
+
+	int iIconShiftY=0;
 
 	void CursorNav(int iDirection);
 
 	void DoScrollKeyboard(int iDirection);
+
+	uint8_t ReadOskTable(int position);
+
+	void HandleOskInsert(char osk_cur);
+
+	void HandleOskErase(char osk_cur);
+
+	uint16_t getCharsForWidth(const uint8_t * pFont,const char* text, uint16_t length, uint16_t desiredWidth);
+
+	bool EditHandlePush(FlexMenuBase * pCurMenu, eFlexMenuNav direction, uint8_t accel);
+
 
 };
 

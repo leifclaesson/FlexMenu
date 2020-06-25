@@ -10,30 +10,44 @@
 #include "FlexMenuBase.h"
 #include "FlexMenuItemSlider.h"
 #include "FlexMenuItemEdit.h"
-//#include "icons\icons_10.h"
-//#include "icons\icons_12.h"
 
 
 #define FILETOARRAY_EXTERN_ONLY
 #include "icons\icons.h"
 
-typedef struct icondef
+struct icondef
 {
 	uint8_t * data;
 	uint8_t cx;
 	uint8_t cy;
+	int8_t shift_x;
+	int8_t shift_y;
 };
 
-icondef keyboard_icons[7]=	//must match eFlexMenuEdit
+icondef keyboard_icons[7]=	//must match eFlexMenuEdit.
 {
-	{0,0,0},
-	{arrows,10,8},
-	{spacebar,10,8},
-	{backspace,8,7},
-	{delete_symbol,8,7},
-	{cancel,7,6},
-	{okay,8,6},
+	{0,0,0,0,0},
+	{arrows,10,8,0,1},
+	{spacebar,10,8,0,2},
+	{delete_symbol,12,9,1,0},
+	{backspace,12,9,-1,0},
+	{cancel,7,6,0,1},
+	{okay,8,6,0,1},
 };
+
+
+char PROGMEM _osk_table[]={
+		"ABCDEFGHIJKLMN"
+		"OPQRSTUVWXYZ.,"
+		"\1\2\3\4\5\6\0\0\0\0\0\0\0\0"
+		"abcdefghijklmn"
+		"opqrstuvwxyz-_"
+		"\1\2\3\4\5\6\0\0\0\0\0\0\0\0"
+		"#$%&:/\\;()[]!?"
+		"<>@'`{|}~^\"_.,"
+		"\1\2\3\4\5\6\0\0\0\0\0\0\0\0"
+		"0123456789-+=*"
+		};
 
 
 
@@ -49,6 +63,7 @@ FlexMenuDisplay_SH1106::~FlexMenuDisplay_SH1106() {
 void FlexMenuDisplay_SH1106::Init()
 {
 	OLEDDisplay & display=*pDisplay;
+	(void)(display);
 
 	iVisibleItems=iScreenCY/iLineHeight;
 
@@ -62,28 +77,19 @@ void FlexMenuDisplay_SH1106::Init()
 	osk_width=14;
 	osk_height=3;
 
-	iEditTextX=3;
+	iEditTextShiftX=3;
+	iIconShiftY=2;
 
-	uint8_t temp[256];
-	uint8_t idx=0;
+//	uint8_t temp[256];
+//	uint8_t idx=0;
 
 
-	char okay[]={
-			"ABCDEFGHIJKLMN"
-			"OPQRSTUVWXYZ.,"
-			"\1\2\3\4\5\6\0\0\0\0\0\0\0\0"
-			"abcdefghijklmn"
-			"opqrstuvwxyz-_"
-			"\1\2\3\4\5\6\0\0\0\0\0\0\0\0"
-			"#$%&:/\\;()[]!?"
-			"<>@'`{|}~^\"_.,"
-			"\1\2\3\4\5\6\0\0\0\0\0\0\0\0"
-			"0123456789-+=*"
-			};
-
+	osk_table=(uint8_t *) _osk_table;
+	osk_table_length=sizeof(_osk_table)-1;
 	num_control_chars=6;
 
 
+	/*
 	osk_table=(uint8_t *) malloc(sizeof(okay)-1);
 	memcpy(osk_table,okay,sizeof(okay)-1);
 	osk_table_length=sizeof(okay)-1;
@@ -95,6 +101,7 @@ void FlexMenuDisplay_SH1106::Init()
 		csprintf("%02x ",osk_table[i]);
 
 	}
+	*/
 
 //
 
@@ -174,6 +181,8 @@ void FlexMenuDisplay_SH1106::Init()
 
 
 }
+
+
 
 int FlexMenuDisplay_SH1106::GetVisibleItems()
 {
@@ -256,9 +265,25 @@ void FlexMenuDisplay_SH1106::DrawDisplay(FlexMenuBase * pCurMenu)
 
 			display.setTextAlignment(TEXT_ALIGN_LEFT);
 			display.drawString(left, i*fLineHeight, strLeft );
+			int widthLeft=display.getStringWidth(strLeft);
 
 			display.setTextAlignment(TEXT_ALIGN_RIGHT);
-			display.drawString(right, i*fLineHeight, strRight );
+
+			int chars=getCharsForWidth(pFont,strRight.c_str(),strRight.length(),iScreenCX-widthLeft-iIconCX-6);
+
+			if(chars!=(int) strRight.length())
+			{
+				String temp=strRight.substring(0,chars);
+				temp+="..";
+				display.drawString(right, i*fLineHeight, temp);
+			}
+			else
+			{
+				display.drawString(right, i*fLineHeight, strRight);
+			}
+
+
+			//drawString(right, i*fLineHeight, strRight );
 
 
 		}
@@ -311,6 +336,7 @@ void FlexMenuDisplay_SH1106::DrawDisplay(FlexMenuBase * pCurMenu)
 
 void FlexMenuDisplay_SH1106::DrawSliderScreen(FlexMenuBase * pCurMenu,FlexMenuBase * pCurItem)
 {
+	(void)(pCurMenu);
 	OLEDDisplay & display=*pDisplay;
 
 	FlexMenuItemSlider * pSlider=(FlexMenuItemSlider *) pCurItem;
@@ -398,6 +424,62 @@ void FlexMenuDisplay_SH1106::DrawSliderScreen(FlexMenuBase * pCurMenu,FlexMenuBa
 }
 
 
+bool FlexMenuDisplay_SH1106::EditHandlePush(FlexMenuBase * pCurMenu, eFlexMenuNav direction, uint8_t accel)
+{
+	uint8_t osk_cur=ReadOskTable(position);
+
+	if(direction==eFlexMenuNav_Repeat)
+	{
+		switch(osk_cur)
+		{
+		case eFlexMenuEdit_Backspace:
+		case eFlexMenuEdit_Delete:
+			break;
+		default:
+			return false;
+		}
+	}
+
+	if(osk_cur<32)
+	{
+		switch(osk_cur)
+		{
+		case eFlexMenuEdit_CaptureCursor:
+			csprintf("Capture cursor!\n");
+			bCursorMode=true;
+			pCurMenu->SetNeedsRefresh(true);
+			break;
+		case eFlexMenuEdit_Space:
+			HandleOskInsert(' ');
+			pCurMenu->SetNeedsRefresh(true);
+			break;
+		case eFlexMenuEdit_Backspace:
+			HandleOskErase(osk_cur);
+			pCurMenu->SetNeedsRefresh(true);
+			break;
+		case eFlexMenuEdit_Delete:
+			HandleOskErase(osk_cur);
+			pCurMenu->SetNeedsRefresh(true);
+			break;
+		case eFlexMenuEdit_Cancel:
+			return true;
+		case eFlexMenuEdit_OK:
+			{
+				FlexMenuItemEdit * pItemEdit=(FlexMenuItemEdit *) pCurMenu;
+				pItemEdit->strEdit=strEdit;
+			}
+			return true;
+		}
+	}
+	else
+	{
+		HandleOskInsert(osk_cur);
+		pCurMenu->SetNeedsRefresh(true);
+	}
+
+	return false;
+}
+
 bool FlexMenuDisplay_SH1106::OnNavigate(FlexMenuBase * pCurMenu, eFlexMenuNav direction, uint8_t accel)
 {
 
@@ -417,7 +499,7 @@ bool FlexMenuDisplay_SH1106::OnNavigate(FlexMenuBase * pCurMenu, eFlexMenuNav di
 		default:
 			break;
 		case eFlexMenuScreenType_Edit:
-			Serial.printf("OnNavigate EDIT %i\n",direction);
+			//Serial.printf("OnNavigate EDIT %i\n",direction);
 			if(bNewItem)
 			{
 				InitEdit(((FlexMenuItemEdit *) pCurMenu));
@@ -427,6 +509,8 @@ bool FlexMenuDisplay_SH1106::OnNavigate(FlexMenuBase * pCurMenu, eFlexMenuNav di
 			if(accel>=30) use_accel=2;
 			switch(direction)
 			{
+			default:
+				break;
 			case eFlexMenuNav_Prev:
 				if(bCursorMode)
 				{
@@ -436,10 +520,10 @@ bool FlexMenuDisplay_SH1106::OnNavigate(FlexMenuBase * pCurMenu, eFlexMenuNav di
 				{
 					do
 					{
-						if(osk_table[position]<32) use_accel=1;
+						if(ReadOskTable(position)<32) use_accel=1;
 						position-=use_accel;
 						if(position<0) position+=osk_table_length;
-					} while(!osk_table[position]);
+					} while(!ReadOskTable(position));
 
 					iLastDirection=-1;
 
@@ -461,10 +545,10 @@ bool FlexMenuDisplay_SH1106::OnNavigate(FlexMenuBase * pCurMenu, eFlexMenuNav di
 				{
 					do
 					{
-						if(osk_table[position]<32) use_accel=1;
+						if(ReadOskTable(position)<32) use_accel=1;
 						position+=use_accel;
 						if(position>=osk_table_length) position-=osk_table_length;
-					} while(!osk_table[position]);
+					} while(!ReadOskTable(position));
 
 					iLastDirection=1;
 
@@ -472,10 +556,15 @@ bool FlexMenuDisplay_SH1106::OnNavigate(FlexMenuBase * pCurMenu, eFlexMenuNav di
 
 				}
 
-
 				pCurMenu->SetNeedsRefresh(true);
 				break;
-			case eFlexMenuNav_Enter:
+			case eFlexMenuNav_Repeat:
+				if(!bCursorMode)
+				{
+					EditHandlePush(pCurMenu,direction,accel);
+				}
+				break;
+			case eFlexMenuNav_Push:
 				if(bCursorMode)
 				{
 					bCursorMode=false;
@@ -483,28 +572,7 @@ bool FlexMenuDisplay_SH1106::OnNavigate(FlexMenuBase * pCurMenu, eFlexMenuNav di
 				}
 				else
 				{
-					if(osk_table[position]<32)
-					{
-						switch(osk_table[position])
-						{
-						case eFlexMenuEdit_CaptureCursor:
-							csprintf("Capture cursor!\n");
-							bCursorMode=true;
-							pCurMenu->SetNeedsRefresh(true);
-							break;
-						case eFlexMenuEdit_Space:
-							break;
-						case eFlexMenuEdit_Backspace:
-							break;
-						case eFlexMenuEdit_Delete:
-							break;
-						case eFlexMenuEdit_Cancel:
-							break;
-						case eFlexMenuEdit_OK:
-							break;
-						}
-
-					}
+					return EditHandlePush(pCurMenu,direction,accel);
 				}
 
 				csprintf("ENTER: POS %i\n",position);
@@ -514,19 +582,87 @@ bool FlexMenuDisplay_SH1106::OnNavigate(FlexMenuBase * pCurMenu, eFlexMenuNav di
 		}
 	}
 
-
 	return false;
 
 }
 
+void FlexMenuDisplay_SH1106::HandleOskErase(char osk_cur)
+{
+	switch(osk_cur)
+	{
+	default:
+		break;
+	case eFlexMenuEdit_Backspace:
+		if(iCursor>0)
+		{
+			String temp=strEdit.substring(0,iCursor-1);
+			temp.concat(strEdit.substring(iCursor));
+			strEdit=temp;
+			CursorNav(-1);
+		}
+		break;
+	case eFlexMenuEdit_Delete:
+		if(iCursor<(int) strEdit.length())
+		{
+			String temp=strEdit.substring(0,iCursor);
+			temp.concat(strEdit.substring(iCursor+1));
+			strEdit=temp;
+		}
+		break;
+
+
+	}
+
+}
+
+void FlexMenuDisplay_SH1106::HandleOskInsert(char osk_cur)
+{
+	if(iCursor>=(int) strEdit.length())
+	{
+		strEdit.concat(osk_cur);
+	}
+	else
+	{
+		String temp=strEdit.substring(0,iCursor);
+		temp.concat(osk_cur);
+		temp.concat(strEdit.substring(iCursor));
+		strEdit=temp;
+	}
+
+	iCursor++;
+
+	int iUseCursor=iCursor-iScrollX;
+
+	if(iUseCursor>=(iMaxCharsX))
+	{
+//		csprintf("scroll_right iUseCursor=%i max=%i\n",iUseCursor,iMaxCharsX);
+		iScrollX+=(iUseCursor-(iMaxCharsX));
+		iUseCursor=iCursor-iScrollX;
+
+	}
+
+
+}
+
+
+uint8_t FlexMenuDisplay_SH1106::ReadOskTable(int position)
+{
+
+	const void * ptr=&osk_table[position];	//second byte of font is height
+	uint8_t test=0;
+	pgm_read_with_offset(ptr,test)	//it's in flash so we need to call the helper function to read it
+
+	return test;
+}
 
 
 void FlexMenuDisplay_SH1106::DrawEditScreen(FlexMenuBase * pCurMenu,FlexMenuBase * pCurItem)
 {
+	(void)(pCurMenu); (void)(pCurItem);
+
 	OLEDDisplay & display=*pDisplay;
 
-	FlexMenuItemEdit & edit=*((FlexMenuItemEdit *) pCurMenu);
-
+	//FlexMenuItemEdit & edit=*((FlexMenuItemEdit *) pCurMenu);
 
 
 	int iFontHeight=0;
@@ -554,7 +690,7 @@ void FlexMenuDisplay_SH1106::DrawEditScreen(FlexMenuBase * pCurMenu,FlexMenuBase
 
 	//csprintf("iScrollX=%i iCursor=%i strbef=%s ",iScrollX,iCursor,strBeforeCursor.c_str());
 
-	display.drawString(iEditTextX, 1, strEdit.substring(iScrollX));
+	display.drawString(iEditTextShiftX, 1, strEdit.substring(iScrollX));
 	int xpos=display.getStringWidth(strBeforeCursor);
 
 	//csprintf("usecursor=%i ",iUseCursor);
@@ -569,7 +705,7 @@ void FlexMenuDisplay_SH1106::DrawEditScreen(FlexMenuBase * pCurMenu,FlexMenuBase
 	display.drawRect(0,0,iScreenCX,edit_height);
 
 	display.setColor(INVERSE);
-	int cursor_xpos=xpos+iEditTextX;
+	int cursor_xpos=xpos+iEditTextShiftX;
 	if(cursor_xpos<1) cursor_xpos=1;
 	if(bDrawCursor) display.drawVerticalLine(cursor_xpos, 1, iFontHeight+1);
 
@@ -579,12 +715,12 @@ void FlexMenuDisplay_SH1106::DrawEditScreen(FlexMenuBase * pCurMenu,FlexMenuBase
 	int cells_y=osk_height;
 
 	int cell_width_lsh10=((iScreenCX<<10) / osk_width);
-	int cell_height=edit_height-1;
+	//int cell_height=edit_height-1;
 
 	String str;
 	str=" ";
 
-	int table_idx=0;
+	//int table_idx=0;
 
 	for(int y=0;y<cells_y;y++)
 	{
@@ -592,7 +728,7 @@ void FlexMenuDisplay_SH1106::DrawEditScreen(FlexMenuBase * pCurMenu,FlexMenuBase
 
 		//current table start position is
 		int table_idx=(((y+scroll_y)*osk_width)+osk_table_length) % osk_table_length;
-		if(osk_table[table_idx]<32)
+		if(ReadOskTable(table_idx)<32)
 		{
 			//control row
 
@@ -600,7 +736,7 @@ void FlexMenuDisplay_SH1106::DrawEditScreen(FlexMenuBase * pCurMenu,FlexMenuBase
 
 			display.setTextAlignment(TEXT_ALIGN_LEFT);
 
-			int cur_cy=iScreenCY-cur_y;
+//			int cur_cy=iScreenCY-cur_y;
 
 			for(int i=0;i<num_control_chars;i++)
 			{
@@ -611,7 +747,7 @@ void FlexMenuDisplay_SH1106::DrawEditScreen(FlexMenuBase * pCurMenu,FlexMenuBase
 				if(position==table_idx+i)
 				{
 					bool bFill=true;
-					if(osk_table[position]==eFlexMenuEdit_CaptureCursor && bCursorMode) bFill=false;
+					if(ReadOskTable(position)==eFlexMenuEdit_CaptureCursor && bCursorMode) bFill=false;
 
 					if(bFill)
 					{
@@ -623,11 +759,11 @@ void FlexMenuDisplay_SH1106::DrawEditScreen(FlexMenuBase * pCurMenu,FlexMenuBase
 					}
 				}
 
-				icondef & icon=keyboard_icons[osk_table[table_idx+i]];
+				icondef & icon=keyboard_icons[ReadOskTable(table_idx+i)];
 				if(icon.data)
 				{
 					display.setColor(INVERSE);
-					display.drawXbm(cur_x+((cur_cx-icon.cx)>>1), cur_y+((iFontHeight-icon.cy)>>1), icon.cx, icon.cy, icon.data);
+					display.drawXbm(cur_x+((cur_cx-icon.cx)>>1)+icon.shift_x, cur_y+((iFontHeight-icon.cy)>>1)+icon.shift_y, icon.cx, icon.cy, icon.data);
 				}
 			}
 
@@ -637,7 +773,7 @@ void FlexMenuDisplay_SH1106::DrawEditScreen(FlexMenuBase * pCurMenu,FlexMenuBase
 			//normal row
 			for(int i=0;i<osk_width;i++)
 			{
-				str.setCharAt(0, osk_table[table_idx+i]);
+				str.setCharAt(0, ReadOskTable(table_idx+i));
 
 				int cur_x=(cell_width_lsh10*i)>>10;
 
@@ -673,6 +809,7 @@ bool FlexMenuDisplay_SH1106::EditNeedsRefresh()
 void FlexMenuDisplay_SH1106::InitEdit(FlexMenuItemEdit * pItemEdit)
 {
 	strEdit=pItemEdit->strEdit;
+	position=28+4;
 	iCursor=strEdit.length();
 	iScrollX=iCursor-iMaxCharsX+1;
 	CursorNav(0);
@@ -687,22 +824,17 @@ void FlexMenuDisplay_SH1106::InitEdit(FlexMenuItemEdit * pItemEdit)
 void FlexMenuDisplay_SH1106::CursorNav(int iDirection)
 {
 
-	if(iDirection>0)
+	if(iDirection)
 	{
 		cursor_millis=millis();
-		iCursor++;
-		if(iCursor>strEdit.length()) iCursor=strEdit.length();
-	}
+		iCursor+=iDirection;
 
-	if(iDirection<0)
-	{
-		cursor_millis=millis();
-		iCursor--;
-		if(iCursor<0) iCursor=0;
+		if(iDirection>0 && iCursor>(int) strEdit.length()) iCursor=strEdit.length();
+		if(iDirection<0 && iCursor<0) iCursor=0;
 	}
 
 
-	if(strEdit.length()-iScrollX<iMaxCharsX)
+	if((int) strEdit.length()-iScrollX<iMaxCharsX)
 	{
 		iScrollX = strEdit.length()-iMaxCharsX;
 		if(iScrollX<0) iScrollX=0;
@@ -724,7 +856,7 @@ void FlexMenuDisplay_SH1106::CursorNav(int iDirection)
 	if(iScrollX<0) iScrollX=0;
 
 
-	if(iUseCursor>=(iMaxCharsX-1) && iDirection>0 && iCursor<strEdit.length())
+	if(iUseCursor>=(iMaxCharsX-1) && iDirection>0 && iCursor<(int) strEdit.length())
 	{
 		csprintf("scroll_right iUseCursor=%i max=%i\n",iUseCursor,iMaxCharsX);
 		iScrollX+=(iUseCursor-(iMaxCharsX-1));
@@ -757,6 +889,24 @@ void FlexMenuDisplay_SH1106::DoScrollKeyboard(int iDirection)
 
 
 
+uint16_t FlexMenuDisplay_SH1106::getCharsForWidth(const uint8_t * pFont,const char* text, uint16_t length, uint16_t desiredWidth)
+{
+
+  uint16_t firstChar        = pgm_read_byte(pFont + FIRST_CHAR_POS);
+
+  uint16_t numChars=0;
+
+  uint16_t stringWidth = 0;
+
+  while (length--) {
+    stringWidth += pgm_read_byte(pFont + JUMPTABLE_START + (text[length] - firstChar) * JUMPTABLE_BYTES + JUMPTABLE_WIDTH);
+    if(stringWidth>desiredWidth)
+    	break;
+    numChars++;
+  }
+
+  return numChars;
+}
 
 
 

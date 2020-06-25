@@ -38,6 +38,9 @@ void FlexMenuManager::Display(bool bForce)
 {
 	InitialEnterMenu();
 
+	HandleRepeat();
+
+
 	bool bNeedsRefresh=false;
 
 	if(pDisplay->EditNeedsRefresh()) bNeedsRefresh=true;
@@ -111,7 +114,7 @@ re_navigate:
 
 		bool bLeave=pDisplay->OnNavigate(pCurMenu, nav, accel);
 
-		if(nav==eFlexMenuNav_Enter && bLeave)
+		if(nav==eFlexMenuNav_Push && bLeave)
 		{
 			ClearVisible();
 			DoLeave();
@@ -145,8 +148,14 @@ re_navigate:
 				goto re_navigate;
 			}
 			break;
-		case eFlexMenuNav_Enter:
-			if(pCurItem && pCurItem->CanNavigate(eFlexMenuNav_Enter,HandleAcceleration(0)))
+		case eFlexMenuNav_Release:
+			countRepeat=0;
+			pCurItem->CanNavigate(eFlexMenuNav_Release,0);
+			break;
+		case eFlexMenuNav_Push:
+			countRepeat=1;
+			timestampRepeat=millis();
+			if(pCurItem && pCurItem->CanNavigate(eFlexMenuNav_Push,HandleAcceleration(0)))
 			{
 				if(pCurItem->IsLeave())
 				{
@@ -229,6 +238,31 @@ re_navigate:
 
 
 }
+
+
+void FlexMenuManager::HandleRepeat()
+{
+	if(countRepeat>0)
+	{
+		uint32_t thresh=countRepeat>1?100:500;
+		if(millis()-timestampRepeat>thresh)
+		{
+			if(countRepeat<255)
+			{
+				countRepeat++;
+
+				FlexMenuBase * pCurItem=pCurMenu->GetCurItemPtr();
+				if(pCurItem) pCurItem->CanNavigate(eFlexMenuNav_Repeat,countRepeat-1);
+
+				pDisplay->OnNavigate(pCurMenu, eFlexMenuNav_Repeat,countRepeat-1);
+
+			}
+
+			timestampRepeat=millis();
+		}
+	}
+}
+
 
 void FlexMenuManager::DoLeave()
 {

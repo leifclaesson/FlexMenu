@@ -45,11 +45,16 @@ private:
 	uint32_t last_timestamp=0;
 	int8_t accel_counter=0;
 
+	uint8_t countRepeat=0;
+	uint32_t timestampRepeat=0;
+
+
 
 
 	FlexMenuBase * pTopMenu=0;
 
 	void InitialEnterMenu();
+	void HandleRepeat();
 
 
 };

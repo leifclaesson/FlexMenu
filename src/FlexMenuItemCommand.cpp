@@ -8,6 +8,7 @@ void FlexMenuItemCommandDummy::GetTitleText(String & strTitleDestination)
 
 bool FlexMenuItemCommandDummy::CanNavigate(eFlexMenuNav direction, uint8_t accel)
 {
+	(void)(accel);
 	last_nav=direction;
 	return true;
 }
@@ -29,7 +30,7 @@ void FlexMenuItemCommand::OnEnter()
 
 void FlexMenuItemCommand::OnLeave()
 {
-	if(iCurItem==2+iSpacers && dummy.last_nav==eFlexMenuNav_Enter)
+	if(iCurItem==2+iSpacers && dummy.last_nav==eFlexMenuNav_Push)
 	{
 		if(cbExecuteCommand) cbExecuteCommand(this);
 	}

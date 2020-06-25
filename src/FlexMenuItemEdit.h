@@ -43,7 +43,7 @@ public:
 	virtual void OnEnter() override;
 
 	virtual int GetNumSubItems() override { return 1; }
-	virtual FlexMenuBase * GetSubItem(int idx) override { return &edit_internal; }
+	virtual FlexMenuBase * GetSubItem(int idx) override { (void)(idx); return &edit_internal; }
 
 	String strTitle;
 	String strEdit;

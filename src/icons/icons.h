@@ -13,14 +13,15 @@ unsigned char arrows[16] PROGMEM =
  
 //  *** FileToArray 2.1, (C) Leif Claesson 2006-2020 ***
 
-#define backspace_size 7
+#define backspace_size 18
 
 #ifdef FILETOARRAY_EXTERN_ONLY
-extern unsigned char backspace[7];
+extern unsigned char backspace[18];
 #else
-unsigned char backspace[7] PROGMEM =
+unsigned char backspace[18] PROGMEM =
 {
-0x80,0x84,0x86,0xBF,0x86,0x84,0x80
+0xF0,0x0F,0xF8,0x0F,0xCC,0x0C,0x1E,0x0E,0x3F,0x0F,0x1E,0x0E,0xCC,0x0C,0xF8,0x0F,
+0xF0,0x0F
 };
 #endif
  
@@ -117,14 +118,15 @@ unsigned char cursor_12[10] PROGMEM =
  
 //  *** FileToArray 2.1, (C) Leif Claesson 2006-2020 ***
 
-#define delete_symbol_size 7
+#define delete_symbol_size 18
 
 #ifdef FILETOARRAY_EXTERN_ONLY
-extern unsigned char delete_symbol[7];
+extern unsigned char delete_symbol[18];
 #else
-unsigned char delete_symbol[7] PROGMEM =
+unsigned char delete_symbol[18] PROGMEM =
 {
-0x01,0x11,0x19,0xFD,0x19,0x11,0x01
+0xFF,0x00,0xFF,0x01,0x33,0x03,0x87,0x07,0xCF,0x0F,0x87,0x07,0x33,0x03,0xFF,0x01,
+0xFF,0x00
 };
 #endif
  

@@ -54,6 +54,7 @@ void FlexMenuItemEditInternal::GetTitleText(String & strTitleDestination)
 
 bool FlexMenuItemEditInternal::CanNavigate(eFlexMenuNav direction, uint8_t accel)
 {
+	(void)(accel);
 	switch(direction)
 	{
 	default:

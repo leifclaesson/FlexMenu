@@ -50,7 +50,7 @@ bool FlexMenuItemSlider::CanNavigate(eFlexMenuNav direction, uint8_t accel)
 			DoAdjust(1,accel);
 			return false;
 		}
-	case eFlexMenuNav_Enter:
+	case eFlexMenuNav_Push:
 	case eFlexMenuNav_Back:
 		if(bAdjusting)
 		{
@@ -134,20 +134,30 @@ void FlexMenuItemSlider::DoAdjust(int8_t direction, uint8_t accel)
 	{
 		if(accel>20)
 		{
+			multiplier=5;
+		}
+
+		if(accel>35)
+		{
 			multiplier=13;
 		}
 
-		if(accel>30)
+		if(accel>50)
 		{
 			multiplier=23;
 		}
 
-		if(accel>50)
+		if(accel>70)
 		{
 			multiplier=53;
 		}
 
 		if(accel>80)
+		{
+			multiplier=73;
+		}
+
+		if(accel>98)
 		{
 			multiplier=107;
 		}
