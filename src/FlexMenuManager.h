@@ -6,6 +6,7 @@
 #include "FlexMenuDisplay.h"
 
 class FlexMenuDisplay;
+class FlexMenuSub;
 
 class FlexMenuManager
 {
@@ -13,7 +14,7 @@ public:
 	FlexMenuManager();
 	~FlexMenuManager();
 
-	void Init(FlexMenuBase * pTopMenu, FlexMenuDisplay * pDisplay);
+	FlexMenuSub * Init(FlexMenuDisplay * pDisplay);	//returns the top menu!
 
 	void Display(bool bForce);
 
@@ -44,6 +45,11 @@ private:
 	uint32_t last_timestamp=0;
 	int8_t accel_counter=0;
 
+
+
+	FlexMenuBase * pTopMenu=0;
+
+	void InitialEnterMenu();
 
 
 };

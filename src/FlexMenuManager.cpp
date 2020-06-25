@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "FlexMenuManager.h"
 
+#include "FlexMenuSub.h"
 
 
 FlexMenuManager::FlexMenuManager()
@@ -13,21 +14,34 @@ FlexMenuManager::~FlexMenuManager()
 }
 
 
-
-void FlexMenuManager::Init(FlexMenuBase * pTopMenu, FlexMenuDisplay * pDisplay)
+FlexMenuSub * FlexMenuManager::Init(FlexMenuDisplay * pDisplay)
 {
 	this->pDisplay=pDisplay;
 	pDisplay->Init();
-	pCurMenu=pTopMenu;
-	pCurMenu->OnEnter();
+
+	pTopMenu=new FlexMenuSub;
+	pTopMenu->SetManager(this);
+	return (FlexMenuSub *) pTopMenu;
+}
 
 
+void FlexMenuManager::InitialEnterMenu()
+{
+	if(!pCurMenu)
+	{
+		pCurMenu=pTopMenu;
+		pCurMenu->OnEnter();
+	}
 }
 
 void FlexMenuManager::Display(bool bForce)
 {
+	InitialEnterMenu();
 
 	bool bNeedsRefresh=false;
+
+	if(pDisplay->EditNeedsRefresh()) bNeedsRefresh=true;
+
 
 	for(int i=0;i<pDisplay->GetVisibleItems();i++)
 	{
@@ -64,6 +78,8 @@ void FlexMenuManager::Display(bool bForce)
 
 void FlexMenuManager::Navigate(eFlexMenuNav nav)
 {
+	InitialEnterMenu();
+
 	uint8_t safety=0;
 re_navigate:
 	safety++;
@@ -79,6 +95,29 @@ re_navigate:
 
 	{
 		FlexMenuBase * pCurItem=pCurMenu->GetSubItem(cur_item);
+
+		int accel=0;
+
+		switch(nav)
+		{
+		default:
+			break;
+		case eFlexMenuNav_Prev:
+			accel=HandleAcceleration(-1); break;
+		case eFlexMenuNav_Next:
+			accel=HandleAcceleration(1); break;
+		}
+
+
+		bool bLeave=pDisplay->OnNavigate(pCurMenu, nav, accel);
+
+		if(nav==eFlexMenuNav_Enter && bLeave)
+		{
+			ClearVisible();
+			DoLeave();
+			nav=eFlexMenuNav_None;
+			goto re_navigate;
+		}
 
 		switch(nav)
 		{

@@ -13,6 +13,7 @@ FlexMenuSub::~FlexMenuSub()
 
 void FlexMenuSub::AddSubItem(FlexMenuBase * pSubItem)
 {
+	pSubItem->SetManager(pManager);
 	vecSubItems.push_back(pSubItem);
 }
 
@@ -56,3 +57,9 @@ void FlexMenuSub::SetCurItem(int iNewCurItem)
 {
 	iCurItem=iNewCurItem;
 }
+
+void FlexMenuSub::SetManager(FlexMenuManager * pManager)
+{
+	this->pManager=pManager;
+}
+

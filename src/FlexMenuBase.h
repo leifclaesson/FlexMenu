@@ -7,6 +7,7 @@
 #define millis GetTickCount
 #else
 #include <Arduino.h>
+#define csprintf Serial.printf
 #endif
 
 enum eFlexMenuNav
@@ -30,6 +31,7 @@ enum eFlexMenuIcon
 	eFlexMenuIcon_Checked,
 	eFlexMenuIcon_Unchecked,
 	eFlexMenuIcon_Execute,
+	eFlexMenuIcon_Cursor,
 
 	eFlexMenuIcon_Count,
 };
@@ -38,16 +40,27 @@ enum eFlexMenuScreenType
 {
 	eFlexMenuScreenType_Normal,
 	eFlexMenuScreenType_Slider,
+	eFlexMenuScreenType_Edit,
 };
+
+enum eFlexMenuEdit
+{
+	eFlexMenuEdit_INVALID,
+	eFlexMenuEdit_CaptureCursor,
+	eFlexMenuEdit_Space,
+	eFlexMenuEdit_Backspace,
+	eFlexMenuEdit_Delete,
+	eFlexMenuEdit_Cancel,
+	eFlexMenuEdit_OK,
+};
+
+class FlexMenuManager;
 
 class FlexMenuBase
 {
 public:
 	FlexMenuBase();
 	virtual ~FlexMenuBase();
-
-		
-//	virtual FlexMenuBase * GetParent() { return 0; };
 
 	virtual bool CanEnter() { return false; };
 	virtual bool CanLeave() { return true; };
@@ -98,7 +111,11 @@ public:
 
 	virtual void UpdateStatus();
 
+	virtual void SetManager(FlexMenuManager * pManager) {};
+
+
 private:
+
 
 	uint8_t flags=0;
 

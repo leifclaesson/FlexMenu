@@ -13,6 +13,7 @@
 #include "FlexMenuBase.h"
 
 class OLEDDisplay;
+class FlexMenuItemEdit;
 
 class FlexMenuDisplay_SH1106 : public FlexMenuDisplay
 {
@@ -30,6 +31,7 @@ public:
 
 	const uint8_t * pFont=NULL;
 	const uint8_t * pFontSlider=NULL;
+	const uint8_t * pFontEdit=NULL;
 
 	int iScreenCX=128;
 	int iScreenCY=64;
@@ -47,6 +49,53 @@ public:
 	virtual void DrawSliderScreen(FlexMenuBase * pCurMenu,FlexMenuBase * pCurItem);
 
 
+
+	virtual void DrawEditScreen(FlexMenuBase * pCurMenu,FlexMenuBase * pCurItem);
+
+	virtual bool OnNavigate(FlexMenuBase * pCurMenu, eFlexMenuNav direction, uint8_t accel) override;
+
+
+	uint8_t * osk_table;
+
+
+	int osk_width;
+	int osk_height;
+	int num_control_chars;
+
+	int position=0;
+	int osk_table_length;
+
+	int scroll_y=0;
+	int last_scroll_y=0;
+
+	int iNudge=0;
+	int iLastDirection=0;
+
+	bool bCursorMode=false;
+
+	FlexMenuBase * pLastCurItem=0;
+
+	void InitEdit(FlexMenuItemEdit * pItemEdit);
+	int iCursor=0;
+
+	String strEdit;
+
+	bool EditNeedsRefresh() override;
+
+	uint32_t cursor_millis=0;
+
+	bool bDrawCursor=false;
+	bool bLastDrawCursor=false;
+
+	int iMaxCharsX=0;
+
+	int iScrollX=0;
+
+	int iEditTextX=0;
+
+	void CursorNav(int iDirection);
+
+	void DoScrollKeyboard(int iDirection);
 
 };
 

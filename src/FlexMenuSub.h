@@ -10,6 +10,8 @@ public:
 
 	String strTitle;
 
+	virtual void SetManager(FlexMenuManager * pManager) override;
+
 	virtual void AddSubItem(FlexMenuBase * pSubItem);
 
 	virtual bool CanEnter() override { return true; };
@@ -32,6 +34,8 @@ public:
 
 
 private:
+
+	FlexMenuManager * pManager=NULL;
 
 	int iScrollPos=0;
 	int iCurItem=0;

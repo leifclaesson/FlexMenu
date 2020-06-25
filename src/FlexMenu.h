@@ -10,3 +10,4 @@
 #include "FlexMenuItemSlider.h"
 #include "FlexMenuItemSpacer.h"
 #include "FlexMenuItemCommand.h"
+#include "FlexMenuItemEdit.h"
