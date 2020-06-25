@@ -152,12 +152,12 @@ void FlexMenuItemSlider::DoAdjust(int8_t direction, uint8_t accel)
 			multiplier=53;
 		}
 
-		if(accel>80)
+		if(accel>110)
 		{
 			multiplier=73;
 		}
 
-		if(accel>98)
+		if(accel>148)
 		{
 			multiplier=107;
 		}

@@ -319,7 +319,7 @@ uint8_t FlexMenuManager::HandleAcceleration(int8_t direction)
 	{
 		//csprintf("diff=%i\n",diff);
 
-		if(diff>100)
+		if(diff>80)
 		{
 			ctr-=3;
 
@@ -327,12 +327,12 @@ uint8_t FlexMenuManager::HandleAcceleration(int8_t direction)
 	
 		}
 
-		if(diff<80)
+		if(diff<50)
 		{
 			ctr+=1;
 		}
 
-		if(diff<40)
+		if(diff<20)
 		{
 			ctr+=1;
 		}
@@ -340,7 +340,7 @@ uint8_t FlexMenuManager::HandleAcceleration(int8_t direction)
 	}
 
 	if(ctr<0) ctr=0;
-	if(ctr>100) ctr=100;
+	if(ctr>150) ctr=150;
 
 	accel_counter=ctr;
 	

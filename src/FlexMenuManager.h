@@ -43,7 +43,7 @@ private:
 	uint8_t HandleAcceleration(int8_t direction);
 	int8_t last_direction=0;
 	uint32_t last_timestamp=0;
-	int8_t accel_counter=0;
+	uint8_t accel_counter=0;
 
 	uint8_t countRepeat=0;
 	uint32_t timestampRepeat=0;
