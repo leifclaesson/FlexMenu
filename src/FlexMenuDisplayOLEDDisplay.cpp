@@ -5,7 +5,7 @@
  *      Author: user
  */
 
-#include <FlexMenuDisplaySH1106.h>
+#include <FlexMenuDisplayOLEDDisplay.h>
 #include <SH1106.h>
 #include "FlexMenuBase.h"
 #include "FlexMenuItemSlider.h"
@@ -45,26 +45,31 @@ char PROGMEM _osk_table[]={
 
 
 
-FlexMenuDisplay_SH1106::FlexMenuDisplay_SH1106()
+FlexMenuDisplay_OLEDDisplay::FlexMenuDisplay_OLEDDisplay()
 {
-	memset(icons,0,sizeof(icons));
 }
 
-FlexMenuDisplay_SH1106::~FlexMenuDisplay_SH1106() {
+FlexMenuDisplay_OLEDDisplay::~FlexMenuDisplay_OLEDDisplay()
+{
 	// TODO Auto-generated destructor stub
 }
 
-void FlexMenuDisplay_SH1106::Init()
+void FlexMenuDisplay_OLEDDisplay::SetParams(FlexMenuDisplay_OLEDDisplay_Params * pParams)
 {
-	OLEDDisplay & display=*pDisplay;
+	params=*pParams;
+}
+
+void FlexMenuDisplay_OLEDDisplay::Init()
+{
+	OLEDDisplay & display=*params.pOLEDDisplay;
 	(void)(display);
 
-	iVisibleItems=iScreenCY/iLineHeight;
+	iVisibleItems=params.iScreenCY/params.iLineHeight;
 
 	FlexMenuEditScreenParams ep;
 
-	ep.iScreenCX=iScreenCX;
-	ep.iScreenCY=iScreenCY;
+	ep.iScreenCX=params.iScreenCX;
+	ep.iScreenCY=params.iScreenCY;
 
 	ep.iMaxCharsX=15;
 
@@ -81,120 +86,25 @@ void FlexMenuDisplay_SH1106::Init()
 
 	ep.pFontEdit=(const uint8_t *) Monospaced_14;
 
-	FlexMenuEditScreen::pDisplay=pDisplay;
+	ep.pOLEDDisplay=params.pOLEDDisplay;
 
 	EditScreen_Init(&ep);
-
-
-//	uint8_t temp[256];
-//	uint8_t idx=0;
-
-	/*
-	osk_table=(uint8_t *) malloc(sizeof(okay)-1);
-	memcpy(osk_table,okay,sizeof(okay)-1);
-	osk_table_length=sizeof(okay)-1;
-
-	csprintf("osk_table_length %i\n",osk_table_length);
-
-	for(int i=0;i<16;i++)
-	{
-		csprintf("%02x ",osk_table[i]);
-
-	}
-	*/
-
-//
-
-/*
-
-
-"\1\2\3\4\5\6\0\0\0\0\0\0\0\0"
-"<>@'`{|}~^"_.,"
-"0123456789-+=*"
-"ABCDEFGHIJKLMN"
-"OPQRSTUVWXYZ[]"
-"#$%&:/\;().,!?"
-"abcdefghijklmn"
-"opqrstuvwxyz-_"
-
-
-
-*/
-	/*
-	uint8_t osk_char='!';	//start at code 33
-
-
-
-	while(1)
-	{
-		if(osk_char<110)
-		{
-			num_control_chars=0;
-			for(int i=eFlexMenuEdit_CaptureCursor;i<=eFlexMenuEdit_OK;i++)
-			{
-				temp[idx]=i; idx++;
-				num_control_chars++;
-			}
-
-			while(idx % osk_width != 0)
-			{
-				temp[idx]=0; idx++;
-			}
-		}
-
-
-		for(int y=0;y<osk_height-1;y++)
-		{
-			for(int i=0;i<osk_width;i++)
-			{
-				if(osk_char<=126)
-				{
-					temp[idx]=osk_char; idx++; osk_char++;
-				}
-			}
-		}
-
-		while(idx % osk_width != 0)
-		{
-			temp[idx]=0; idx++;
-		}
-
-		if(osk_char>126)
-		{
-			break;
-		}
-
-
-	}
-
-
-	osk_table=(uint8_t *) malloc(idx);
-	memcpy(osk_table,temp,idx);
-	osk_table_length=idx;
-
-*/
-
-//	Serial.printf("table_idx=%i\n",idx);
-
-
-
-
 
 }
 
 
 
-int FlexMenuDisplay_SH1106::GetVisibleItems()
+int FlexMenuDisplay_OLEDDisplay::GetVisibleItems()
 {
 	return iVisibleItems;
 }
 
-void FlexMenuDisplay_SH1106::DrawDisplay(FlexMenuBase * pCurMenu)
+void FlexMenuDisplay_OLEDDisplay::DrawDisplay(FlexMenuBase * pCurMenu)
 {
-	OLEDDisplay & display=*pDisplay;
+	OLEDDisplay & display=*params.pOLEDDisplay;
 
 	display.clear();
-	display.setFont(pFont);
+	display.setFont(params.pFont);
 
 	{
 		FlexMenuBase * pCurItem=pCurMenu->GetCurItemPtr();
@@ -217,7 +127,7 @@ void FlexMenuDisplay_SH1106::DrawDisplay(FlexMenuBase * pCurMenu)
 	}
 
 
-	float fLineHeight=(float) (iScreenCY) / GetVisibleItems();
+	float fLineHeight=(float) (params.iScreenCY) / GetVisibleItems();
 
 	for(int i=0;i<GetVisibleItems();i++)
 	{
@@ -234,26 +144,26 @@ void FlexMenuDisplay_SH1106::DrawDisplay(FlexMenuBase * pCurMenu)
 			eFlexMenuIcon icon=pItem->UseIcon();
 
 			int left=0;
-			int right=iScreenCX;
+			int right=params.iScreenCX;
 
 
-			if(icon<eFlexMenuIcon_Count && icons[icon])
+			if(icon<eFlexMenuIcon_Count && params.icons[icon])
 			{
 				if(icon==eFlexMenuIcon_LeftArrow)
 				{
-					left+=iIconCX;
-					if(icons[icon])
+					left+=params.iIconCX;
+					if(params.icons[icon])
 					{
-						display.drawXbm(0, i*fLineHeight+iIconY, iIconCX, iIconCY, icons[icon]);
+						display.drawXbm(0, i*fLineHeight+params.iIconY, params.iIconCX, params.iIconCY, params.icons[icon]);
 					}
 				}
 				else
 				{
-					if(icon!=eFlexMenuIcon_None) right-=iIconCX;
-					//right-=iIconCX;
-					if(icons[icon])
+					if(icon!=eFlexMenuIcon_None) right-=params.iIconCX;
+					//right-=params.iIconCX;
+					if(params.icons[icon])
 					{
-						display.drawXbm(right, i*fLineHeight+iIconY, iIconCX, iIconCY, icons[icon]);
+						display.drawXbm(right, i*fLineHeight+params.iIconY, params.iIconCX, params.iIconCY, params.icons[icon]);
 					}
 				}
 			}
@@ -269,7 +179,7 @@ void FlexMenuDisplay_SH1106::DrawDisplay(FlexMenuBase * pCurMenu)
 
 			display.setTextAlignment(TEXT_ALIGN_RIGHT);
 
-			int chars=getCharsForWidth(pFont,strRight.c_str(),strRight.length(),iScreenCX-widthLeft-iIconCX-6);
+			int chars=getCharsForWidth(params.pFont,strRight.c_str(),strRight.length(),params.iScreenCX-widthLeft-params.iIconCX-6);
 
 			if(chars!=(int) strRight.length())
 			{
@@ -298,7 +208,7 @@ void FlexMenuDisplay_SH1106::DrawDisplay(FlexMenuBase * pCurMenu)
 		{
 			display.setColor(INVERSE);
 
-			display.fillRect( 0, iCurItem*fLineHeight, iScreenCX, iLineHeight+1);
+			display.fillRect( 0, iCurItem*fLineHeight, params.iScreenCX, params.iLineHeight+1);
 		}
 	}
 
@@ -334,18 +244,18 @@ void FlexMenuDisplay_SH1106::DrawDisplay(FlexMenuBase * pCurMenu)
 */
 }
 
-void FlexMenuDisplay_SH1106::DrawSliderScreen(FlexMenuBase * pCurMenu,FlexMenuBase * pCurItem)
+void FlexMenuDisplay_OLEDDisplay::DrawSliderScreen(FlexMenuBase * pCurMenu,FlexMenuBase * pCurItem)
 {
 	(void)(pCurMenu);
-	OLEDDisplay & display=*pDisplay;
+	OLEDDisplay & display=*params.pOLEDDisplay;
 
 	FlexMenuItemSlider * pSlider=(FlexMenuItemSlider *) pCurItem;
 
-	const uint8_t * pUseFont=pFont;
-	int iFontHeight=iLineHeight;
-	if(pFontSlider)
+	const uint8_t * pUseFont=params.pFont;
+	int iFontHeight=params.iLineHeight;
+	if(params.pFontSlider)
 	{
-		pUseFont=pFontSlider;
+		pUseFont=params.pFontSlider;
 
 		const void * ptr=&pUseFont[1];	//second byte of font is height
 		uint8_t test=0;
@@ -364,68 +274,26 @@ void FlexMenuDisplay_SH1106::DrawSliderScreen(FlexMenuBase * pCurMenu,FlexMenuBa
 
 	display.setColor(WHITE);
 	display.setTextAlignment(TEXT_ALIGN_CENTER);
-	display.drawString(iScreenCX/2, 0, strTitle);
+	display.drawString(params.iScreenCX/2, 0, strTitle);
 
-	display.drawString(iScreenCX/2, iScreenCY-iFontHeight, strValue);
+	display.drawString(params.iScreenCX/2, params.iScreenCY-iFontHeight, strValue);
 
+	int bar_height=(params.iScreenCY * 30) / 100;
 
-	int bar_height=((iScreenCY * 30) / 100) & 0xFFFFFFFE;
+	int bar_y=(params.iScreenCY-bar_height)/2;
 
+	//draw frame around the progress bar
+	display.drawRect(0,bar_y,params.iScreenCX,bar_height);
 
-	int bar_y=(iScreenCY-bar_height)/2;
-
-
-	display.drawRect(0,bar_y,iScreenCX,bar_height);
-
-
-	//if(abs(range)>1048576) downshift_bits=8;	//i doubt we'll ever need to support a range that large but at least now we're prepared.
-
-	//int range=pSlider->range_max-pSlider->range_min;
-
-	uint8_t downshift_bits=0;
-
-	int fraction=0;
-
-	if(pSlider->range_max>pSlider->range_min)
-	{
-		fraction=((pSlider->value - pSlider->range_min)<<(10-downshift_bits)) / ((pSlider->range_max - pSlider->range_min)>>downshift_bits);
-
-		//csprintf("fraction (pos)=%i\n",fraction);
-	}
-	else
-	{
-		fraction=(1<<10) - (((pSlider->value - pSlider->range_max)<<(10-downshift_bits)) / ((-(pSlider->range_max - pSlider->range_min))>>downshift_bits));
-
-		//csprintf("fraction (neg)=%i\n",fraction);
-	}
-
-	//csprintf("pixels: %i\n",(fraction*173)>>10);
-
-	int bar_pixels=(fraction*(iScreenCX-4)>>10);
-
-
+	//fill in the progress bar
+	int bar_pixels=pSlider->GetProgressBar(params.iScreenCX-4);
 	display.fillRect(2, bar_y+2, bar_pixels, bar_height-4);
 
-
-
-	//if(
-
-
-/*
-	display.drawVerticalLine(0, (iScreenCY-bar_height)/2, bar_height);
-	display.drawVerticalLine(iScreenCX-1, (iScreenCY-bar_height)/2, bar_height);
-
-	display.drawHorizontalLine(1, (iScreenCY-bar_height)/2, iScreenCX-2);
-	display.drawHorizontalLine(1, (iScreenCY+bar_height-2)/2, iScreenCX-2);*/
-
-//	display.drawProgressBar(0, (iScreenCY-bar_height)/2, iScreenCX-1, bar_height, 98);
-
-//	display.fillRect( 0, 0, iScreenCX, iScreenCY);
 }
 
 
 
-uint16_t FlexMenuDisplay_SH1106::getCharsForWidth(const uint8_t * pFont,const char* text, uint16_t length, uint16_t desiredWidth)
+uint16_t FlexMenuDisplay_OLEDDisplay::getCharsForWidth(const uint8_t * pFont,const char* text, uint16_t length, uint16_t desiredWidth)
 {
 
   uint16_t firstChar        = pgm_read_byte(pFont + FIRST_CHAR_POS);
@@ -445,7 +313,7 @@ uint16_t FlexMenuDisplay_SH1106::getCharsForWidth(const uint8_t * pFont,const ch
 }
 
 
-bool FlexMenuDisplay_SH1106::OnNavigate(FlexMenuBase * pCurMenu, eFlexMenuNav direction, uint8_t accel)
+bool FlexMenuDisplay_OLEDDisplay::OnNavigate(FlexMenuBase * pCurMenu, eFlexMenuNav direction, uint8_t accel)
 {
 
 	if(EditScreen_OnNavigate(pCurMenu, direction, accel)) return true;
@@ -453,12 +321,12 @@ bool FlexMenuDisplay_SH1106::OnNavigate(FlexMenuBase * pCurMenu, eFlexMenuNav di
 	return false;
 }
 
-void FlexMenuDisplay_SH1106::OnEditMode(FlexMenuBase * pCurMenu, bool bEnable)
+void FlexMenuDisplay_OLEDDisplay::OnEditMode(FlexMenuBase * pCurMenu, bool bEnable)
 {
 	EditScreen_OnEditMode(pCurMenu,bEnable);
 }
 
-bool FlexMenuDisplay_SH1106::DisplayNeedsRefresh(FlexMenuBase * pCurMenu)
+bool FlexMenuDisplay_OLEDDisplay::DisplayNeedsRefresh(FlexMenuBase * pCurMenu)
 {
 	if(EditScreen_NeedsRefresh(pCurMenu)) return true;
 

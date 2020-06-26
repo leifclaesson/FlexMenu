@@ -241,7 +241,7 @@ void FlexMenuEditScreen::EditScreen_Draw(FlexMenuBase * pCurMenu,FlexMenuBase * 
 {
 	(void)(pCurMenu); (void)(pCurItem);
 
-	OLEDDisplay & display=*pDisplay;
+	OLEDDisplay & display=*params.pOLEDDisplay;
 
 	//FlexMenuItemEdit & edit=*((FlexMenuItemEdit *) pCurMenu);
 

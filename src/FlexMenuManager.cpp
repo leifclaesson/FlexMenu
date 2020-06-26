@@ -237,7 +237,6 @@ re_navigate:
 		FlexMenuBase * pCurItem=pCurMenu->GetSubItem(cur_item);
 		if(pCurItem && !pCurItem->AllowLand() && cur_item>=0 && cur_item<pCurMenu->GetNumSubItems()-1 && cur_item!=last_cur_item)
 		{
-//			csprintf("renav ");
 			goto re_navigate;
 		}
 	}
@@ -252,9 +251,9 @@ void FlexMenuManager::HandleRepeat()
 	{
 		uint32_t thresh=500;
 
-		if(countRepeat>1) thresh=100;
-		if(countRepeat>10) thresh=70;
-		if(countRepeat>20) thresh=50;
+		if(countRepeat>=2) thresh=100;
+		if(countRepeat>=6) thresh=70;
+		if(countRepeat>=16) thresh=50;
 
 		if(millis()-timestampRepeat>thresh)
 		{
@@ -332,18 +331,13 @@ uint8_t FlexMenuManager::HandleAcceleration(int8_t direction)
 	{
 		ctr=0;
 		accel_counter=0;
-		//Serial.printf("reset\n");
 	}
 	else
 	{
-		//csprintf("diff=%i\n",diff);
 
 		if(diff>80)
 		{
 			ctr-=3;
-
-			//Serial.printf("sub... %i\n",ctr);
-	
 		}
 
 		if(diff<50)
@@ -363,12 +357,8 @@ uint8_t FlexMenuManager::HandleAcceleration(int8_t direction)
 
 	accel_counter=ctr;
 	
-
 	last_timestamp=millis();
-
 	
-	//csprintf("accel_counter=%i\n",accel_counter);
-
 	last_direction=direction;
 	
 	return accel_counter;

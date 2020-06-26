@@ -10,6 +10,8 @@ struct osk_icondef
 	int8_t shift_y;
 };
 
+class OLEDDisplay;
+
 class FlexMenuEditScreenParams
 {
 public:
@@ -31,6 +33,8 @@ public:
 	int iMaxCharsX=0;
 	int iEditTextShiftX=0;
 
+	OLEDDisplay * pOLEDDisplay;
+
 };
 
 class OLEDDisplay;
@@ -41,11 +45,8 @@ public:
 	FlexMenuEditScreen();
 	virtual ~FlexMenuEditScreen();
 
-	OLEDDisplay * pDisplay;
-
 	void EditScreen_Init(FlexMenuEditScreenParams * pParams);
 
-	FlexMenuEditScreenParams params;
 
 
 	virtual void EditScreen_Draw(FlexMenuBase * pCurMenu,FlexMenuBase * pCurItem);
@@ -58,6 +59,7 @@ public:
 
 private:
 
+	FlexMenuEditScreenParams params;
 
 	int selection=0;
 

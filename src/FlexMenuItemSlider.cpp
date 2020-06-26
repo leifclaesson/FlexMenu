@@ -2,14 +2,6 @@
 #include "FlexMenuItemSlider.h"
 
 
-enum eSubItem
-{
-//	eSubItem_Leave,
-	eSubItem_Slider,
-	eSubItem_Count,
-};
-
-
 FlexMenuItemSlider::FlexMenuItemSlider()
 {
 }
@@ -18,13 +10,6 @@ FlexMenuItemSlider::FlexMenuItemSlider()
 FlexMenuItemSlider::~FlexMenuItemSlider()
 {
 }
-
-/*
-void FlexMenuItemSlider::OnEnter()
-{
-	iCurItem=eSubItem_Slider;
-}
-*/
 
 eFlexMenuScreenType FlexMenuItemSlider::GetScreenType()
 {
@@ -66,29 +51,6 @@ bool FlexMenuItemSlider::CanNavigate(eFlexMenuNav direction, uint8_t accel)
 	return true;
 }
 
-
-/*
-int FlexMenuItemSlider::GetNumSubItems()
-{
-	return eSubItem_Count;
-}
-
-FlexMenuBase * FlexMenuItemSlider::GetSubItem(int idx)
-{
-	switch(idx)
-	{
-	case eSubItem_Slider:
-		GetTitleText(dummy.strReturnTitle);
-		GetValueText(dummy.strReturnValue);
-		break;
-	default:
-		dummy.strReturnTitle="unknown";
-		break;
-	};
-
-	return &dummy;
-}
-*/
 
 void FlexMenuItemSlider::OnPush()
 {
@@ -203,56 +165,7 @@ void FlexMenuItemSlider::DoAdjust(int8_t direction, uint8_t accel)
 		SetNeedsRefresh(true);
 	}
 
-/*	FlexMenuItemSlider * pSlider=this;
-
-
-	uint8_t downshift_bits=0;
-
-	int fraction=0;
-
-	if(pSlider->range_max>pSlider->range_min)
-	{
-		fraction=((pSlider->value - pSlider->range_min)<<(10-downshift_bits)) / ((pSlider->range_max - pSlider->range_min)>>downshift_bits);
-
-		csprintf("fraction (pos)=%i\n",fraction);
-	}
-	else
-	{
-		fraction=(1<<10) - (((pSlider->value - pSlider->range_max)<<(10-downshift_bits)) / ((-(pSlider->range_max - pSlider->range_min))>>downshift_bits));
-
-		csprintf("fraction (neg)=%i\n",fraction);
-	}
-
-	csprintf("pixels: %i\n",(fraction*173)>>10);
-	*/
-
-	//csprintf("range=%i\n",range);
-
-
-//	csprintf("adjust %i, accel %i\n",direction,accel);
 }
-
-/*
-int FlexMenuItemSlider::GetScrollPos()
-{
-	return iScrollPos;
-}
-
-int FlexMenuItemSlider::GetCurItem()
-{
-	return iCurItem;
-}
-
-void FlexMenuItemSlider::SetScrollPos(int iNewScrollPos)
-{
-	iScrollPos=(uint8_t) iNewScrollPos;
-}
-
-void FlexMenuItemSlider::SetCurItem(int iNewCurItem)
-{
-	iCurItem=(uint8_t) iNewCurItem;
-}
-*/
 
 eFlexMenuIcon FlexMenuItemSlider::UseIcon()
 {
@@ -262,5 +175,23 @@ eFlexMenuIcon FlexMenuItemSlider::UseIcon()
 	}
 
 	return eFlexMenuIcon_Blank;
+}
+
+int FlexMenuItemSlider::GetProgressBar(int iPixelWidth)
+{
+	uint8_t downshift_bits=0;
+
+	int fraction=0;
+
+	if(range_max>range_min)
+	{
+		fraction=((value - range_min)<<(10-downshift_bits)) / ((range_max - range_min)>>downshift_bits);
+	}
+	else
+	{
+		fraction=(1<<10) - (((value - range_max)<<(10-downshift_bits)) / ((-(range_max - range_min))>>downshift_bits));
+	}
+
+	return (fraction*iPixelWidth)>>10;
 }
 
