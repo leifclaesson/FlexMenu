@@ -24,7 +24,10 @@ public:
 
 	virtual eFlexMenuIcon UseIcon();
 
-	FlexMenuItemToggleCB cbStateChange;
+	void SetCallback(FlexMenuItemToggleCB & pCallback);
+
+private:
+	FlexMenuItemToggleCB * pfnCallback=NULL;
 
 };
 

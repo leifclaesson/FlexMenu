@@ -4,6 +4,9 @@
 #include "FlexMenuItemSelector.h"
 
 
+static FMISelector_DummySubItem dummy;
+
+
 FlexMenuItemSelector::FlexMenuItemSelector()
 {
 }
@@ -32,7 +35,7 @@ int FlexMenuItemSelector::GetNumSubItems()
 
 FlexMenuBase * FlexMenuItemSelector::GetSubItem(int idx)
 {
-	if(idx==0 || idx>(int) vecItems.size()) return &leave;
+	if(idx==0 || idx>(int) vecItems.size()) return GetLeaveItem();
 
 	idx--;
 

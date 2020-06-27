@@ -56,8 +56,7 @@ public:
 
 	virtual void OnSelChange() {};
 
-	int iCurSel=0;
-	std::vector<FMISelector_Item *> vecItems;
+	std::vector <FMISelector_Item *> vecItems;
 
 	String strText;
 
@@ -85,17 +84,16 @@ public:
 	virtual bool LoadString(const String & strLoad) override;
 
 
-	eFMISelector_Mode mode=eFMISelector_Mode_NoSave;
-
 private:
 
-	FlexMenuItemLeave leave;
-	FMISelector_DummySubItem dummy;
-
-	int iScrollPos=0;
-	int iCurItem=0;
+	int16_t iScrollPos=0;
+	int16_t iCurItem=0;
 
 	bool bInMenu=false;
+
+public:
+	int16_t iCurSel=0;
+	eFMISelector_Mode mode=eFMISelector_Mode_NoSave;
 
 
 };

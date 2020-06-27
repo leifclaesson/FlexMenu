@@ -57,8 +57,6 @@ public:
 	uint8_t iSpacers;
 
 
-	FlexMenuItemCommandDummy dummy;
-
 
 };
 

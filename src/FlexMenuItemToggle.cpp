@@ -21,7 +21,7 @@ void FlexMenuItemToggle::GetTitleText(String & strTitleDestination)
 void FlexMenuItemToggle::OnPush()
 {
 	bState=bState==false;
-	if(cbStateChange) cbStateChange(this);
+	if(pfnCallback && *pfnCallback) (*pfnCallback)(this);
 	SetNeedsRefresh(true);
 }
 
@@ -30,3 +30,10 @@ eFlexMenuIcon FlexMenuItemToggle::UseIcon()
 	return bState?eFlexMenuIcon_Checked:eFlexMenuIcon_Unchecked;
 }
 
+void FlexMenuItemToggle::SetCallback(FlexMenuItemToggleCB & fnCallback)
+{
+	if(!pfnCallback) pfnCallback=new FlexMenuItemToggleCB;
+
+	*pfnCallback=fnCallback;
+
+}

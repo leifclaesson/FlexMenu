@@ -3,6 +3,8 @@
 #include "stdafx.h"
 #include "FlexMenuItemCommand.h"
 
+static FlexMenuItemCommandDummy dummy;
+
 void FlexMenuItemCommandDummy::GetTitleText(String & strTitleDestination)
 {
 	strTitleDestination=strTitle;

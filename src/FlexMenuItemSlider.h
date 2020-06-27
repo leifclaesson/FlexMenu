@@ -6,15 +6,22 @@
 
 class FlexMenuItemSlider;
 
-typedef std::function<void(FlexMenuItemSlider *, String &)> FlexMenuItemSliderDisplayValueCB;
+enum eFMISliderCallback
+{
+	eFMISliderCallback_DisplayValue,
+	eFMISliderCallback_ValueChanging,
+	eFMISliderCallback_ValueChanged,
+};
 
-typedef std::function<void(FlexMenuItemSlider *)> FlexMenuItemSliderValueChangingCB;
-typedef std::function<void(FlexMenuItemSlider *)> FlexMenuItemSliderValueChangedCB;
+typedef std::function<int(FlexMenuItemSlider *, eFMISliderCallback, String *)> FlexMenuItemSliderCB;
+
+
 
 
 class FlexMenuItemSlider :
 	public FlexMenuBase
 {
+	FlexMenuItemSliderCB * pfnCallback=NULL;
 public:
 	FlexMenuItemSlider();
 	~FlexMenuItemSlider();
@@ -36,11 +43,7 @@ public:
 
 	virtual eFlexMenuIcon UseIcon() override;
 
-	FlexMenuItemSliderDisplayValueCB cbDisplayValue;
-	FlexMenuItemSliderValueChangingCB cbValueChanging;
-	FlexMenuItemSliderValueChangedCB cbValueChanged;
-
-	FlexMenuItemLeave leave;
+	void SetCallbackFn(FlexMenuItemSliderCB & fnCallback);
 
 
 	virtual void OnPush() override;
@@ -52,12 +55,12 @@ public:
 	virtual void GetTitleText(String & strTitleDestination) override;
 	virtual void GetValueText(String & strValueDestination) override;
 
+
 	bool bAdjusting=false;
 
 	bool bModified=false;
 
 	void DoAdjust(int8_t direction, uint8_t accel);
-
 
 
 };

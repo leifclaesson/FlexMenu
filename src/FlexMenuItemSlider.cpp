@@ -43,7 +43,7 @@ bool FlexMenuItemSlider::CanNavigate(eFlexMenuNav direction, uint8_t accel)
 		{
 			bAdjusting=false;
 			SetNeedsRefresh(true);
-			if(bModified && cbValueChanged) cbValueChanged(this);
+			if(bModified && pfnCallback && *pfnCallback) (*pfnCallback)(this, eFMISliderCallback_ValueChanged, 0);
 			bModified=false;
 			return false;
 		}
@@ -70,11 +70,7 @@ void FlexMenuItemSlider::GetTitleText(String & strTitleDestination)
 
 void FlexMenuItemSlider::GetValueText(String & strValueDestination)
 {
-	if(cbDisplayValue)
-	{
-		cbDisplayValue(this,strValueDestination);
-	}
-	else
+	if(!pfnCallback || !(*pfnCallback) || !(*pfnCallback)(this,eFMISliderCallback_DisplayValue,&strValueDestination))
 	{
 #ifdef WIN32
 		char temp[16];
@@ -162,7 +158,7 @@ void FlexMenuItemSlider::DoAdjust(int8_t direction, uint8_t accel)
 	if(value!=val)
 	{
 		value=val;
-		if(cbValueChanging) cbValueChanging(this);
+		if(pfnCallback && *pfnCallback) (*pfnCallback)(this,eFMISliderCallback_ValueChanging,0);
 		bModified=true;
 		SetNeedsRefresh(true);
 	}
@@ -197,3 +193,8 @@ int FlexMenuItemSlider::GetProgressBar(int iPixelWidth)
 	return (fraction*iPixelWidth)>>10;
 }
 
+void FlexMenuItemSlider::SetCallbackFn(FlexMenuItemSliderCB & fnCallback)
+{
+	if(!pfnCallback) pfnCallback=new FlexMenuItemSliderCB;
+	*pfnCallback=fnCallback;
+}

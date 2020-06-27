@@ -4,6 +4,14 @@
 #include "FlexMenuManager.h"
 
 #include "FlexMenuSub.h"
+#include "FlexMenuItemLeave.h"
+
+FlexMenuItemLeave g_leave;
+
+FlexMenuBase * GetLeaveItem()
+{
+	return &g_leave;
+}
 
 
 FlexMenuManager::FlexMenuManager()
