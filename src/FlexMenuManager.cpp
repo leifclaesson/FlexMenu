@@ -1,3 +1,5 @@
+// * Copyright 2020 Leif Claesson. Licenced under the GNU GPL Version 3.
+
 #include "stdafx.h"
 #include "FlexMenuManager.h"
 
@@ -262,9 +264,9 @@ void FlexMenuManager::HandleRepeat()
 				countRepeat++;
 
 				FlexMenuBase * pCurItem=pCurMenu->GetCurItemPtr();
-				if(pCurItem) pCurItem->CanNavigate(eFlexMenuNav_Repeat,countRepeat-1);
+				if(pCurItem) pCurItem->CanNavigate(eFlexMenuNav_PushRepeat,countRepeat-1);
 
-				pDisplay->OnNavigate(pCurMenu, eFlexMenuNav_Repeat,countRepeat-1);
+				pDisplay->OnNavigate(pCurMenu, eFlexMenuNav_PushRepeat,countRepeat-1);
 
 			}
 

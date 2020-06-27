@@ -1,3 +1,5 @@
+// * Copyright 2020 Leif Claesson. Licenced under the GNU GPL Version 3.
+
 #include "FlexMenuBase.h"
 class FlexMenuItemEdit;
 
@@ -10,7 +12,13 @@ struct osk_icondef
 	int8_t shift_y;
 };
 
-class OLEDDisplay;
+enum eEditOskDrawKey
+{
+	eEditOskDrawKey_NoFrame,
+	eEditOskDrawKey_Selected,
+	eEditOskDrawKey_LockedIn,
+
+};
 
 class FlexMenuEditScreenParams
 {
@@ -18,6 +26,7 @@ public:
 	int iScreenCX;
 	int iScreenCY;
 	const uint8_t * pFontEdit;
+	int iFontHeightEdit;
 
 	int osk_width;
 	int osk_height;
@@ -33,11 +42,7 @@ public:
 	int iMaxCharsX=0;
 	int iEditTextShiftX=0;
 
-	OLEDDisplay * pOLEDDisplay;
-
 };
-
-class OLEDDisplay;
 
 class FlexMenuEditScreen
 {
@@ -46,7 +51,6 @@ public:
 	virtual ~FlexMenuEditScreen();
 
 	void EditScreen_Init(FlexMenuEditScreenParams * pParams);
-
 
 
 	virtual void EditScreen_Draw(FlexMenuBase * pCurMenu,FlexMenuBase * pCurItem);
@@ -58,6 +62,10 @@ public:
 
 
 private:
+
+	virtual void ESCB_DrawEditBox(const FlexMenuEditScreenParams & editparams, const String & strDisplayText, const String & strBeforeCursor, bool bDrawCursor)=0;
+	virtual void ESCB_DrawOSK_Key(uint16_t x, uint16_t y, uint16_t cx, uint16_t cy, eEditOskDrawKey mode, const osk_icondef * pIcon, const String * pText)=0;
+
 
 	FlexMenuEditScreenParams params;
 

@@ -1,3 +1,4 @@
+// * Copyright 2020 Leif Claesson. Licenced under the GNU GPL Version 3.
 #include "stdafx.h"
 #include "FlexMenuBase.h"
 

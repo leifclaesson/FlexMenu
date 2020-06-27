@@ -1,9 +1,4 @@
-/*
- * FlexMenuItemEdit.h
- *
- *  Created on: 24 Jun 2020
- *      Author: user
- */
+// * Copyright 2020 Leif Claesson. Licenced under the GNU GPL Version 3.
 
 #ifndef LIBRARIES_FLEXMENU_SRC_FLEXMENUITEMEDIT_H_
 #define LIBRARIES_FLEXMENU_SRC_FLEXMENUITEMEDIT_H_

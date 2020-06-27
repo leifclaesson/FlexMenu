@@ -1,3 +1,5 @@
+// * Copyright 2020 Leif Claesson. Licenced under the GNU GPL Version 3.
+
 #pragma once
 #include "FlexMenuBase.h"
 #include "FlexMenuItemLeave.h"
@@ -22,7 +24,19 @@ public:
 class FMISelector_Item
 {
 public:
+	FMISelector_Item() {};
+
 	String strText;
+	int16_t id;
+
+};
+
+enum eFMISelector_Mode
+{
+	eFMISelector_Mode_NoSave,
+	eFMISelector_Mode_SaveText,
+	eFMISelector_Mode_SaveIndex,
+	eFMISelector_Mode_SaveID,
 };
 
 class FlexMenuItemSelector :
@@ -51,6 +65,8 @@ public:
 	virtual void GetTitleText(String & strTitleDestination) override;
 	virtual void GetValueText(String & strValueDestination) override;
 
+	FMISelector_Item * GetCurSelectorItem();
+
 	virtual void OnPushChild() override;
 
 	virtual eFlexMenuIcon UseIcon() { return eFlexMenuIcon_RightArrow; };
@@ -63,6 +79,13 @@ public:
 	virtual void SetCurItem( int iNewCurItem ) override;
 
 	virtual bool IsActive();
+
+	virtual bool IsSaveable() override { return mode!=eFMISelector_Mode_NoSave; }
+	virtual void GetSaveString(String & strSave) override;
+	virtual bool LoadString(const String & strLoad) override;
+
+
+	eFMISelector_Mode mode=eFMISelector_Mode_NoSave;
 
 private:
 
