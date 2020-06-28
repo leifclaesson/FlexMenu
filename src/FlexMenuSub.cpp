@@ -29,33 +29,33 @@ void FlexMenuSub::GetValueText(String & strValueDestination)
 	strValueDestination="";
 }
 
-int FlexMenuSub::GetNumSubItems()
+int16_t FlexMenuSub::GetNumSubItems()
 {
-	return (int) vecSubItems.size();
+	return (int16_t) vecSubItems.size();
 }
 
-FlexMenuBase * FlexMenuSub::GetSubItem(int idx)
+FlexMenuBase * FlexMenuSub::GetSubItem(int16_t idx)
 {
 	if(idx>=0 && idx<(int) vecSubItems.size()) return vecSubItems[idx];
 	return NULL;
 }
 
-int FlexMenuSub::GetScrollPos()
+int16_t FlexMenuSub::GetScrollPos()
 {
 	return iScrollPos;
 }
 
-int FlexMenuSub::GetCurItem()
+int16_t FlexMenuSub::GetCurItem()
 {
 	return iCurItem;
 }
 
-void FlexMenuSub::SetScrollPos(int iNewScrollPos)
+void FlexMenuSub::SetScrollPos(int16_t iNewScrollPos)
 {
 	iScrollPos=iNewScrollPos;
 }
 
-void FlexMenuSub::SetCurItem(int iNewCurItem)
+void FlexMenuSub::SetCurItem(int16_t iNewCurItem)
 {
 	iCurItem=iNewCurItem;
 }

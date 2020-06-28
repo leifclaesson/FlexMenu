@@ -51,8 +51,8 @@ public:
 	virtual void OnEnter();
 	virtual void OnLeave();
 
-	virtual int GetNumSubItems();
-	virtual FlexMenuBase * GetSubItem(int idx);
+	virtual int16_t GetNumSubItems();
+	virtual FlexMenuBase * GetSubItem(int16_t idx);
 
 	virtual void OnSelChange() {};
 
@@ -71,29 +71,28 @@ public:
 	virtual eFlexMenuIcon UseIcon() { return eFlexMenuIcon_RightArrow; };
 
 
-	virtual int GetScrollPos() override;
-	virtual int GetCurItem() override;
+	virtual int16_t GetScrollPos() override;
+	virtual int16_t GetCurItem() override;
 
-	virtual void SetScrollPos( int iNewScrollPos ) override;
-	virtual void SetCurItem( int iNewCurItem ) override;
+	virtual void SetScrollPos( int16_t iNewScrollPos ) override;
+	virtual void SetCurItem( int16_t iNewCurItem ) override;
 
 	virtual bool IsActive();
 
-	virtual bool IsSaveable() override { return mode!=eFMISelector_Mode_NoSave; }
+	virtual bool IsSaveable() override { return GetMode()!=eFMISelector_Mode_NoSave; }
 	virtual void GetSaveString(String & strSave) override;
 	virtual bool LoadString(const String & strLoad) override;
-
 
 private:
 
 	int16_t iScrollPos=0;
 	int16_t iCurItem=0;
 
-	bool bInMenu=false;
-
 public:
 	int16_t iCurSel=0;
-	eFMISelector_Mode mode=eFMISelector_Mode_NoSave;
+	void SetMode(eFMISelector_Mode mode) { derived_use_2=mode; }
+	eFMISelector_Mode GetMode() { return (eFMISelector_Mode) derived_use_2; };
+
 
 
 };

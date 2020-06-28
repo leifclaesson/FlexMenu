@@ -37,8 +37,8 @@ public:
 	virtual bool CanEnter() override { return true; }
 	virtual void OnEnter() override;
 
-	virtual int GetNumSubItems() override { return 1; }
-	virtual FlexMenuBase * GetSubItem(int idx) override { (void)(idx); return &edit_internal; }
+	virtual int16_t GetNumSubItems() override { return 1; }
+	virtual FlexMenuBase * GetSubItem(int16_t idx) override { (void)(idx); return &edit_internal; }
 
 	String strTitle;
 	String strEdit;

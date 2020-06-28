@@ -80,6 +80,8 @@ protected:
 
 	int iVisibleItems=0;
 
+	virtual void DrawMessage(FlexMenuBase * pCurMenu);
+
 };
 
 #endif /* LIBRARIES_FLEXMENU_SRC_FLEXMENUDISPLAY_OLED_BASE_H_ */

@@ -44,17 +44,39 @@ void FlexMenuManager::InitialEnterMenu()
 	}
 }
 
-void FlexMenuManager::Display(bool bForce)
+void FlexMenuManager::Loop(bool bForceRefresh)
 {
 	InitialEnterMenu();
 
-	HandleRepeat();
-
-
 	bool bNeedsRefresh=false;
+
+
+	switch(stateDisplayMessage)
+	{
+	case eDisplayMessageState_Idle:
+		break;
+	case eDisplayMessageState_Displaying:
+		if((int) (millis()-timestampDisplayMessage)>0)
+		{
+			bWeNeedRefresh=true;
+			stateDisplayMessage=eDisplayMessageState_PostDisplaying_IgnoreInput;	//ignore input for ... (see below)
+		}
+		break;
+	case eDisplayMessageState_PostDisplaying_IgnoreInput:
+		if((int) (millis()-timestampDisplayMessage)>=500)	//ignore input for 500 milliseconds to prevent accidental selection if a user clicks to dismiss a message just as it's going away
+		{
+
+			bWeNeedRefresh=true;
+			stateDisplayMessage=eDisplayMessageState_Idle;
+		}
+		break;
+	}
+
 
 	if(pDisplay->DisplayNeedsRefresh(pCurMenu)) bNeedsRefresh=true;
 
+
+	HandleRepeat();
 
 	for(int i=0;i<pDisplay->GetVisibleItems();i++)
 	{
@@ -75,14 +97,22 @@ void FlexMenuManager::Display(bool bForce)
 	}
 	vecUpdateStatus.clear();
 
-	if(bNeedsRefresh || bForce || pLastMenu!=pCurMenu || iLastItem!=pCurMenu->GetCurItem() || iLastScrollPos!=pCurMenu->GetScrollPos() || pCurMenu->GetNeedsRefresh())
+	if(bWeNeedRefresh || bNeedsRefresh || bForceRefresh || pLastMenu!=pCurMenu || iLastItem!=pCurMenu->GetCurItem() || iLastScrollPos!=pCurMenu->GetScrollPos() || pCurMenu->GetNeedsRefresh())
 	{
+		bWeNeedRefresh=false;
 		pCurMenu->SetNeedsRefresh(false);
 		pLastMenu=pCurMenu;
 		iLastItem=pCurMenu->GetCurItem();
 		iLastScrollPos=pCurMenu->GetScrollPos();
 
-		pDisplay->DrawDisplay(pCurMenu);
+		if(stateDisplayMessage==eDisplayMessageState_Displaying)
+		{
+			pDisplay->DrawDisplay(&dummyDisplayMessage);
+		}
+		else
+		{
+			pDisplay->DrawDisplay(pCurMenu);
+		}
 	}
 
 
@@ -92,6 +122,34 @@ void FlexMenuManager::Display(bool bForce)
 void FlexMenuManager::Navigate(eFlexMenuNav nav)
 {
 	InitialEnterMenu();
+
+	if(nav==eFlexMenuNav_Release)	//handle this first, so we never ignore release and keep repeating!
+	{
+		int cur_item=pCurMenu->GetCurItem();
+		countRepeat=0;
+		FlexMenuBase * pCurItem=pCurMenu->GetSubItem(cur_item);
+		if(pCurItem) pCurItem->CanNavigate(eFlexMenuNav_Release,0);
+	}
+
+
+
+	if(stateDisplayMessage!=eDisplayMessageState_Idle)
+	{
+
+		if(stateDisplayMessage==eDisplayMessageState_Displaying)
+		{
+			//if we push while displaying, cancel the display
+
+			if(nav==eFlexMenuNav_Push)
+			{
+				stateDisplayMessage=eDisplayMessageState_Idle;
+				bWeNeedRefresh=true;
+			}
+		}
+		return;
+
+	}
+
 
 	uint8_t safety=0;
 re_navigate:
@@ -373,3 +431,30 @@ uint8_t FlexMenuManager::HandleAcceleration(int8_t direction)
 	
 	return accel_counter;
 }
+
+void FlexMenuManager::DisplayMessage(const String & strTitle, const String & strValue, uint32_t milliseconds)
+{
+	if(strTitle.length() || strValue.length())
+	{
+
+		timestampDisplayMessage=millis()+milliseconds;
+		if(!timestampDisplayMessage) timestampDisplayMessage++;
+
+		dummyDisplayMessage.strTitle=strTitle;
+		dummyDisplayMessage.strValue=strValue;
+
+		stateDisplayMessage=eDisplayMessageState_Displaying;
+	}
+	else
+	{
+		stateDisplayMessage=eDisplayMessageState_PostDisplaying_IgnoreInput;
+		timestampDisplayMessage=millis()+milliseconds;
+
+		dummyDisplayMessage.strTitle="";
+		dummyDisplayMessage.strValue="";
+	}
+
+	bWeNeedRefresh=true;
+
+}
+

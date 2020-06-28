@@ -60,6 +60,7 @@ void FlexMenuDisplay_OLED_Base::DrawDisplay(FlexMenuBase * pCurMenu)
 	display.clear();
 	display.setFont(pFont);
 
+
 	{
 		FlexMenuBase * pCurItem=pCurMenu->GetCurItemPtr();
 		if(pCurItem)
@@ -74,6 +75,9 @@ void FlexMenuDisplay_OLED_Base::DrawDisplay(FlexMenuBase * pCurMenu)
 				return;
 			case eFlexMenuScreenType_Edit:
 				EditScreen_Draw(pCurMenu,pCurItem);
+				return;
+			case eFlexMenuScreenType_Message:
+				DrawMessage(pCurMenu);
 				return;
 			}
 		}
@@ -314,6 +318,45 @@ void FlexMenuDisplay_OLED_Base::ESCB_DrawOSK_Key(uint16_t x, uint16_t y, uint16_
 
 }
 
+
+void FlexMenuDisplay_OLED_Base::DrawMessage(FlexMenuBase * pCurMenu)
+{
+	OLEDDisplay & display=*params.pOLEDDisplay;
+
+	const uint8_t * pUseFont=pFont;
+	if(pFontSlider)
+	{
+		pUseFont=pFontSlider;
+	}
+
+	display.setColor(WHITE);
+	display.setFont(pUseFont);
+
+	display.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
+
+	String strTemp1;
+	String strTemp2;
+
+	pCurMenu->GetTitleText(strTemp1);
+	pCurMenu->GetValueText(strTemp2);
+
+	if(strTemp1.length() && !strTemp2.length())
+	{
+		strTemp2=strTemp1;
+		strTemp1="";
+	}
+
+	if(strTemp1.length() && strTemp2.length())
+	{
+		display.drawString(params.iScreenCX>>1 /*middle*/, (params.iScreenCY * 85) >> 8 /*one third*/ , strTemp1);
+		display.drawString(params.iScreenCX>>1 /*middle*/, (params.iScreenCY * 171) >> 8 /*two thirds*/ , strTemp2);
+	}
+	else
+	{
+		display.drawString(params.iScreenCX>>1 /*middle*/, params.iScreenCY >> 1 /*middle*/ , strTemp2);
+	}
+
+}
 
 
 

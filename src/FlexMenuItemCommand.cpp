@@ -19,7 +19,6 @@ bool FlexMenuItemCommandDummy::CanNavigate(eFlexMenuNav direction, uint8_t accel
 
 FlexMenuItemCommand::FlexMenuItemCommand()
 {
-	iSpacers=1;
 }
 
 
@@ -27,14 +26,19 @@ FlexMenuItemCommand::~FlexMenuItemCommand()
 {
 }
 
+int FlexMenuItemCommand::GetNumSpacers()
+{
+	return 1;
+}
+
 void FlexMenuItemCommand::OnEnter()
 {
-	iCurItem=3+iSpacers;
+	derived_use_2=3+GetNumSpacers();
 }
 
 void FlexMenuItemCommand::OnLeave()
 {
-	if(iCurItem==2+iSpacers && dummy.last_nav==eFlexMenuNav_Push)
+	if(derived_use_2==2+GetNumSpacers() && dummy.last_nav==eFlexMenuNav_Push)
 	{
 		if(cbExecuteCommand) cbExecuteCommand(this);
 	}
@@ -52,7 +56,7 @@ void FlexMenuItemCommand::GetTitleText(String & strTitleDestination)
 
 eFlexMenuIcon FlexMenuItemCommand::UseIcon()
 {
-	if(bConfirm)
+	if(GetConfirm())
 	{
 		return eFlexMenuIcon_RightArrow;
 	}
@@ -62,29 +66,29 @@ eFlexMenuIcon FlexMenuItemCommand::UseIcon()
 	}
 }
 
-int FlexMenuItemCommand::GetNumSubItems()
+int16_t FlexMenuItemCommand::GetNumSubItems()
 {
-	return 4+iSpacers;
+	return 4+GetNumSpacers();
 }
 
-FlexMenuBase * FlexMenuItemCommand::GetSubItem(int idx)
+FlexMenuBase * FlexMenuItemCommand::GetSubItem(int16_t idx)
 {
 	if(idx==0)
 	{
 		dummy.bIsLeave=false;
 		dummy.strTitle=strTitle;
 	}
-	else if(idx==1+(iSpacers!=0))
+	else if(idx==1+(GetNumSpacers()!=0))
 	{
 		dummy.bIsLeave=false;
 		dummy.strTitle="Are you sure?";
 	}
-	else if(idx==2+iSpacers)
+	else if(idx==2+GetNumSpacers())
 	{
 		dummy.bIsLeave=true;
 		dummy.strTitle="Yes";
 	}
-	else if(idx==3+iSpacers)
+	else if(idx==3+GetNumSpacers())
 	{
 		dummy.bIsLeave=true;
 		dummy.strTitle="No";
@@ -98,25 +102,35 @@ FlexMenuBase * FlexMenuItemCommand::GetSubItem(int idx)
 	return &dummy;
 }
 
-int FlexMenuItemCommand::GetScrollPos()
+int16_t FlexMenuItemCommand::GetScrollPos()
 {
-	return iScrollPos;
+	return derived_use_1;
 }
 
-int FlexMenuItemCommand::GetCurItem()
+int16_t FlexMenuItemCommand::GetCurItem()
 {
-	return iCurItem;
+	return derived_use_2;
 }
 
-void FlexMenuItemCommand::SetScrollPos(int iNewScrollPos)
+void FlexMenuItemCommand::SetScrollPos(int16_t iNewScrollPos)
 {
-	iScrollPos=iNewScrollPos;
+	derived_use_1=iNewScrollPos;
 }
 
-void FlexMenuItemCommand::SetCurItem(int iNewCurItem)
+void FlexMenuItemCommand::SetCurItem(int16_t iNewCurItem)
 {
-	if(iNewCurItem<2+iSpacers) iNewCurItem=2+iSpacers;
-	iCurItem=iNewCurItem;
+	if(iNewCurItem<2+GetNumSpacers()) iNewCurItem=2+GetNumSpacers();
+	derived_use_2=iNewCurItem;
+}
+
+bool FlexMenuItemCommand::GetConfirm()
+{
+	return (flags & 128) != 0;
+}
+
+void FlexMenuItemCommand::SetConfirm(bool bConfirm)
+{
+	if(bConfirm) flags |= 0x80; else flags &= 0x7f;
 }
 
 

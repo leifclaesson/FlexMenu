@@ -18,22 +18,22 @@ FlexMenuItemSelector::~FlexMenuItemSelector()
 
 void FlexMenuItemSelector::OnEnter()
 {
-	bInMenu=true;
+	derived_use_1=true;	//in_menu
 	UpdateStatus();
 	iCurItem=iCurSel+1;
 }
 
 void FlexMenuItemSelector::OnLeave()
 {
-	bInMenu=false;
+	derived_use_1=false;	//in_menu
 }
 
-int FlexMenuItemSelector::GetNumSubItems()
+int16_t FlexMenuItemSelector::GetNumSubItems()
 {
 	return vecItems.size()+2;
 }
 
-FlexMenuBase * FlexMenuItemSelector::GetSubItem(int idx)
+FlexMenuBase * FlexMenuItemSelector::GetSubItem(int16_t idx)
 {
 	if(idx==0 || idx>(int) vecItems.size()) return GetLeaveItem();
 
@@ -90,36 +90,36 @@ void FlexMenuItemSelector::OnPushChild()
 	}
 }
 
-int FlexMenuItemSelector::GetScrollPos()
+int16_t FlexMenuItemSelector::GetScrollPos()
 {
 	return iScrollPos;
 }
 
-int FlexMenuItemSelector::GetCurItem()
+int16_t FlexMenuItemSelector::GetCurItem()
 {
 	return iCurItem;
 }
 
-void FlexMenuItemSelector::SetScrollPos(int iNewScrollPos)
+void FlexMenuItemSelector::SetScrollPos(int16_t iNewScrollPos)
 {
 	iScrollPos=iNewScrollPos;
 }
 
-void FlexMenuItemSelector::SetCurItem(int iNewCurItem)
+void FlexMenuItemSelector::SetCurItem(int16_t iNewCurItem)
 {
 	iCurItem=iNewCurItem;
 }
 
 bool FlexMenuItemSelector::IsActive()
 {
-	return bInMenu || GetVisible();
+	return derived_use_1 /*in_menu*/ || GetVisible();
 }
 
 
 
 void FlexMenuItemSelector::GetSaveString(String & strSave)
 {
-	switch(mode)
+	switch(GetMode())
 	{
 	case eFMISelector_Mode_NoSave:
 		strSave.clear();
@@ -149,7 +149,7 @@ void FlexMenuItemSelector::GetSaveString(String & strSave)
 
 bool FlexMenuItemSelector::LoadString(const String & strLoad)
 {
-	switch(mode)
+	switch(GetMode())
 	{
 	case eFMISelector_Mode_NoSave:
 		break;

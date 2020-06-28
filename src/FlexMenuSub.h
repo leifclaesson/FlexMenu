@@ -23,14 +23,14 @@ public:
 	virtual void GetValueText(String & strValueDestination) override;
 
 
-	virtual int GetNumSubItems() override;
-	virtual FlexMenuBase * GetSubItem(int idx) override;
+	virtual int16_t GetNumSubItems() override;
+	virtual FlexMenuBase * GetSubItem(int16_t idx) override;
 
-	virtual int GetScrollPos() override;
-	virtual int GetCurItem() override;
+	virtual int16_t GetScrollPos() override;
+	virtual int16_t GetCurItem() override;
 
-	virtual void SetScrollPos( int iNewScrollPos ) override;
-	virtual void SetCurItem( int iNewCurItem ) override;
+	virtual void SetScrollPos( int16_t iNewScrollPos ) override;
+	virtual void SetCurItem( int16_t iNewCurItem ) override;
 
 	virtual eFlexMenuIcon UseIcon() override { return eFlexMenuIcon_RightArrow; };
 
@@ -39,8 +39,8 @@ private:
 
 	FlexMenuManager * pManager=NULL;
 
-	int iScrollPos=0;
-	int iCurItem=0;
+	int16_t iScrollPos=0;
+	int16_t iCurItem=0;
 
 	std::vector<FlexMenuBase *> vecSubItems;
 

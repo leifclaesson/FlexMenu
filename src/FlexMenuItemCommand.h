@@ -27,7 +27,7 @@ public:
 	FlexMenuItemCommand();
 	~FlexMenuItemCommand();
 
-	virtual bool CanEnter() { return bConfirm; };
+	virtual bool CanEnter() { return GetConfirm(); };
 	virtual void OnEnter();
 	virtual void OnLeave();
 
@@ -40,23 +40,19 @@ public:
 
 	FlexMenuItemCommandCB cbExecuteCommand;
 
-	bool bConfirm=false;
-
-	virtual int GetNumSubItems();
-	virtual FlexMenuBase * GetSubItem(int idx);
+	virtual int16_t GetNumSubItems();
+	virtual FlexMenuBase * GetSubItem(int16_t idx);
 	
-	uint8_t iScrollPos=0;
-	uint8_t iCurItem=0;
+	virtual int16_t GetScrollPos() override;
+	virtual int16_t GetCurItem() override;
 
-	virtual int GetScrollPos() override;
-	virtual int GetCurItem() override;
+	virtual void SetScrollPos( int16_t iNewScrollPos ) override;
+	virtual void SetCurItem( int16_t iNewCurItem ) override;
 
-	virtual void SetScrollPos( int iNewScrollPos ) override;
-	virtual void SetCurItem( int iNewCurItem ) override;
+	int GetNumSpacers();
 
-	uint8_t iSpacers;
-
-
+	virtual bool GetConfirm();
+	virtual void SetConfirm(bool bConfirm);
 
 };
 

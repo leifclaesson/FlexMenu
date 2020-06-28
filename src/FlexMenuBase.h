@@ -69,6 +69,7 @@ enum eFlexMenuScreenType
 	eFlexMenuScreenType_Normal,
 	eFlexMenuScreenType_Slider,
 	eFlexMenuScreenType_Edit,
+	eFlexMenuScreenType_Message,
 };
 
 enum eFlexMenuEdit
@@ -101,11 +102,11 @@ public:
 
 	virtual bool AllowLand() { return true; }
 
-	virtual int GetNumSubItems() { return 0; };
-	virtual FlexMenuBase * GetSubItem(int idx) { (void)(idx); return 0; }
+	virtual int16_t GetNumSubItems() { return 0; };
+	virtual FlexMenuBase * GetSubItem(int16_t idx) { (void)(idx); return 0; }
 
-	virtual int GetScrollPos() { return 0; }
-	virtual int GetCurItem() { return 0; }
+	virtual int16_t GetScrollPos() { return 0; }
+	virtual int16_t GetCurItem() { return 0; }
 	virtual FlexMenuBase * GetCurItemPtr()
 	{
 		if(GetCurItem()>=0 && GetCurItem()<GetNumSubItems())
@@ -115,9 +116,9 @@ public:
 		return 0;
 	}
 
-	virtual void SetScrollPos( int iNewScrollPos ) { (void)(iNewScrollPos); }
+	virtual void SetScrollPos( int16_t iNewScrollPos ) { (void)(iNewScrollPos); }
 
-	virtual void SetCurItem( int iNewCurItem ) { (void)(iNewCurItem); }
+	virtual void SetCurItem( int16_t iNewCurItem ) { (void)(iNewCurItem); }
 
 	virtual void GetTitleText(String & strTitleDestination)=0;
 	virtual void GetValueText(String & strValueDestination) { strValueDestination=""; }
@@ -147,10 +148,17 @@ public:
 	virtual bool LoadString(const String & strLoad) { return false; }
 
 
+
+protected:
+
+	uint8_t flags=0;	// 1 = NeedsRefresh, 2 = Visible, 4 = LastVisible... 8 = Reserved, 16 = Reserved, 32-64-128 for derived use
+
+	//for use by derived classes. saves memory due to slotting into empty space created by 32-bit alignment requirements
+	uint8_t derived_use_1=0;
+	uint8_t derived_use_2=0;
+	uint8_t derived_use_3=0;
+
 private:
-
-
-	uint8_t flags=0;
 
 	bool GetLastVisible();
 	void SetLastVisible(bool bSet);

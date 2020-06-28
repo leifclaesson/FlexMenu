@@ -3,10 +3,6 @@
 #pragma once
 #include "FlexMenuBase.h"
 
-class FlexMenuItemToggle;
-
-typedef std::function<void(FlexMenuItemToggle *)> FlexMenuItemToggleCB;
-
 
 class FlexMenuItemToggle :
 	public FlexMenuBase
@@ -15,7 +11,8 @@ public:
 	FlexMenuItemToggle();
 	~FlexMenuItemToggle();
 
-	bool bState=false;
+	virtual bool GetState();
+	virtual void SetState(bool bState);
 
 	virtual void GetTitleText(String & strTitleDestination);
 	virtual void OnPush();
@@ -24,10 +21,28 @@ public:
 
 	virtual eFlexMenuIcon UseIcon();
 
-	void SetCallback(FlexMenuItemToggleCB & pCallback);
+	virtual void OnValueChanged() {};
 
 private:
-	FlexMenuItemToggleCB * pfnCallback=NULL;
 
 };
 
+
+class FlexMenuItemToggleEx;
+
+enum eFMIToggleCallback
+{
+	eFMIToggleCallback_ValueChanged,
+};
+
+typedef std::function<void(FlexMenuItemToggleEx *,eFMIToggleCallback)> FlexMenuItemToggleExCB;
+
+class FlexMenuItemToggleEx : public FlexMenuItemToggle
+{
+public:
+
+	virtual void OnValueChanged() override { if(fnCallback) fnCallback(this,eFMIToggleCallback_ValueChanged); }
+
+	FlexMenuItemToggleExCB fnCallback;
+
+};

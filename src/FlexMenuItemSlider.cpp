@@ -15,7 +15,7 @@ FlexMenuItemSlider::~FlexMenuItemSlider()
 
 eFlexMenuScreenType FlexMenuItemSlider::GetScreenType()
 {
-	if(bAdjusting) return eFlexMenuScreenType_Slider;
+	if(GetAdjusting()) return eFlexMenuScreenType_Slider;
 	else return eFlexMenuScreenType_Normal;
 }
 
@@ -26,25 +26,25 @@ bool FlexMenuItemSlider::CanNavigate(eFlexMenuNav direction, uint8_t accel)
 	default:
 		break;
 	case eFlexMenuNav_Prev:
-		if(bAdjusting)
+		if(GetAdjusting())
 		{
 			DoAdjust(-1,accel);
 			return false;
 		}
 	case eFlexMenuNav_Next:
-		if(bAdjusting)
+		if(GetAdjusting())
 		{
 			DoAdjust(1,accel);
 			return false;
 		}
 	case eFlexMenuNav_Push:
 	case eFlexMenuNav_Back:
-		if(bAdjusting)
+		if(GetAdjusting())
 		{
-			bAdjusting=false;
+			SetAdjusting(false);
 			SetNeedsRefresh(true);
-			if(bModified && pfnCallback && *pfnCallback) (*pfnCallback)(this, eFMISliderCallback_ValueChanged, 0);
-			bModified=false;
+			if(GetModified()) OnValueChanged();
+			SetModified(false);
 			return false;
 		}
 		break;
@@ -56,9 +56,9 @@ bool FlexMenuItemSlider::CanNavigate(eFlexMenuNav direction, uint8_t accel)
 
 void FlexMenuItemSlider::OnPush()
 {
-	bAdjusting=true;
+	SetAdjusting(true);
 
-	bModified=false;
+	SetModified(false);
 
 	SetNeedsRefresh(true);
 }
@@ -70,7 +70,7 @@ void FlexMenuItemSlider::GetTitleText(String & strTitleDestination)
 
 void FlexMenuItemSlider::GetValueText(String & strValueDestination)
 {
-	if(!pfnCallback || !(*pfnCallback) || !(*pfnCallback)(this,eFMISliderCallback_DisplayValue,&strValueDestination))
+	if(!OnDisplayValue(strValueDestination))
 	{
 #ifdef WIN32
 		char temp[16];
@@ -158,8 +158,8 @@ void FlexMenuItemSlider::DoAdjust(int8_t direction, uint8_t accel)
 	if(value!=val)
 	{
 		value=val;
-		if(pfnCallback && *pfnCallback) (*pfnCallback)(this,eFMISliderCallback_ValueChanging,0);
-		bModified=true;
+		OnValueChanging();
+		SetModified(true);
 		SetNeedsRefresh(true);
 	}
 
@@ -167,7 +167,7 @@ void FlexMenuItemSlider::DoAdjust(int8_t direction, uint8_t accel)
 
 eFlexMenuIcon FlexMenuItemSlider::UseIcon()
 {
-	if(bAdjusting)
+	if(GetAdjusting())
 	{
 		return eFlexMenuIcon_Circle;
 	}
@@ -193,8 +193,3 @@ int FlexMenuItemSlider::GetProgressBar(int iPixelWidth)
 	return (fraction*iPixelWidth)>>10;
 }
 
-void FlexMenuItemSlider::SetCallbackFn(FlexMenuItemSliderCB & fnCallback)
-{
-	if(!pfnCallback) pfnCallback=new FlexMenuItemSliderCB;
-	*pfnCallback=fnCallback;
-}

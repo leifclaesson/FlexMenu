@@ -13,6 +13,16 @@ FlexMenuItemToggle::~FlexMenuItemToggle()
 {
 }
 
+bool FlexMenuItemToggle::GetState()
+{
+	return (bool) derived_use_1;
+}
+
+void FlexMenuItemToggle::SetState(bool bState)
+{
+	derived_use_1=bState;
+}
+
 void FlexMenuItemToggle::GetTitleText(String & strTitleDestination)
 {
 	strTitleDestination=strTitle;
@@ -20,20 +30,13 @@ void FlexMenuItemToggle::GetTitleText(String & strTitleDestination)
 
 void FlexMenuItemToggle::OnPush()
 {
-	bState=bState==false;
-	if(pfnCallback && *pfnCallback) (*pfnCallback)(this);
+	derived_use_1=derived_use_1==false;
+	OnValueChanged();
 	SetNeedsRefresh(true);
 }
 
 eFlexMenuIcon FlexMenuItemToggle::UseIcon()
 {
-	return bState?eFlexMenuIcon_Checked:eFlexMenuIcon_Unchecked;
+	return derived_use_1?eFlexMenuIcon_Checked:eFlexMenuIcon_Unchecked;
 }
 
-void FlexMenuItemToggle::SetCallback(FlexMenuItemToggleCB & fnCallback)
-{
-	if(!pfnCallback) pfnCallback=new FlexMenuItemToggleCB;
-
-	*pfnCallback=fnCallback;
-
-}
