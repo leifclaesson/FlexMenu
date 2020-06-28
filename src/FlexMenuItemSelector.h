@@ -34,8 +34,8 @@ public:
 enum eFMISelector_Mode
 {
 	eFMISelector_Mode_NoSave,
-	eFMISelector_Mode_SaveText,
 	eFMISelector_Mode_SaveIndex,
+	eFMISelector_Mode_SaveText,
 	eFMISelector_Mode_SaveID,
 };
 

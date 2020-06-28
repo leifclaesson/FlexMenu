@@ -50,13 +50,12 @@ void FlexMenuManager::Loop(bool bForceRefresh)
 
 	bool bNeedsRefresh=false;
 
-
 	switch(stateShowMessage)
 	{
 	case eShowMessageState_Idle:
 		break;
 	case eShowMessageState_Displaying:
-		if((int) (millis()-timestampShowMessage)>0)
+		if((int) (millis()-timestampShowMessage)>0 && !bPermanentErrorMessage)
 		{
 			bWeNeedRefresh=true;
 			stateShowMessage=eShowMessageState_PostDisplaying_IgnoreInput;	//ignore input for ... (see below)
@@ -65,7 +64,6 @@ void FlexMenuManager::Loop(bool bForceRefresh)
 	case eShowMessageState_PostDisplaying_IgnoreInput:
 		if((int) (millis()-timestampShowMessage)>=500)	//ignore input for 500 milliseconds to prevent accidental selection if a user clicks to dismiss a message just as it's going away
 		{
-
 			bWeNeedRefresh=true;
 			stateShowMessage=eShowMessageState_Idle;
 		}
@@ -122,6 +120,8 @@ void FlexMenuManager::Loop(bool bForceRefresh)
 void FlexMenuManager::Navigate(eFlexMenuNav nav)
 {
 	InitialEnterMenu();
+
+	if(bPermanentErrorMessage) return;
 
 	if(nav==eFlexMenuNav_Release)	//handle this first, so we never ignore release and keep repeating!
 	{
@@ -432,8 +432,18 @@ uint8_t FlexMenuManager::HandleAcceleration(int8_t direction)
 	return accel_counter;
 }
 
+void FlexMenuManager::ShowPermanentErrorMessage(const String & strTitle, const String & strValue)
+{
+	ShowMessage(strTitle,strValue,0);
+	bPermanentErrorMessage=true;
+
+}
+
 void FlexMenuManager::ShowMessage(const String & strTitle, const String & strValue, uint32_t milliseconds)
 {
+	csprintf("PE %i\n",bPermanentErrorMessage);
+	if(bPermanentErrorMessage) return;
+
 	if(strTitle.length() || strValue.length())
 	{
 

@@ -332,7 +332,6 @@ void FlexMenuDisplay_OLED_Base::DrawMessage(FlexMenuBase * pCurMenu)
 	display.setColor(WHITE);
 	display.setFont(pUseFont);
 
-	display.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
 
 	String strTemp1;
 	String strTemp2;
@@ -346,15 +345,36 @@ void FlexMenuDisplay_OLED_Base::DrawMessage(FlexMenuBase * pCurMenu)
 		strTemp1="";
 	}
 
-	if(strTemp1.length() && strTemp2.length())
+
+	int length1=display.getStringWidth(strTemp1);
+	int length2=display.getStringWidth(strTemp2);
+
+	csprintf("screenCX is %i\n",params.iScreenCX);
+
+	int line2_y=0;
+
+	if(length1 && length2)
 	{
-		display.drawString(params.iScreenCX>>1 /*middle*/, (params.iScreenCY * 85) >> 8 /*one third*/ , strTemp1);
-		display.drawString(params.iScreenCX>>1 /*middle*/, (params.iScreenCY * 171) >> 8 /*two thirds*/ , strTemp2);
+		display.setTextAlignment(TEXT_ALIGN_CENTER);
+		display.drawString(params.iScreenCX>>1 /*middle*/, 0, strTemp1);
+
+		line2_y=iLineHeight + ((params.iScreenCY - iLineHeight) >> 1);
 	}
 	else
 	{
-		display.drawString(params.iScreenCX>>1 /*middle*/, params.iScreenCY >> 1 /*middle*/ , strTemp2);
+		line2_y=params.iScreenCY>>1;
 	}
+
+	display.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
+	if(strTemp2.indexOf('\n')>=0)
+	{
+		display.drawString(params.iScreenCX>>1 /*middle*/, line2_y, strTemp2);
+	}
+	else
+	{
+		display.drawStringMaxWidth(params.iScreenCX>>1 /*middle*/, line2_y, params.iScreenCX, strTemp2);
+	}
+
 
 }
 

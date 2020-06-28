@@ -35,6 +35,8 @@ public:
 
 	void Navigate(eFlexMenuNav nav);
 	
+	void ShowPermanentErrorMessage(const String & strTitle, const String & strValue);	//never goes away, disables menu
+
 	void ShowMessage(const String & strTitle, const String & strValue, uint32_t milliseconds);
 
 	void IterateItems(FlexMenuManagerIterateCB fnCallback, FlexMenuBase * pStart=NULL);
@@ -47,6 +49,7 @@ private:
 
 	FMM_ShowMessageOuter dummyShowMessage;
 	uint32_t timestampShowMessage;
+	bool bPermanentErrorMessage=false;
 
 
 	FlexMenuDisplay * pDisplay=NULL;
