@@ -193,3 +193,31 @@ int FlexMenuItemSlider::GetProgressBar(int iPixelWidth)
 	return (fraction*iPixelWidth)>>10;
 }
 
+void FlexMenuItemSlider::GetSaveString(String & strSave)
+{
+	strSave=value;
+}
+
+bool FlexMenuItemSlider::LoadString(const String & strLoad)
+{
+	bool bRet=true;
+
+	int val=strLoad.toInt();
+
+	if(range_max<range_min)
+	{
+		if(val>range_min) { bRet=false; val=range_min; }
+		if(val<range_max) { bRet=false; val=range_max; }
+	}
+	else
+	{
+		if(val<range_min) { bRet=false; val=range_min; }
+		if(val>range_max) { bRet=false; val=range_max; }
+	}
+
+	value=val;
+
+	return bRet;
+
+}
+

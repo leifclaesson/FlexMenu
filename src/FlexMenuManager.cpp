@@ -51,23 +51,23 @@ void FlexMenuManager::Loop(bool bForceRefresh)
 	bool bNeedsRefresh=false;
 
 
-	switch(stateDisplayMessage)
+	switch(stateShowMessage)
 	{
-	case eDisplayMessageState_Idle:
+	case eShowMessageState_Idle:
 		break;
-	case eDisplayMessageState_Displaying:
-		if((int) (millis()-timestampDisplayMessage)>0)
+	case eShowMessageState_Displaying:
+		if((int) (millis()-timestampShowMessage)>0)
 		{
 			bWeNeedRefresh=true;
-			stateDisplayMessage=eDisplayMessageState_PostDisplaying_IgnoreInput;	//ignore input for ... (see below)
+			stateShowMessage=eShowMessageState_PostDisplaying_IgnoreInput;	//ignore input for ... (see below)
 		}
 		break;
-	case eDisplayMessageState_PostDisplaying_IgnoreInput:
-		if((int) (millis()-timestampDisplayMessage)>=500)	//ignore input for 500 milliseconds to prevent accidental selection if a user clicks to dismiss a message just as it's going away
+	case eShowMessageState_PostDisplaying_IgnoreInput:
+		if((int) (millis()-timestampShowMessage)>=500)	//ignore input for 500 milliseconds to prevent accidental selection if a user clicks to dismiss a message just as it's going away
 		{
 
 			bWeNeedRefresh=true;
-			stateDisplayMessage=eDisplayMessageState_Idle;
+			stateShowMessage=eShowMessageState_Idle;
 		}
 		break;
 	}
@@ -105,9 +105,9 @@ void FlexMenuManager::Loop(bool bForceRefresh)
 		iLastItem=pCurMenu->GetCurItem();
 		iLastScrollPos=pCurMenu->GetScrollPos();
 
-		if(stateDisplayMessage==eDisplayMessageState_Displaying)
+		if(stateShowMessage==eShowMessageState_Displaying)
 		{
-			pDisplay->DrawDisplay(&dummyDisplayMessage);
+			pDisplay->DrawDisplay(&dummyShowMessage);
 		}
 		else
 		{
@@ -133,16 +133,16 @@ void FlexMenuManager::Navigate(eFlexMenuNav nav)
 
 
 
-	if(stateDisplayMessage!=eDisplayMessageState_Idle)
+	if(stateShowMessage!=eShowMessageState_Idle)
 	{
 
-		if(stateDisplayMessage==eDisplayMessageState_Displaying)
+		if(stateShowMessage==eShowMessageState_Displaying)
 		{
 			//if we push while displaying, cancel the display
 
 			if(nav==eFlexMenuNav_Push)
 			{
-				stateDisplayMessage=eDisplayMessageState_Idle;
+				stateShowMessage=eShowMessageState_Idle;
 				bWeNeedRefresh=true;
 			}
 		}
@@ -432,26 +432,26 @@ uint8_t FlexMenuManager::HandleAcceleration(int8_t direction)
 	return accel_counter;
 }
 
-void FlexMenuManager::DisplayMessage(const String & strTitle, const String & strValue, uint32_t milliseconds)
+void FlexMenuManager::ShowMessage(const String & strTitle, const String & strValue, uint32_t milliseconds)
 {
 	if(strTitle.length() || strValue.length())
 	{
 
-		timestampDisplayMessage=millis()+milliseconds;
-		if(!timestampDisplayMessage) timestampDisplayMessage++;
+		timestampShowMessage=millis()+milliseconds;
+		if(!timestampShowMessage) timestampShowMessage++;
 
-		dummyDisplayMessage.strTitle=strTitle;
-		dummyDisplayMessage.strValue=strValue;
+		dummyShowMessage.inner.strTitle=strTitle;
+		dummyShowMessage.inner.strValue=strValue;
 
-		stateDisplayMessage=eDisplayMessageState_Displaying;
+		stateShowMessage=eShowMessageState_Displaying;
 	}
 	else
 	{
-		stateDisplayMessage=eDisplayMessageState_PostDisplaying_IgnoreInput;
-		timestampDisplayMessage=millis()+milliseconds;
+		stateShowMessage=eShowMessageState_PostDisplaying_IgnoreInput;
+		timestampShowMessage=millis()+milliseconds;
 
-		dummyDisplayMessage.strTitle="";
-		dummyDisplayMessage.strValue="";
+		dummyShowMessage.inner.strTitle="";
+		dummyShowMessage.inner.strValue="";
 	}
 
 	bWeNeedRefresh=true;

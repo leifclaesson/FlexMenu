@@ -144,11 +144,11 @@ void FlexMenuItemSelector::GetSaveString(String & strSave)
 		break;
 	}
 
-
 }
 
 bool FlexMenuItemSelector::LoadString(const String & strLoad)
 {
+	bool bRet=false;
 	switch(GetMode())
 	{
 	case eFMISelector_Mode_NoSave:
@@ -160,29 +160,35 @@ bool FlexMenuItemSelector::LoadString(const String & strLoad)
 			if(vecItems[i]->strText==strLoad)
 			{
 				iCurSel=i;
+				bRet=true;
 				break;
 			}
 		}
 		break;
 	case eFMISelector_Mode_SaveIndex:
-		iCurSel=atoi(strLoad.c_str());
+		iCurSel=strLoad.toInt();
+		if(iCurSel>=0 && iCurSel<(int) vecItems.size())
+		{
+			bRet=true;
+		}
 		break;
 	case eFMISelector_Mode_SaveID:
 		iCurSel=-1;
 
-		int load_id=atoi(strLoad.c_str());
+		int load_id=strLoad.toInt();
 
 		for(int i=0;i<(int) vecItems.size();i++)
 		{
 			if(vecItems[i]->id==load_id)
 			{
 				iCurSel=i;
+				bRet=true;
 				break;
 			}
 		}
 		break;
 	}
-	return false;
+	return bRet;
 }
 
 

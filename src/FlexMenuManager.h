@@ -10,31 +10,14 @@
 class FlexMenuDisplay;
 class FlexMenuSub;
 
-enum eDisplayMessageState
+#include "FlexMenuShowMessage.h"
+
+enum eShowMessageState
 {
-	eDisplayMessageState_Idle,
-	eDisplayMessageState_Displaying,
-	eDisplayMessageState_PostDisplaying_IgnoreInput
-
+	eShowMessageState_Idle,
+	eShowMessageState_Displaying,
+	eShowMessageState_PostDisplaying_IgnoreInput
 };
-
-class FMM_DisplayMessage : public FlexMenuBase
-{
-public:
-
-	virtual void GetTitleText(String & strTitleDestination) { strTitleDestination=strTitle; }
-	virtual void GetValueText(String & strValueDestination) { strValueDestination=strValue; }
-
-	String strTitle;
-	String strValue;
-
-	virtual eFlexMenuScreenType GetScreenType() override { return eFlexMenuScreenType_Message; }
-
-	virtual int16_t GetNumSubItems() override { return 1; };
-	virtual FlexMenuBase * GetSubItem(int16_t idx) override { return this; }
-
-};
-
 
 class FlexMenuManager
 {
@@ -48,14 +31,14 @@ public:
 
 	void Navigate(eFlexMenuNav nav);
 	
-	void DisplayMessage(const String & strTitle, const String & strValue, uint32_t milliseconds);
+	void ShowMessage(const String & strTitle, const String & strValue, uint32_t milliseconds);
 
 private:
 
-	eDisplayMessageState stateDisplayMessage=eDisplayMessageState_Idle;
+	eShowMessageState stateShowMessage=eShowMessageState_Idle;
 
-	FMM_DisplayMessage dummyDisplayMessage;
-	uint32_t timestampDisplayMessage;
+	FMM_ShowMessageOuter dummyShowMessage;
+	uint32_t timestampShowMessage;
 
 
 	FlexMenuDisplay * pDisplay=NULL;

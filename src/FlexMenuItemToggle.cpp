@@ -40,3 +40,23 @@ eFlexMenuIcon FlexMenuItemToggle::UseIcon()
 	return derived_use_1?eFlexMenuIcon_Checked:eFlexMenuIcon_Unchecked;
 }
 
+void FlexMenuItemToggle::GetSaveString(String & strSave)
+{
+	strSave=GetState();
+}
+
+bool FlexMenuItemToggle::LoadString(const String & strLoad)
+{
+	if(strLoad=="1")
+	{
+		SetState(true);
+		return true;
+	}
+	if(strLoad=="0")
+	{
+		SetState(false);
+		return true;
+	}
+	return false;
+}
+

@@ -23,6 +23,10 @@ public:
 
 	virtual void OnValueChanged() {};
 
+	virtual bool IsSaveable() override { return true; }
+	virtual void GetSaveString(String & strSave) override;
+	virtual bool LoadString(const String & strLoad) override;
+
 private:
 
 };

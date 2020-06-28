@@ -39,6 +39,7 @@ public:
 	virtual void GetTitleText(String & strTitleDestination) override;
 	virtual void GetValueText(String & strValueDestination) override;
 
+
 	bool GetAdjusting() { return (flags & 0x40)!=0; };
 	void SetAdjusting(bool bAdjusting) { if(bAdjusting) flags |= 0x40; else flags &=(0xFF-0x40); };
 
@@ -50,6 +51,11 @@ public:
 	virtual bool OnDisplayValue(String & strText) { return false; }
 	virtual void OnValueChanging() {}
 	virtual void OnValueChanged() {}
+
+	virtual bool IsSaveable() { return true; }
+	virtual void GetSaveString(String & strSave) override;
+	virtual bool LoadString(const String & strLoad) override;
+
 
 };
 
