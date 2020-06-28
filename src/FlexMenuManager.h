@@ -19,6 +19,10 @@ enum eShowMessageState
 	eShowMessageState_PostDisplaying_IgnoreInput
 };
 
+
+typedef std::function<bool(FlexMenuBase *, FlexMenuManager *)> FlexMenuManagerIterateCB;	//return false to stop iterating
+
+
 class FlexMenuManager
 {
 public:
@@ -33,7 +37,11 @@ public:
 	
 	void ShowMessage(const String & strTitle, const String & strValue, uint32_t milliseconds);
 
+	void IterateItems(FlexMenuManagerIterateCB fnCallback, FlexMenuBase * pStart=NULL);
+
 private:
+
+	void IterateItemsInternal(FlexMenuManagerIterateCB & fnCallback, FlexMenuBase * pStart);
 
 	eShowMessageState stateShowMessage=eShowMessageState_Idle;
 

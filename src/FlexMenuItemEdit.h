@@ -49,6 +49,11 @@ public:
 
 	FlexMenuManager * pManager=NULL;
 
+	void SetIsSaveable(bool bSaveable) { if(bSaveable) flags |= 0x80; else flags &=(0xFF-0x80); }
+	bool IsSaveable() override { return (flags & 0x80)!=0; }
+	virtual void GetSaveString(String & strSave) override { strSave=strEdit; }
+	virtual bool LoadString(const String & strLoad) override { strEdit=strLoad; return true; };
+
 };
 
 #endif /* LIBRARIES_FLEXMENU_SRC_FLEXMENUITEMEDIT_H_ */

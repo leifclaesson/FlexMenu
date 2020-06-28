@@ -15,6 +15,7 @@
 FlexMenuItemEdit::FlexMenuItemEdit() {
 	// TODO Auto-generated constructor stub
 	edit_internal.pParent=this;
+	SetIsSaveable(true);
 }
 
 FlexMenuItemEdit::~FlexMenuItemEdit() {

@@ -458,3 +458,20 @@ void FlexMenuManager::ShowMessage(const String & strTitle, const String & strVal
 
 }
 
+void FlexMenuManager::IterateItems(FlexMenuManagerIterateCB fnCallback, FlexMenuBase * pStart)
+{
+	if(!pStart) pStart=pTopMenu;
+	IterateItemsInternal(fnCallback, pStart);
+}
+
+void FlexMenuManager::IterateItemsInternal(FlexMenuManagerIterateCB & fnCallback, FlexMenuBase * pStart)
+{
+	for(int16_t i=0;i<pStart->GetNumSubItems();i++)
+	{
+		FlexMenuBase * pCur=pStart->GetSubItem(i);
+		fnCallback(pCur,this);
+
+		IterateItemsInternal(fnCallback,pCur);
+	}
+}
+
