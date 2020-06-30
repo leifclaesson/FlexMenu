@@ -60,6 +60,8 @@ void FlexMenuDisplay_OLED_Base::DrawScreen(FlexMenuBase * pCurMenu)
 	display.clear();
 	display.setFont(pFont);
 
+	int iWidthDots=display.getStringWidth("..");
+
 
 	{
 		switch(pCurMenu->GetScreenType())
@@ -131,7 +133,9 @@ void FlexMenuDisplay_OLED_Base::DrawScreen(FlexMenuBase * pCurMenu)
 
 			display.setTextAlignment(TEXT_ALIGN_RIGHT);
 
-			int chars=getCharsForWidth(pFont,strRight.c_str(),strRight.length(),params.iScreenCX-widthLeft-iIconCX-12);
+			int chars=getCharsForWidth(pFont,strRight.c_str(),strRight.length(),params.iScreenCX-(widthLeft+iIconCX+iWidthDots));
+
+			//csprintf("chars=%i scx=%i widthLeft=%i widthDots=%i iconCX=%i\n",chars,params.iScreenCX,widthLeft,widthDots,iIconCX);
 
 			if(chars!=(int) strRight.length())
 			{
@@ -226,8 +230,9 @@ uint16_t FlexMenuDisplay_OLED_Base::getCharsForWidth(const uint8_t * pFont,const
 
   uint16_t stringWidth = 0;
 
-  while (length--) {
-    stringWidth += pgm_read_byte(pFont + JUMPTABLE_START + (text[length] - firstChar) * JUMPTABLE_BYTES + JUMPTABLE_WIDTH);
+  for(int i=0;i<length;i++)
+  {
+    stringWidth += pgm_read_byte(pFont + JUMPTABLE_START + (text[i] - firstChar) * JUMPTABLE_BYTES + JUMPTABLE_WIDTH);
     if(stringWidth>desiredWidth)
     	break;
     numChars++;

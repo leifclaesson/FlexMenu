@@ -6,21 +6,28 @@
  */
 
 #include <FlexMenuSPIFFS.h>
+
+#if defined(ARDUINO_ARCH_ESP32)
 #include "SPIFFS.h"
+#define FILESYSTEM SPIFFS
+#else
+#include "LittleFS.h"
+#define FILESYSTEM LittleFS
+#endif
 #include "FlexMenu.h"
 #include <map>
 
 bool FlexMenuSPIFFS_Init(FlexMenuManager & flexmenu)
 {
 
-	if(!SPIFFS.begin())
+	if(!FILESYSTEM.begin())
 	{
 		csprintf("SPIFFS Mount Failed. Attempting to format.\n");
 		flexmenu.ShowMessage("SPIFFS", "Formatting file system, please wait.",0);
 		flexmenu.Loop(false);
 		flexmenu.Output();
 
-		if(SPIFFS.format())
+		if(FILESYSTEM.format())
 		{
 			csprintf("format successful\n");
 			flexmenu.ShowMessage("SPIFFS", "Format Successful.",1000);
@@ -28,7 +35,7 @@ bool FlexMenuSPIFFS_Init(FlexMenuManager & flexmenu)
 			flexmenu.Output();
 			delay(3000);
 
-			if(SPIFFS.begin())
+			if(FILESYSTEM.begin())
 			{
 				csprintf("file system opened\n");
 				flexmenu.ShowMessage("SPIFFS", "File system opened.",1000);
@@ -37,7 +44,7 @@ bool FlexMenuSPIFFS_Init(FlexMenuManager & flexmenu)
 				delay(3000);
 
 
-				File config_file=SPIFFS.open( "/config.sys", FILE_WRITE);
+				File config_file=FILESYSTEM.open( "/config.sys", "w");
 
 				if(config_file)
 				{
@@ -88,7 +95,7 @@ bool FlexMenuSPIFFS_Init(FlexMenuManager & flexmenu)
 
 void FlexMenuSPIFFS_DoLoad(FlexMenuManager & flexmenu)
 {
-	File config_file=SPIFFS.open( "/config.sys", FILE_READ);
+	File config_file=FILESYSTEM.open( "/config.sys", "r");
 
 	typedef std::map<String, String> _mapConfig;
 
@@ -169,7 +176,7 @@ void FlexMenuSPIFFS_DoLoad(FlexMenuManager & flexmenu)
 void FlexMenuSPIFFS_DoSave(FlexMenuManager & flexmenu)
 {
 
-	File config_file=SPIFFS.open( "/config.sys", FILE_WRITE);
+	File config_file=FILESYSTEM.open( "/config.sys", "w");
 
 	if(config_file)
 	{

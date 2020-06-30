@@ -59,7 +59,6 @@ protected:
 	int iIconCY=0;
 	int iIconY=0;
 
-
 	friend class FlexMenuManager;
 
 	virtual void Init() override;
