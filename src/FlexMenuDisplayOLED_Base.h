@@ -42,6 +42,9 @@ protected:
 	virtual void InitResources_MenuFonts()=0;
 	virtual void InitResources_Edit(FlexMenuEditScreenParams & ep)=0;
 
+	virtual bool HistoryBuffer(FlexMenuBase * pCurMenu, uintptr_t * data) override;
+
+
 
 	uint8_t * icons[eFlexMenuIcon_Count];
 
@@ -63,9 +66,9 @@ protected:
 
 	virtual int GetVisibleItems() override;
 
-	virtual void DrawDisplay(FlexMenuBase * pCurMenu) override;
+	virtual void DrawScreen(FlexMenuBase * pCurMenu) override;
 
-	virtual void DrawSliderScreen(FlexMenuBase * pCurMenu,FlexMenuBase * pCurItem);
+	virtual void DrawSliderScreen(FlexMenuBase * pCurMenu);
 
 	uint16_t getCharsForWidth(const uint8_t * pFont,const char* text, uint16_t length, uint16_t desiredWidth);
 
@@ -81,6 +84,9 @@ protected:
 	int iVisibleItems=0;
 
 	virtual void DrawMessage(FlexMenuBase * pCurMenu);
+
+	virtual void Output() override;
+
 
 };
 

@@ -1,8 +1,8 @@
 // * Copyright 2020 Leif Claesson. Licenced under the GNU GPL Version 3.
 
 #pragma once
+#include <FlexMenuGlobalItems.h>
 #include "FlexMenuBase.h"
-#include "FlexMenuItemLeave.h"
 
 
 class FMISelector_DummySubItem : public FlexMenuBase
@@ -83,10 +83,14 @@ public:
 	virtual void GetSaveString(String & strSave) override;
 	virtual bool LoadString(const String & strLoad) override;
 
+	virtual int16_t GetCurItem_History();
+	virtual void HistoryBuffer(uintptr_t * data);
+
 private:
 
 	int16_t iScrollPos=0;
 	int16_t iCurItem=0;
+	int16_t iCurItem_History;
 
 public:
 	int16_t iCurSel=0;

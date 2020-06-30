@@ -65,3 +65,16 @@ void FlexMenuSub::SetManager(FlexMenuManager * pManager)
 	this->pManager=pManager;
 }
 
+
+int16_t FlexMenuSub::GetCurItem_History()
+{
+	if(iCurItem_History>=0) return iCurItem_History; else return iCurItem;
+}
+
+void FlexMenuSub::HistoryBuffer(uintptr_t * data)
+{
+	iCurItem_History=(int16_t) *data;
+	*data=iCurItem;
+
+}
+

@@ -31,7 +31,9 @@ public:
 
 	FlexMenuSub * Init(FlexMenuDisplay * pDisplay);	//returns the top menu!
 
-	void Loop(bool bForceRefresh);
+	bool Loop(bool bForceRefresh);	//return true if the display needs to be updated
+
+	void Output();	//write to the screen
 
 	void Navigate(eFlexMenuNav nav);
 	
@@ -79,6 +81,7 @@ private:
 	uint32_t timestampRepeat=0;
 
 
+	bool bSkipFirstIgnoreInput=true;
 
 
 	FlexMenuBase * pTopMenu=0;
@@ -88,6 +91,14 @@ private:
 
 	bool bWeNeedRefresh=false;
 
+	uintptr_t vpHistoryBuffer[5];
+	uint32_t lastHistoryBufTimestamp=0;
+	uint8_t history_idx=0;
+
+	uint8_t run_history=0xFF;
+
+	void HandleHistoryBuffer();
+	void ClearHistoryBuffer();
 
 };
 

@@ -28,12 +28,12 @@ osk_icondef osk_icons[7]=	//must match eFlexMenuEdit.
 
 char PROGMEM _osk_table[]={
 		"ABCDEFGHIJKLMN"
-		"OPQRSTUVWXYZ.,"
+		"OPQRSTUVWXYZ.-"
 		"\1\2\3\4\5\6\0\0\0\0\0\0\0\0"
 		"abcdefghijklmn"
-		"opqrstuvwxyz-_"
+		"opqrstuvwxyz.-"
 		"\1\2\3\4\5\6\0\0\0\0\0\0\0\0"
-		"#$%&:/\\;()[]!?"
+		"!?#$%&:;/\\()[]"
 		"<>@'`{|}~^\"_.,"
 		"\1\2\3\4\5\6\0\0\0\0\0\0\0\0"
 		"0123456789-+=*"

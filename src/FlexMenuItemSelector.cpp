@@ -41,7 +41,6 @@ FlexMenuBase * FlexMenuItemSelector::GetSubItem(int16_t idx)
 
 	dummy.icon=idx==iCurSel?eFlexMenuIcon_Selection:eFlexMenuIcon_Blank;
 	dummy.pReturnTitle=&vecItems[idx]->strText;
-	//dummy.pReturnValue=&vecItems[idx].strText;
 	
 	return &dummy;
 }
@@ -84,7 +83,8 @@ void FlexMenuItemSelector::OnPushChild()
 {
 	if(iCurSel!=GetCurItem()-1)
 	{
-		iCurSel=GetCurItem()-1;
+		iCurSel=GetCurItem_History()-1;
+
 		SetNeedsRefresh(true);
 		OnSelChange();
 	}
@@ -93,11 +93,6 @@ void FlexMenuItemSelector::OnPushChild()
 int16_t FlexMenuItemSelector::GetScrollPos()
 {
 	return iScrollPos;
-}
-
-int16_t FlexMenuItemSelector::GetCurItem()
-{
-	return iCurItem;
 }
 
 void FlexMenuItemSelector::SetScrollPos(int16_t iNewScrollPos)
@@ -190,6 +185,25 @@ bool FlexMenuItemSelector::LoadString(const String & strLoad)
 	}
 	return bRet;
 }
+
+
+int16_t FlexMenuItemSelector::GetCurItem()
+{
+	return iCurItem;
+}
+
+int16_t FlexMenuItemSelector::GetCurItem_History()
+{
+	if(iCurItem_History>=0) return iCurItem_History; else return iCurItem;
+}
+
+void FlexMenuItemSelector::HistoryBuffer(uintptr_t * data)
+{
+	iCurItem_History=(int16_t) *data;
+	*data=iCurItem;
+}
+
+
 
 
 void FlexMenuItemSelectorEx::UpdateStatus()

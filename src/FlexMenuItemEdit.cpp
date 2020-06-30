@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include "FlexMenuItemEdit.h"
+#include "FlexMenuGlobalItems.h"
 /*
  * FlexMenuItemEdit.cpp
  *
@@ -14,7 +15,6 @@
 
 FlexMenuItemEdit::FlexMenuItemEdit() {
 	// TODO Auto-generated constructor stub
-	edit_internal.pParent=this;
 	SetIsSaveable(true);
 }
 
@@ -39,35 +39,17 @@ void FlexMenuItemEdit::GetValueText(String & strValueDestination)
 
 void FlexMenuItemEdit::OnEnter()
 {
-	edit_internal.Entering();
+	Serial.printf("FlexMenuItemEdit::OnEnter()\n");
+
+	FlexMenuTempItem & item=*((FlexMenuTempItem *)GetTempItem());
+
+	item.Reset();
+	item.pParent=this;
 }
 
-
-
-void FlexMenuItemEditInternal::Entering()
+void FlexMenuItemEdit::HistoryBuffer(uintptr_t * data)
 {
-//	Serial.printf("FlexMenuItemEdit::OnEnter()\n");
-}
-
-void FlexMenuItemEditInternal::GetTitleText(String & strTitleDestination)
-{
-	strTitleDestination="edit_internal";
+	csprintf("FlexMenuItemEdit::HistoryBuffer\n");
 
 }
-
-bool FlexMenuItemEditInternal::CanNavigate(eFlexMenuNav direction, uint8_t accel)
-{
-	(void)(accel);
-	switch(direction)
-	{
-	default:
-		break;
-	case eFlexMenuNav_Prev:
-	case eFlexMenuNav_Next:
-		//Serial.printf("nav... pManager=%p\n",pParent->pManager);
-		return false;
-	}
-	return true;
-}
-
 

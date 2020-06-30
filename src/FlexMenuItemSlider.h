@@ -1,8 +1,9 @@
 // * Copyright 2020 Leif Claesson. Licenced under the GNU GPL Version 3.
 
 #pragma once
+#include <FlexMenuGlobalItems.h>
 #include "FlexMenuBase.h"
-#include "FlexMenuItemLeave.h"
+
 
 
 
@@ -15,22 +16,20 @@ public:
 	~FlexMenuItemSlider();
 
 	int value=0;
+	int history_value=-1;
 
 	int range_min=0;
 	int range_max=100;
 
 	String strTitle;
 
-	virtual bool CanEnter() { return false; };
+	virtual bool CanEnter() override;
+	virtual void OnEnter() override;
+	virtual void OnLeave() override;
 
 	virtual eFlexMenuScreenType GetScreenType() override;
 
 	virtual bool CanNavigate(eFlexMenuNav direction, uint8_t accel) override;
-
-	virtual eFlexMenuIcon UseIcon() override;
-
-
-	virtual void OnPush() override;
 
 	virtual int GetProgressBar(int iPixelWidth);
 
@@ -39,22 +38,25 @@ public:
 	virtual void GetTitleText(String & strTitleDestination) override;
 	virtual void GetValueText(String & strValueDestination) override;
 
+	virtual int16_t GetNumSubItems() override { return 1; };
+	virtual FlexMenuBase * GetSubItem(int16_t idx) override { (void)(idx); return GetTempItem(); }
 
-	bool GetAdjusting() { return (flags & 0x40)!=0; };
-	void SetAdjusting(bool bAdjusting) { if(bAdjusting) flags |= 0x40; else flags &=(0xFF-0x40); };
 
 	bool GetModified() { return (flags & 0x80)!=0; };
 	void SetModified(bool bModified) { if(bModified) flags |= 0x80; else flags &=(0xFF-0x80); };
 
 	void DoAdjust(int8_t direction, uint8_t accel);
 
-	virtual bool OnDisplayValue(String & strText) { return false; }
+	virtual bool OnDisplayValue(String & strText) { (void)(strText); return false; }
 	virtual void OnValueChanging() {}
 	virtual void OnValueChanged() {}
 
-	virtual bool IsSaveable() { return true; }
+	virtual bool IsSaveable() override { return true; }
 	virtual void GetSaveString(String & strSave) override;
 	virtual bool LoadString(const String & strLoad) override;
+
+	virtual void ClearHistoryBuffer(uintptr_t * data, int count) override;
+	virtual void HistoryBuffer(uintptr_t * data) override;
 
 
 };

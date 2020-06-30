@@ -53,7 +53,7 @@ int FlexMenuDisplay_OLED_Base::GetVisibleItems()
 	return iVisibleItems;
 }
 
-void FlexMenuDisplay_OLED_Base::DrawDisplay(FlexMenuBase * pCurMenu)
+void FlexMenuDisplay_OLED_Base::DrawScreen(FlexMenuBase * pCurMenu)
 {
 	OLEDDisplay & display=*params.pOLEDDisplay;
 
@@ -62,24 +62,20 @@ void FlexMenuDisplay_OLED_Base::DrawDisplay(FlexMenuBase * pCurMenu)
 
 
 	{
-		FlexMenuBase * pCurItem=pCurMenu->GetCurItemPtr();
-		if(pCurItem)
+		switch(pCurMenu->GetScreenType())
 		{
-			switch(pCurItem->GetScreenType())
-			{
-			default:
-			case eFlexMenuScreenType_Normal:
-				break;
-			case eFlexMenuScreenType_Slider:
-				DrawSliderScreen(pCurMenu,pCurItem);
-				return;
-			case eFlexMenuScreenType_Edit:
-				EditScreen_Draw(pCurMenu,pCurItem);
-				return;
-			case eFlexMenuScreenType_Message:
-				DrawMessage(pCurMenu);
-				return;
-			}
+		default:
+		case eFlexMenuScreenType_Normal:
+			break;
+		case eFlexMenuScreenType_Slider:
+			DrawSliderScreen(pCurMenu);
+			return;
+		case eFlexMenuScreenType_Edit:
+			EditScreen_Draw(pCurMenu);
+			return;
+		case eFlexMenuScreenType_Message:
+			DrawMessage(pCurMenu);
+			return;
 		}
 
 	}
@@ -135,7 +131,7 @@ void FlexMenuDisplay_OLED_Base::DrawDisplay(FlexMenuBase * pCurMenu)
 
 			display.setTextAlignment(TEXT_ALIGN_RIGHT);
 
-			int chars=getCharsForWidth(pFont,strRight.c_str(),strRight.length(),params.iScreenCX-widthLeft-iIconCX-6);
+			int chars=getCharsForWidth(pFont,strRight.c_str(),strRight.length(),params.iScreenCX-widthLeft-iIconCX-12);
 
 			if(chars!=(int) strRight.length())
 			{
@@ -168,12 +164,12 @@ void FlexMenuDisplay_OLED_Base::DrawDisplay(FlexMenuBase * pCurMenu)
 
 }
 
-void FlexMenuDisplay_OLED_Base::DrawSliderScreen(FlexMenuBase * pCurMenu,FlexMenuBase * pCurItem)
+void FlexMenuDisplay_OLED_Base::DrawSliderScreen(FlexMenuBase * pCurMenu)
 {
 	(void)(pCurMenu);
 	OLEDDisplay & display=*params.pOLEDDisplay;
 
-	FlexMenuItemSlider * pSlider=(FlexMenuItemSlider *) pCurItem;
+	FlexMenuItemSlider * pSlider=(FlexMenuItemSlider *) pCurMenu;
 
 	const uint8_t * pUseFont=pFont;
 	int iFontHeight=iLineHeight;
@@ -195,10 +191,10 @@ void FlexMenuDisplay_OLED_Base::DrawSliderScreen(FlexMenuBase * pCurMenu,FlexMen
 
 
 	String strTitle;
-	pCurItem->GetTitleText(strTitle);
+	pCurMenu->GetTitleText(strTitle);
 
 	String strValue;
-	pCurItem->GetValueText(strValue);
+	pCurMenu->GetValueText(strValue);
 
 	display.setColor(WHITE);
 	display.setTextAlignment(TEXT_ALIGN_CENTER);
@@ -378,8 +374,23 @@ void FlexMenuDisplay_OLED_Base::DrawMessage(FlexMenuBase * pCurMenu)
 
 }
 
+bool FlexMenuDisplay_OLED_Base::HistoryBuffer(FlexMenuBase * pCurMenu, uintptr_t * data)
+{
+	switch(pCurMenu->GetScreenType())
+	{
+	default:
+		return false;
+	case eFlexMenuScreenType_Edit:
+		EditScreen_HistoryBuffer(data);
+		return true;
+	}
+}
 
 
+void FlexMenuDisplay_OLED_Base::Output()
+{
+	params.pOLEDDisplay->display();
+}
 
 
 

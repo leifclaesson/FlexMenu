@@ -34,6 +34,9 @@ public:
 
 	virtual eFlexMenuIcon UseIcon() override { return eFlexMenuIcon_RightArrow; };
 
+	virtual int16_t GetCurItem_History();
+	virtual void HistoryBuffer(uintptr_t * data);
+
 
 private:
 
@@ -41,6 +44,8 @@ private:
 
 	int16_t iScrollPos=0;
 	int16_t iCurItem=0;
+
+	int16_t iCurItem_History=-1;
 
 	std::vector<FlexMenuBase *> vecSubItems;
 

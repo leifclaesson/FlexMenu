@@ -19,13 +19,24 @@ void FlexMenuEditScreen::EditScreen_Init(FlexMenuEditScreenParams * pParams)
 {
 	params=*pParams;
 	selection=params.initial_osk_selection;
+	history_selection=-1;
 }
 
 
 bool FlexMenuEditScreen::EditHandlePush(FlexMenuBase * pCurMenu, eFlexMenuNav direction, uint8_t accel)
 {
 	(void)(accel);
-	uint8_t osk_cur=ReadOskTable(selection);
+
+	int use_selection=history_selection>=0?history_selection:selection;
+
+	if(use_selection!=selection)
+	{
+		csprintf("EditHandlePush rewrite history!\n");
+		selection=use_selection;
+		pCurMenu->SetNeedsRefresh(true);
+	}
+
+	uint8_t osk_cur=ReadOskTable(use_selection);
 
 	if(direction==eFlexMenuNav_PushRepeat)
 	{
@@ -82,9 +93,7 @@ bool FlexMenuEditScreen::EditHandlePush(FlexMenuBase * pCurMenu, eFlexMenuNav di
 bool FlexMenuEditScreen::EditScreen_OnNavigate(FlexMenuBase * pCurMenu, eFlexMenuNav direction, uint8_t accel)
 {
 
-	FlexMenuBase * pCurItem=pCurMenu->GetCurItemPtr();
-
-	if(!pCurItem || pCurItem->GetScreenType()!=eFlexMenuScreenType_Edit) return false;
+	if(pCurMenu->GetScreenType()!=eFlexMenuScreenType_Edit) return false;
 
 	int use_accel=1;
 	if(accel>=30) use_accel=2;
@@ -233,9 +242,9 @@ uint8_t FlexMenuEditScreen::ReadOskTable(int selection)
 }
 
 
-void FlexMenuEditScreen::EditScreen_Draw(FlexMenuBase * pCurMenu,FlexMenuBase * pCurItem)
+void FlexMenuEditScreen::EditScreen_Draw(FlexMenuBase * pCurMenu)
 {
-	(void)(pCurMenu); (void)(pCurItem);
+	(void)(pCurMenu);
 
 	int iUseCursor=iCursor-iScrollX;
 	ESCB_DrawEditBox(params,strEdit.substring(iScrollX),strEdit.substring(iScrollX, iUseCursor+iScrollX),bDrawCursor);
@@ -313,9 +322,7 @@ void FlexMenuEditScreen::EditScreen_Draw(FlexMenuBase * pCurMenu,FlexMenuBase * 
 bool FlexMenuEditScreen::EditScreen_NeedsRefresh(FlexMenuBase * pCurMenu)
 {
 
-	FlexMenuBase * pCurItem=pCurMenu->GetCurItemPtr();
-
-	if(pCurItem && pCurItem->GetScreenType()==eFlexMenuScreenType_Edit)
+	if(pCurMenu->GetScreenType()==eFlexMenuScreenType_Edit)
 	{
 		bDrawCursor=((millis()-cursor_millis) & 1023)<512;
 		if(bLastDrawCursor!=bDrawCursor)
@@ -333,6 +340,7 @@ void FlexMenuEditScreen::EditScreen_OnEditMode(FlexMenuBase * pCurMenu, bool bEn
 	FlexMenuItemEdit * pItemEdit=(FlexMenuItemEdit *) pCurMenu;
 	if(bEnable)
 	{
+		csprintf("pItemEdit->strEdit=%s\n",pItemEdit->strEdit.c_str());
 		strEdit=pItemEdit->strEdit;
 		selection=28+4;
 		iCursor=strEdit.length();
@@ -412,6 +420,15 @@ void FlexMenuEditScreen::DoScrollKeyboard(int iDirection)
 			scroll_y = (selection / params.osk_width) - (params.osk_height-2);
 		}
 	}
+}
+
+void FlexMenuEditScreen::EditScreen_HistoryBuffer(uintptr_t * data)
+{
+	history_selection=*data;
+	*data=selection;
+
+	//csprintf("FlexMenuEditScreen::HistoryBuffer    was: %i   now: %i\n",history_selection,selection);
+
 }
 
 

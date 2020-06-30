@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include "FlexMenuItemSlider.h"
+#include "FlexMenuGlobalItems.h"
 
 
 FlexMenuItemSlider::FlexMenuItemSlider()
@@ -15,8 +16,7 @@ FlexMenuItemSlider::~FlexMenuItemSlider()
 
 eFlexMenuScreenType FlexMenuItemSlider::GetScreenType()
 {
-	if(GetAdjusting()) return eFlexMenuScreenType_Slider;
-	else return eFlexMenuScreenType_Normal;
+	return eFlexMenuScreenType_Slider;
 }
 
 bool FlexMenuItemSlider::CanNavigate(eFlexMenuNav direction, uint8_t accel)
@@ -26,41 +26,45 @@ bool FlexMenuItemSlider::CanNavigate(eFlexMenuNav direction, uint8_t accel)
 	default:
 		break;
 	case eFlexMenuNav_Prev:
-		if(GetAdjusting())
-		{
-			DoAdjust(-1,accel);
-			return false;
-		}
+		DoAdjust(-1,accel);
+		return false;
 	case eFlexMenuNav_Next:
-		if(GetAdjusting())
-		{
-			DoAdjust(1,accel);
-			return false;
-		}
-	case eFlexMenuNav_Push:
-	case eFlexMenuNav_Back:
-		if(GetAdjusting())
-		{
-			SetAdjusting(false);
-			SetNeedsRefresh(true);
-			if(GetModified()) OnValueChanged();
-			SetModified(false);
-			return false;
-		}
-		break;
+		DoAdjust(1,accel);
+		return false;
 	};
 
 	return true;
 }
 
-
-void FlexMenuItemSlider::OnPush()
+bool FlexMenuItemSlider::CanEnter()
 {
-	SetAdjusting(true);
+	return true;
+}
 
+
+void FlexMenuItemSlider::OnEnter()
+{
 	SetModified(false);
 
-	SetNeedsRefresh(true);
+	FlexMenuTempItem & item=*((FlexMenuTempItem *)GetTempItem());
+
+	item.Reset();
+	item.pParent=this;
+	item.bIsLeave=true;
+
+}
+
+void FlexMenuItemSlider::OnLeave()
+{
+	if(GetModified())
+	{
+		if(history_value!=(int) 0x80000000)
+		{
+			value=history_value;
+		}
+		OnValueChanged();
+	}
+	SetModified(false);
 }
 
 void FlexMenuItemSlider::GetTitleText(String & strTitleDestination)
@@ -165,16 +169,6 @@ void FlexMenuItemSlider::DoAdjust(int8_t direction, uint8_t accel)
 
 }
 
-eFlexMenuIcon FlexMenuItemSlider::UseIcon()
-{
-	if(GetAdjusting())
-	{
-		return eFlexMenuIcon_Circle;
-	}
-
-	return eFlexMenuIcon_Blank;
-}
-
 int FlexMenuItemSlider::GetProgressBar(int iPixelWidth)
 {
 	uint8_t downshift_bits=0;
@@ -219,5 +213,20 @@ bool FlexMenuItemSlider::LoadString(const String & strLoad)
 
 	return bRet;
 
+}
+
+void FlexMenuItemSlider::HistoryBuffer(uintptr_t * data)
+{
+	history_value=(int16_t) *data;
+	*data=value;
+
+}
+
+void FlexMenuItemSlider::ClearHistoryBuffer(uintptr_t * data, int count)
+{
+	for(int i=0;i<count;i++)
+	{
+		data[i]=0x80000000;
+	}
 }
 

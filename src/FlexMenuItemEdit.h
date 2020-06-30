@@ -6,19 +6,6 @@
 
 class FlexMenuItemEdit;
 
-class FlexMenuItemEditInternal : public FlexMenuBase
-{
-public:
-	FlexMenuItemEdit * pParent;
-
-	void Entering();
-
-	virtual void GetTitleText(String & strTitleDestination);
-
-	virtual eFlexMenuScreenType GetScreenType() { return eFlexMenuScreenType_Edit; }
-	virtual bool CanNavigate(eFlexMenuNav direction, uint8_t accel) override;
-
-};
 
 
 class FlexMenuItemEdit :
@@ -38,14 +25,12 @@ public:
 	virtual void OnEnter() override;
 
 	virtual int16_t GetNumSubItems() override { return 1; }
-	virtual FlexMenuBase * GetSubItem(int16_t idx) override { (void)(idx); return &edit_internal; }
+	virtual FlexMenuBase * GetSubItem(int16_t idx) override { (void)(idx); return GetTempItem(); }
 
 	String strTitle;
 	String strEdit;
 
 	virtual void SetManager(FlexMenuManager * pManager) override;
-
-	FlexMenuItemEditInternal edit_internal;
 
 	FlexMenuManager * pManager=NULL;
 
@@ -53,6 +38,11 @@ public:
 	bool IsSaveable() override { return (flags & 0x80)!=0; }
 	virtual void GetSaveString(String & strSave) override { strSave=strEdit; }
 	virtual bool LoadString(const String & strLoad) override { strEdit=strLoad; return true; };
+
+	virtual eFlexMenuScreenType GetScreenType() { return eFlexMenuScreenType_Edit; }
+
+	virtual void HistoryBuffer(uintptr_t * data) override;
+
 
 };
 

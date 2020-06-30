@@ -1,10 +1,10 @@
 // * Copyright 2020 Leif Claesson. Licenced under the GNU GPL Version 3.
 
+#include <FlexMenuGlobalItems.h>
 #include "stdafx.h"
 #include "FlexMenuManager.h"
 
 #include "FlexMenuSub.h"
-#include "FlexMenuItemLeave.h"
 
 FlexMenuItemLeave g_leave;
 
@@ -13,6 +13,13 @@ FlexMenuBase * GetLeaveItem()
 	return &g_leave;
 }
 
+
+FlexMenuTempItem g_tempitem;
+
+FlexMenuBase * GetTempItem()
+{
+	return &g_tempitem;
+}
 
 FlexMenuManager::FlexMenuManager()
 {
@@ -40,15 +47,22 @@ void FlexMenuManager::InitialEnterMenu()
 	if(!pCurMenu)
 	{
 		pCurMenu=pTopMenu;
+		ClearHistoryBuffer();
 		pCurMenu->OnEnter();
 	}
 }
 
-void FlexMenuManager::Loop(bool bForceRefresh)
+bool FlexMenuManager::Loop(bool bForceRefresh)
 {
 	InitialEnterMenu();
 
+	HandleHistoryBuffer();
+
 	bool bNeedsRefresh=false;
+
+
+
+
 
 	switch(stateShowMessage)
 	{
@@ -62,8 +76,9 @@ void FlexMenuManager::Loop(bool bForceRefresh)
 		}
 		break;
 	case eShowMessageState_PostDisplaying_IgnoreInput:
-		if((int) (millis()-timestampShowMessage)>=500)	//ignore input for 500 milliseconds to prevent accidental selection if a user clicks to dismiss a message just as it's going away
+		if((int) (millis()-timestampShowMessage)>=500 || bSkipFirstIgnoreInput)	//ignore input for 500 milliseconds to prevent accidental selection if a user clicks to dismiss a message just as it's going away
 		{
+			bSkipFirstIgnoreInput=false;
 			bWeNeedRefresh=true;
 			stateShowMessage=eShowMessageState_Idle;
 		}
@@ -105,16 +120,23 @@ void FlexMenuManager::Loop(bool bForceRefresh)
 
 		if(stateShowMessage==eShowMessageState_Displaying)
 		{
-			pDisplay->DrawDisplay(&dummyShowMessage);
+			pDisplay->DrawScreen(&dummyShowMessage);
 		}
 		else
 		{
-			pDisplay->DrawDisplay(pCurMenu);
+			pDisplay->DrawScreen(pCurMenu);
 		}
+
+		return true;
 	}
 
+	return false;
 
+}
 
+void FlexMenuManager::Output()
+{
+	pDisplay->Output();
 }
 
 void FlexMenuManager::Navigate(eFlexMenuNav nav)
@@ -125,10 +147,22 @@ void FlexMenuManager::Navigate(eFlexMenuNav nav)
 
 	if(nav==eFlexMenuNav_Release)	//handle this first, so we never ignore release and keep repeating!
 	{
-		int cur_item=pCurMenu->GetCurItem();
 		countRepeat=0;
-		FlexMenuBase * pCurItem=pCurMenu->GetSubItem(cur_item);
-		if(pCurItem) pCurItem->CanNavigate(eFlexMenuNav_Release,0);
+		pCurMenu->CanNavigate(eFlexMenuNav_Release,0);
+	}
+
+	if(countRepeat)
+	{
+		if(nav!=eFlexMenuNav_Release)	//if we're repeating, ignore everything but release
+		{
+			return;
+		}
+	}
+
+
+	if(nav!=eFlexMenuNav_None)
+	{
+		run_history=0;	//wake up the history buffer
 	}
 
 
@@ -165,8 +199,6 @@ re_navigate:
 	int last_scrollpos=scrollpos;
 
 	{
-		FlexMenuBase * pCurItem=pCurMenu->GetSubItem(cur_item);
-
 		int accel=0;
 
 		switch(nav)
@@ -196,19 +228,19 @@ re_navigate:
 		case eFlexMenuNav_None:
 			break;
 		case eFlexMenuNav_Prev:
-			if(!pCurItem || pCurItem->CanNavigate(eFlexMenuNav_Prev,HandleAcceleration(-1)))
+			if(pCurMenu->CanNavigate(eFlexMenuNav_Prev,HandleAcceleration(-1)))
 			{
 				cur_item--;
 			}
 			break;
 		case eFlexMenuNav_Next:
-			if(!pCurItem || pCurItem->CanNavigate(eFlexMenuNav_Next,HandleAcceleration(1)))
+			if(pCurMenu->CanNavigate(eFlexMenuNav_Next,HandleAcceleration(1)))
 			{
 				cur_item++;
 			}
 			break;
 		case eFlexMenuNav_Back:
-			if((!pCurItem || pCurItem->CanNavigate(eFlexMenuNav_Back,HandleAcceleration(0))) && pCurMenu->CanLeave())
+			if((pCurMenu->CanNavigate(eFlexMenuNav_Back,HandleAcceleration(0))) && pCurMenu->CanLeave())
 			{
 				ClearVisible();
 				DoLeave();
@@ -218,14 +250,21 @@ re_navigate:
 			break;
 		case eFlexMenuNav_Release:
 			countRepeat=0;
-			pCurItem->CanNavigate(eFlexMenuNav_Release,0);
+			pCurMenu->CanNavigate(eFlexMenuNav_Release,0);
 			break;
 		case eFlexMenuNav_Push:
 			countRepeat=1;
 			timestampRepeat=millis();
-			if(pCurItem && pCurItem->CanNavigate(eFlexMenuNav_Push,HandleAcceleration(0)))
+			if(pCurMenu->CanNavigate(eFlexMenuNav_Push,HandleAcceleration(0)))
 			{
-				if(pCurItem->IsLeave())
+				FlexMenuBase * pCurItem=pCurMenu->GetCurItemPtr_History();
+
+				if(pCurMenu->AllowRewriteHistory() && pCurMenu->GetCurItem_History()!=pCurMenu->GetCurItem())
+				{
+					cur_item=pCurMenu->GetCurItem_History();	//go back to the intended (historic) item!
+				}
+
+				if(pCurMenu->CanLeave() && pCurItem->IsLeave())
 				{
 					ClearVisible();
 					DoLeave();
@@ -238,10 +277,10 @@ re_navigate:
 					menustack_count++;
 					menustack.push_front(pCurMenu);
 					pCurMenu=pCurItem;
+					ClearHistoryBuffer();
 					pCurMenu->OnEnter();
 
-					pCurItem=pCurMenu->GetCurItemPtr();
-					if(pCurItem && pCurItem->GetScreenType()==eFlexMenuScreenType_Edit)
+					if(pCurMenu->GetScreenType()==eFlexMenuScreenType_Edit)
 					{
 						pDisplay->OnEditMode(pCurMenu, true);
 					}
@@ -329,8 +368,7 @@ void FlexMenuManager::HandleRepeat()
 			{
 				countRepeat++;
 
-				FlexMenuBase * pCurItem=pCurMenu->GetCurItemPtr();
-				if(pCurItem) pCurItem->CanNavigate(eFlexMenuNav_PushRepeat,countRepeat-1);
+				pCurMenu->CanNavigate(eFlexMenuNav_PushRepeat,countRepeat-1);
 
 				pDisplay->OnNavigate(pCurMenu, eFlexMenuNav_PushRepeat,countRepeat-1);
 
@@ -349,8 +387,7 @@ void FlexMenuManager::DoLeave()
 
 		pCurMenu->OnLeave();
 
-		FlexMenuBase * pCurItem=pCurMenu->GetCurItemPtr();
-		if(pCurItem && pCurItem->GetScreenType()==eFlexMenuScreenType_Edit)
+		if(pCurMenu->GetScreenType()==eFlexMenuScreenType_Edit)
 		{
 			pDisplay->OnEditMode(pCurMenu, false);
 		}
@@ -358,6 +395,9 @@ void FlexMenuManager::DoLeave()
 		pCurMenu=*menustack.begin();
 		menustack.pop_front();
 		menustack_count--;
+
+		ClearHistoryBuffer();
+
 		pCurMenu->OnReturn();
 
 
@@ -485,3 +525,48 @@ void FlexMenuManager::IterateItemsInternal(FlexMenuManagerIterateCB & fnCallback
 	}
 }
 
+void FlexMenuManager::HandleHistoryBuffer()
+{
+
+	if(!pCurMenu) return;
+
+	const int history_interval=30;
+
+//	csprintf("run_history %i\n",run_history);
+
+	if(run_history>(sizeof(vpHistoryBuffer)/sizeof(vpHistoryBuffer[0]))+1)	// +1 just in case
+	{
+		lastHistoryBufTimestamp=millis()-history_interval;
+		return;
+	}
+
+	uint8_t i=0;
+
+	while(millis()-lastHistoryBufTimestamp>=history_interval)
+	{
+
+		run_history++;
+
+		history_idx++;
+		if(history_idx>=sizeof(vpHistoryBuffer)/sizeof(vpHistoryBuffer[0])) history_idx=0;
+
+		if(!pDisplay->HistoryBuffer(pCurMenu,&vpHistoryBuffer[history_idx]))
+		{
+			pCurMenu->HistoryBuffer(&vpHistoryBuffer[history_idx]);
+		}
+
+		lastHistoryBufTimestamp+=history_interval;
+		i++;
+		if(i>=3)
+		{
+			lastHistoryBufTimestamp=millis();
+			break;
+		}
+	}
+
+}
+
+void FlexMenuManager::ClearHistoryBuffer()
+{
+	pCurMenu->ClearHistoryBuffer(vpHistoryBuffer, sizeof(vpHistoryBuffer)/sizeof(vpHistoryBuffer[0]));
+}

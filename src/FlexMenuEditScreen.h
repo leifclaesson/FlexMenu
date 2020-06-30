@@ -53,12 +53,14 @@ public:
 	void EditScreen_Init(FlexMenuEditScreenParams * pParams);
 
 
-	virtual void EditScreen_Draw(FlexMenuBase * pCurMenu,FlexMenuBase * pCurItem);
+	virtual void EditScreen_Draw(FlexMenuBase * pCurMenu);
 
 	virtual bool EditScreen_OnNavigate(FlexMenuBase * pCurMenu, eFlexMenuNav direction, uint8_t accel);
 
 	void EditScreen_OnEditMode(FlexMenuBase * pCurMenu, bool bEnable);
 	bool EditScreen_NeedsRefresh(FlexMenuBase * pCurMenu);
+
+	virtual void EditScreen_HistoryBuffer(uintptr_t * data);
 
 
 private:
@@ -103,6 +105,7 @@ private:
 
 	bool EditHandlePush(FlexMenuBase * pCurMenu, eFlexMenuNav direction, uint8_t accel);
 
+	int history_selection=-1;
 
 
 };

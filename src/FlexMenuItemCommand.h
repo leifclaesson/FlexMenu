@@ -15,9 +15,6 @@ public:
 	virtual void GetTitleText(String & strTitleDestination) override;
 	virtual bool IsLeave() { return bIsLeave; };
 	bool bIsLeave=false;
-	virtual bool CanNavigate(eFlexMenuNav direction, uint8_t accel) override;
-
-	eFlexMenuNav last_nav;
 };
 
 class FlexMenuItemCommand :
@@ -53,6 +50,11 @@ public:
 
 	virtual bool GetConfirm();
 	virtual void SetConfirm(bool bConfirm);
+
+	virtual bool CanNavigate(eFlexMenuNav direction, uint8_t accel) override;
+	eFlexMenuNav last_nav;
+
+	virtual void HistoryBuffer(uintptr_t * data);
 
 };
 

@@ -107,11 +107,23 @@ public:
 
 	virtual int16_t GetScrollPos() { return 0; }
 	virtual int16_t GetCurItem() { return 0; }
+
+	virtual int16_t GetCurItem_History() { return GetCurItem(); }	//used by FlexMenuManager to enter menus. History buffer is to prevent accidental nudging as you push the knob.
+
 	virtual FlexMenuBase * GetCurItemPtr()
 	{
 		if(GetCurItem()>=0 && GetCurItem()<GetNumSubItems())
 		{
 			return GetSubItem(GetCurItem());
+		}
+		return 0;
+	}
+
+	virtual FlexMenuBase * GetCurItemPtr_History()	//used by FlexMenuManager to enter menus. History buffer is to prevent accidental nudging as you push the knob.
+	{
+		if(GetCurItem_History()>=0 && GetCurItem_History()<GetNumSubItems())
+		{
+			return GetSubItem(GetCurItem_History());
 		}
 		return 0;
 	}
@@ -130,6 +142,14 @@ public:
 
 	virtual void OnVisibilityChange() {};
 
+	// The HistoryBuffer is used to prevent accidentally selecting an unintended value as the user pushes the rotary encoder.
+	// HistoryBuffer() is called by FlexMenuManager at regular intervals, pointing to a value in the circular buffer.
+	// This circular buffer is initialized to 0xFF every time the user navigates in or out of a menu.
+	// Read the old value from the data pointer, then store the current value in the same slot.
+	virtual void ClearHistoryBuffer(uintptr_t * data, int count) { memset(data,0xFF,count*sizeof(uintptr_t)); }
+	virtual void HistoryBuffer(uintptr_t * data) {(void)(data);};
+	virtual bool AllowRewriteHistory() { return true; }
+
 	bool GetNeedsRefresh();
 	void SetNeedsRefresh(bool bSet);
 
@@ -144,8 +164,8 @@ public:
 	virtual void SetManager(FlexMenuManager * pManager) { (void)(pManager); }
 
 	virtual bool IsSaveable() { return false; }
-	virtual void GetSaveString(String & strSave) {}
-	virtual bool LoadString(const String & strLoad) { return false; }
+	virtual void GetSaveString(String & strSave) { (void)(strSave); }
+	virtual bool LoadString(const String & strLoad) { (void)(strLoad); return false; }
 
 
 
@@ -168,3 +188,5 @@ private:
 
 
 FlexMenuBase * GetLeaveItem();
+FlexMenuBase * GetTempItem();
+
