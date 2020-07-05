@@ -14,26 +14,6 @@
 #endif
 
 
-// Minimal class to replace std::vector
-template<typename Data>
-class Vector {
-  size_t d_size; // Stores no. of actually stored objects
-  size_t d_capacity; // Stores allocated capacity
-  Data *d_data; // Stores data
-  public:
-    Vector() : d_size(0), d_capacity(0), d_data(0) {}; // Default constructor
-    Vector(Vector const &other) : d_size(other.d_size), d_capacity(other.d_capacity), d_data(0) { d_data = (Data *)malloc(d_capacity*sizeof(Data)); memcpy(d_data, other.d_data, d_size*sizeof(Data)); }; // Copy constuctor
-    ~Vector() { free(d_data); }; // Destructor
-    Vector &operator=(Vector const &other) { free(d_data); d_size = other.d_size; d_capacity = other.d_capacity; d_data = (Data *)malloc(d_capacity*sizeof(Data)); memcpy(d_data, other.d_data, d_size*sizeof(Data)); return *this; }; // Needed for memory management
-    void push_back(Data const &x) { if (d_capacity == d_size) resize(); d_data[d_size++] = x; }; // Adds new value. If needed, allocates more space
-    size_t size() const { return d_size; }; // Size getter
-    Data const &operator[](size_t idx) const { return d_data[idx]; }; // Const getter
-    Data &operator[](size_t idx) { return d_data[idx]; }; // Changeable getter
-    void clear() { if(d_data) free(d_data); d_data=0; d_capacity=0; d_size=0; };
-  private:
-    void resize() { d_capacity = d_capacity ? d_capacity*2 : 1; Data *newdata = (Data *)malloc(d_capacity*sizeof(Data)); memcpy(newdata, d_data, d_size * sizeof(Data)); free(d_data); d_data = newdata; };// Allocates double the old space
-};
-
 
 enum eFlexMenuNav
 {
@@ -47,6 +27,11 @@ enum eFlexMenuNav
 	eFlexMenuNav_PushRepeat,	//FlexMenuManager feeds to child objects while rotary encoder is pushed
 };
 
+enum eFlexMenuFont
+{
+	eFlexMenuFont_Normal,
+	eFlexMenuFont_Large,
+};
 
 enum eFlexMenuIcon
 {
@@ -142,6 +127,8 @@ public:
 
 	virtual void OnVisibilityChange() {};
 
+	virtual bool DisplayCentered() { return false; };
+
 	// The HistoryBuffer is used to prevent accidentally selecting an unintended value as the user pushes the rotary encoder.
 	// HistoryBuffer() is called by FlexMenuManager at regular intervals, pointing to a value in the circular buffer.
 	// This circular buffer is initialized to 0xFF every time the user navigates in or out of a menu.
@@ -156,17 +143,20 @@ public:
 	bool GetVisible();
 	void SetVisible(bool bSet);
 
-	virtual eFlexMenuScreenType GetScreenType() { return eFlexMenuScreenType_Normal; }
-	
 
 	virtual void UpdateStatus();
 
 	virtual void SetManager(FlexMenuManager * pManager) { (void)(pManager); }
 
+	virtual void GetIdentifier(String & strIdentifier);
+	virtual void SetSaveIdx( uint16_t idx ) { (void)(idx); }	//can be used to differentiate multiple instances of a parameter
+	virtual uint16_t GetSaveIdx( ) { return 0; }
 	virtual bool IsSaveable() { return false; }
 	virtual void GetSaveString(String & strSave) { (void)(strSave); }
 	virtual bool LoadString(const String & strLoad) { (void)(strLoad); return false; }
 
+	virtual eFlexMenuScreenType GetScreenType() { return eFlexMenuScreenType_Normal; }
+	virtual eFlexMenuFont GetFont() { return eFlexMenuFont_Normal; }	//only supported by eFlexMenuScreenType_Message so far
 
 
 protected:
@@ -189,4 +179,5 @@ private:
 
 FlexMenuBase * GetLeaveItem();
 FlexMenuBase * GetTempItem();
+FlexMenuBase * GetSpacerItem();
 

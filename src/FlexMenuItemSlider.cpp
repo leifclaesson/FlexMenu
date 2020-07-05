@@ -211,6 +211,8 @@ bool FlexMenuItemSlider::LoadString(const String & strLoad)
 
 	value=val;
 
+	OnValueChanged();
+
 	return bRet;
 
 }

@@ -58,11 +58,14 @@ public:
 	virtual void ClearHistoryBuffer(uintptr_t * data, int count) override;
 	virtual void HistoryBuffer(uintptr_t * data) override;
 
+	virtual void SetSaveIdx( uint16_t idx ) override { derived_use_3 = (uint8_t) idx; }
+	virtual uint16_t GetSaveIdx( ) override { return derived_use_3; }
+
 
 };
 
 
-class FlexMenuItemSliderEx;
+class FlexMenuItemSliderCB;
 
 enum eFMISliderCallback
 {
@@ -71,10 +74,10 @@ enum eFMISliderCallback
 	eFMISliderCallback_ValueChanged,
 };
 
-typedef std::function<int(FlexMenuItemSliderEx *, eFMISliderCallback, String *)> FlexMenuItemSliderExCB;
+typedef std::function<int(FlexMenuItemSliderCB *, eFMISliderCallback, String *)> fn_FlexMenuItemSliderCB;
 
 
-class FlexMenuItemSliderEx : public FlexMenuItemSlider
+class FlexMenuItemSliderCB : public FlexMenuItemSlider
 {
 public:
 
@@ -83,8 +86,16 @@ public:
 	virtual void OnValueChanging() override { if(fnCallback) fnCallback(this,eFMISliderCallback_ValueChanging,0); }
 	virtual void OnValueChanged() override { if(fnCallback) fnCallback(this,eFMISliderCallback_ValueChanged,0); }
 
-	FlexMenuItemSliderExCB fnCallback;
+	fn_FlexMenuItemSliderCB fnCallback;
+};
 
+class FlexMenuItemSliderModPtr : public FlexMenuItemSlider
+{
+public:
+
+	bool * pModified=0;
+
+	virtual void OnValueChanged() override { if(pModified) *pModified=true; }
 
 };
 

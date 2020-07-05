@@ -70,3 +70,12 @@ void FlexMenuBase::UpdateStatus()
 	}
 }
 
+void FlexMenuBase::GetIdentifier(String & strIdentifier)
+{
+	GetTitleText(strIdentifier);
+	if(GetSaveIdx())
+	{
+		strIdentifier+="_";
+		strIdentifier+=GetSaveIdx();
+	}
+}

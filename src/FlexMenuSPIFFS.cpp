@@ -7,49 +7,54 @@
 
 #include <FlexMenuSPIFFS.h>
 
-#if defined(ARDUINO_ARCH_ESP32)
-#include "SPIFFS.h"
-#define FILESYSTEM SPIFFS
-#else
-#include "LittleFS.h"
-#define FILESYSTEM LittleFS
-#endif
 #include "FlexMenu.h"
 #include <map>
+#include <list>
+
+FS & FlexMenuGetFileSystem()
+{
+	return FLEXMENU_FILESYSTEM;
+}
+
+const char * FlexMenuGetConfigFileName()
+{
+	return "/config.txt";
+}
+
 
 bool FlexMenuSPIFFS_Init(FlexMenuManager & flexmenu)
 {
 
-	if(!FILESYSTEM.begin())
+	if(!FLEXMENU_FILESYSTEM.begin())
 	{
 		csprintf("SPIFFS Mount Failed. Attempting to format.\n");
-		flexmenu.ShowMessage("SPIFFS", "Formatting file system, please wait.",0);
+		flexmenu.ShowMessage("SPIFFS", "Formatting file system, please wait.",eFlexMenuFont_Large,0);
 		flexmenu.Loop(false);
 		flexmenu.Output();
 
-		if(FILESYSTEM.format())
+		if(FLEXMENU_FILESYSTEM.format())
 		{
 			csprintf("format successful\n");
-			flexmenu.ShowMessage("SPIFFS", "Format Successful.",1000);
+			flexmenu.ShowMessage("SPIFFS", "Format Successful.",eFlexMenuFont_Large,1000);
 			flexmenu.Loop(false);
 			flexmenu.Output();
 			delay(3000);
 
-			if(FILESYSTEM.begin())
+			if(FLEXMENU_FILESYSTEM.begin())
 			{
 				csprintf("file system opened\n");
-				flexmenu.ShowMessage("SPIFFS", "File system opened.",1000);
+				flexmenu.ShowMessage("SPIFFS", "File system opened.",eFlexMenuFont_Large,1000);
 				flexmenu.Loop(false);
 				flexmenu.Output();
 				delay(3000);
 
 
-				File config_file=FILESYSTEM.open( "/config.sys", "w");
+				File config_file=FLEXMENU_FILESYSTEM.open( FlexMenuGetConfigFileName(), "w");
 
 				if(config_file)
 				{
 					config_file.println("placeholder=0");
-					flexmenu.ShowMessage("SPIFFS", "Placeholder Written",1000);
+					flexmenu.ShowMessage("SPIFFS", "Placeholder Written",eFlexMenuFont_Large,1000);
 					flexmenu.Loop(false);
 					flexmenu.Output();
 					delay(3000);
@@ -59,7 +64,7 @@ bool FlexMenuSPIFFS_Init(FlexMenuManager & flexmenu)
 			else
 			{
 				csprintf("unable to open file system\n");
-				flexmenu.ShowPermanentErrorMessage("SPIFFS", "Unable to open file system");
+				flexmenu.ShowPermanentErrorMessage("SPIFFS", "Unable to open file system", eFlexMenuFont_Large);
 				flexmenu.Loop(false);
 				flexmenu.Output();
 			}
@@ -68,7 +73,7 @@ bool FlexMenuSPIFFS_Init(FlexMenuManager & flexmenu)
 		else
 		{
 			csprintf("error, format failed\n");
-			flexmenu.ShowPermanentErrorMessage("SPIFFS", "ERROR: FORMAT FAILED");
+			flexmenu.ShowPermanentErrorMessage("SPIFFS", "ERROR: FORMAT FAILED", eFlexMenuFont_Large);
 			flexmenu.Loop(false);
 			flexmenu.Output();
 		}
@@ -95,7 +100,7 @@ bool FlexMenuSPIFFS_Init(FlexMenuManager & flexmenu)
 
 void FlexMenuSPIFFS_DoLoad(FlexMenuManager & flexmenu)
 {
-	File config_file=FILESYSTEM.open( "/config.sys", "r");
+	File config_file=FLEXMENU_FILESYSTEM.open( FlexMenuGetConfigFileName(), "r");
 
 	typedef std::map<String, String> _mapConfig;
 
@@ -134,19 +139,19 @@ void FlexMenuSPIFFS_DoLoad(FlexMenuManager & flexmenu)
 			(void)(pManager);
 			if(pItem->IsSaveable())
 			{
-				String strTitle;
-				pItem->GetTitleText(strTitle);
+				String strIdentifier;
+				pItem->GetIdentifier(strIdentifier);
 
-				if(strTitle.length())
+				if(strIdentifier.length())
 				{
 
-					_mapConfig::const_iterator pos=mapConfig.find(strTitle);
+					_mapConfig::const_iterator pos=mapConfig.find(strIdentifier);
 
 					if(pos!=mapConfig.end())
 					{
 						pItem->LoadString(pos->second);
 						iParametersUsed++;
-						//Serial.printf("Found %s = '%s'\n",strTitle.c_str(),pos->second.c_str());
+						//Serial.printf("Found %s = '%s'\n",strIdentifier.c_str(),pos->second.c_str());
 					}
 
 				}
@@ -160,14 +165,14 @@ void FlexMenuSPIFFS_DoLoad(FlexMenuManager & flexmenu)
 		strTemp+=iParametersRead; strTemp+=" params read\n";
 		strTemp+=iParametersUsed; strTemp+=" params used";
 
-		flexmenu.ShowMessage("Gate Controller", strTemp, 1000);
+		flexmenu.ShowMessage("Gate Controller", strTemp, eFlexMenuFont_Large, 1000);
 
 	}
 	else
 	{
-//		csprintf("No config file found.\n");
+		csprintf("No config file found.\n");
 
-		flexmenu.ShowMessage("Gate Controller", "No config file found.", 1000);
+		flexmenu.ShowMessage("Gate Controller", "No config file found.", eFlexMenuFont_Large, 1000);
 
 	}
 
@@ -176,48 +181,87 @@ void FlexMenuSPIFFS_DoLoad(FlexMenuManager & flexmenu)
 void FlexMenuSPIFFS_DoSave(FlexMenuManager & flexmenu)
 {
 
-	File config_file=FILESYSTEM.open( "/config.sys", "w");
+	std::list<String> file_buffer;
 
-	if(config_file)
+	int iItems=0;
+
+	flexmenu.IterateItems([&iItems,&file_buffer] (FlexMenuBase * pItem, FlexMenuManager * pManager)->bool
 	{
-		config_file.printf("Settings\n");
 
-		int iItems=0;
-
-		flexmenu.IterateItems([&iItems,&config_file] (FlexMenuBase * pItem, FlexMenuManager * pManager)->bool
+		(void)(pManager);
+		if(pItem)
 		{
 			if(pItem->IsSaveable())
 			{
-				String strTitle;
-				pItem->GetTitleText(strTitle);
 
-				if(strTitle.length())
+				String strTemp;
+				pItem->GetIdentifier(strTemp);
+
+//				csprintf("iterate identifier %s\n",strTemp.c_str());
+
+				if(strTemp.length())
 				{
 					String strSave;
 					pItem->GetSaveString(strSave);
 
+					strTemp+='=';
+					strTemp+=strSave;
 
-					config_file.print(strTitle);
-					config_file.print('=');
-					config_file.println(strSave);
+					file_buffer.push_back(strTemp);
 
 					iItems++;
-
-					//csprintf("Save %s: %s!\n",strTitle.c_str(),strSave.c_str());
 				}
 			}
-			return true;
-		}, 0);
-		char temp[64];
+		}
+		else
+		{
+			csprintf("Iterate got NULL POINTER\n");
+		}
+
+
+		return true;
+	}, 0);
+
+
+
+	csprintf("Got %i items to save\n",iItems);
+
+	char temp[64];
+	sprintf(temp,"Saving %i items",iItems);
+
+	flexmenu.ShowMessage("Save Settings", temp, eFlexMenuFont_Large, 0);
+	flexmenu.Loop(false);
+	flexmenu.Output();
+
+
+
+	//csprintf("Save %s: %s!\n",strIdentifier.c_str(),strSave.c_str());
+
+	delay(50);
+
+	File config_file=FLEXMENU_FILESYSTEM.open( FlexMenuGetConfigFileName(), "w");
+
+	if(config_file)
+	{
+		csprintf("opened file %s\n",FlexMenuGetConfigFileName());
+		delay(50);
+
+		for(int i=0;i<iItems;i++)
+		{
+			config_file.println(*file_buffer.begin());
+			csprintf("printed line %i\n",i);
+			delay(50);
+			file_buffer.pop_front();
+		}
+
 
 		sprintf(temp,"Saved %i items",iItems);
-
-		flexmenu.ShowMessage("Save Settings", temp, 2000);
+		flexmenu.ShowMessage("Save Settings", temp, eFlexMenuFont_Large, 2000);
 
 	}
 	else
 	{
-		flexmenu.ShowMessage("ERROR", "Unable to open file.", 2000);
+		flexmenu.ShowMessage("ERROR", "Unable to open file.", eFlexMenuFont_Large, 2000);
 	}
 
 }

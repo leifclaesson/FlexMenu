@@ -7,7 +7,6 @@
 class FlexMenuItemEdit;
 
 
-
 class FlexMenuItemEdit :
 	public FlexMenuBase
 {
@@ -34,16 +33,57 @@ public:
 
 	FlexMenuManager * pManager=NULL;
 
+	void SetIsPassword(bool bPassword) { if(bPassword) flags |= 0x40; else flags &=(0xFF-0x40); }
+	bool IsPassword() { return (flags & 0x40)!=0; }
+
 	void SetIsSaveable(bool bSaveable) { if(bSaveable) flags |= 0x80; else flags &=(0xFF-0x80); }
 	bool IsSaveable() override { return (flags & 0x80)!=0; }
 	virtual void GetSaveString(String & strSave) override { strSave=strEdit; }
-	virtual bool LoadString(const String & strLoad) override { strEdit=strLoad; return true; };
+	virtual bool LoadString(const String & strLoad) override { strEdit=strLoad; OnValueChanged(); return true; };
+	virtual void SetSaveIdx( uint16_t idx ) override { derived_use_3 = (uint8_t) idx; }
+	virtual uint16_t GetSaveIdx( ) override { return derived_use_3; }
 
 	virtual eFlexMenuScreenType GetScreenType() { return eFlexMenuScreenType_Edit; }
 
-	virtual void HistoryBuffer(uintptr_t * data) override;
+	virtual void OnValueChanged() { }
+
+	virtual void OskSetString(const String & str) { LoadString(str); }
+
 
 
 };
+
+
+class FlexMenuItemEditCB;
+
+enum eFMIEditCallback
+{
+	eFMIEditCallback_ValueChanged,
+};
+
+typedef std::function<void(FlexMenuItemEditCB *,eFMIEditCallback)> fn_FlexMenuItemEditCB;
+
+class FlexMenuItemEditCB : public FlexMenuItemEdit
+{
+public:
+
+	virtual void OnValueChanged() override { if(fnCallback) fnCallback(this,eFMIEditCallback_ValueChanged); }
+
+	fn_FlexMenuItemEditCB fnCallback;
+
+};
+
+
+class FlexMenuItemEditModPtr : public FlexMenuItemEdit
+{
+public:
+
+	bool * pModified=0;
+
+	virtual void OnValueChanged() override { if(pModified) *pModified=true; }
+
+};
+
+
 
 #endif /* LIBRARIES_FLEXMENU_SRC_FLEXMENUITEMEDIT_H_ */

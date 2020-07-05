@@ -44,3 +44,12 @@ public:
 	virtual eFlexMenuIcon UseIcon() { return icon; };
 
 };
+
+class FlexMenuItemSpacer :
+	public FlexMenuBase
+{
+public:
+	virtual void GetTitleText(String & strTitleDestination) { strTitleDestination=""; };
+	virtual bool AllowLand() { return false; };
+};
+

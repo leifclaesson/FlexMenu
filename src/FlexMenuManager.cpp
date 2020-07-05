@@ -21,6 +21,15 @@ FlexMenuBase * GetTempItem()
 	return &g_tempitem;
 }
 
+
+FlexMenuItemSpacer g_spaceritem;
+
+FlexMenuBase * GetSpacerItem()
+{
+	return &g_spaceritem;
+}
+
+
 FlexMenuManager::FlexMenuManager()
 {
 }
@@ -472,14 +481,23 @@ uint8_t FlexMenuManager::HandleAcceleration(int8_t direction)
 	return accel_counter;
 }
 
-void FlexMenuManager::ShowPermanentErrorMessage(const String & strTitle, const String & strValue)
+void FlexMenuManager::ShowPermanentErrorMessage(const String & strTitle, const String & strValue, eFlexMenuFont font)
 {
-	ShowMessage(strTitle,strValue,0);
+	ShowMessage(strTitle,strValue,font,0);
 	bPermanentErrorMessage=true;
 
 }
 
-void FlexMenuManager::ShowMessage(const String & strTitle, const String & strValue, uint32_t milliseconds)
+void FlexMenuManager::CancelMessage()
+{
+	if(stateShowMessage!=eShowMessageState_Idle)
+	{
+		bWeNeedRefresh=true;
+		stateShowMessage=eShowMessageState_Idle;
+	}
+}
+
+void FlexMenuManager::ShowMessage(const String & strTitle, const String & strValue, eFlexMenuFont font, uint32_t milliseconds)
 {
 	csprintf("PE %i\n",bPermanentErrorMessage);
 	if(bPermanentErrorMessage) return;
@@ -492,6 +510,7 @@ void FlexMenuManager::ShowMessage(const String & strTitle, const String & strVal
 
 		dummyShowMessage.inner.strTitle=strTitle;
 		dummyShowMessage.inner.strValue=strValue;
+		dummyShowMessage.font=font;
 
 		stateShowMessage=eShowMessageState_Displaying;
 	}
@@ -502,6 +521,7 @@ void FlexMenuManager::ShowMessage(const String & strTitle, const String & strVal
 
 		dummyShowMessage.inner.strTitle="";
 		dummyShowMessage.inner.strValue="";
+		dummyShowMessage.font=eFlexMenuFont_Normal;
 	}
 
 	bWeNeedRefresh=true;
@@ -512,6 +532,9 @@ void FlexMenuManager::IterateItems(FlexMenuManagerIterateCB fnCallback, FlexMenu
 {
 	if(!pStart) pStart=pTopMenu;
 	IterateItemsInternal(fnCallback, pStart);
+
+	IterateItemsInternal(fnCallback, &data_items);
+
 }
 
 void FlexMenuManager::IterateItemsInternal(FlexMenuManagerIterateCB & fnCallback, FlexMenuBase * pStart)
@@ -521,6 +544,7 @@ void FlexMenuManager::IterateItemsInternal(FlexMenuManagerIterateCB & fnCallback
 		FlexMenuBase * pCur=pStart->GetSubItem(i);
 		fnCallback(pCur,this);
 
+		delay(0);
 		IterateItemsInternal(fnCallback,pCur);
 	}
 }

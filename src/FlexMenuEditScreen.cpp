@@ -76,7 +76,7 @@ bool FlexMenuEditScreen::EditHandlePush(FlexMenuBase * pCurMenu, eFlexMenuNav di
 		case eFlexMenuEdit_OK:
 			{
 				FlexMenuItemEdit * pItemEdit=(FlexMenuItemEdit *) pCurMenu;
-				pItemEdit->strEdit=strEdit;
+				pItemEdit->OskSetString(strEdit);
 			}
 			return true;
 		}

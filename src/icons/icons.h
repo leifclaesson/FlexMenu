@@ -40,14 +40,14 @@ unsigned char cancel[7] PROGMEM =
  
 //  *** FileToArray 2.1, (C) Leif Claesson 2006-2020 ***
 
-#define checked_10_size 8
+#define checked_10_size 11
 
 #ifdef FILETOARRAY_EXTERN_ONLY
-extern unsigned char checked_10[8];
+extern unsigned char checked_10[11];
 #else
-unsigned char checked_10[8] PROGMEM =
+unsigned char checked_10[11] PROGMEM =
 {
-0x3F,0x3F,0x3F,0x1F,0x2E,0x35,0x3B,0x00
+0x00,0x00,0x3F,0x3F,0x3F,0x1F,0x2E,0x35,0x3B,0x00,0x00
 };
 #endif
  
@@ -66,14 +66,14 @@ unsigned char checked_12[10] PROGMEM =
  
 //  *** FileToArray 2.1, (C) Leif Claesson 2006-2020 ***
 
-#define circle_10_size 8
+#define circle_10_size 11
 
 #ifdef FILETOARRAY_EXTERN_ONLY
-extern unsigned char circle_10[8];
+extern unsigned char circle_10[11];
 #else
-unsigned char circle_10[8] PROGMEM =
+unsigned char circle_10[11] PROGMEM =
 {
-0x00,0x1C,0x22,0x22,0x22,0x1C,0x00,0x00
+0x00,0x00,0x00,0x1C,0x22,0x22,0x22,0x1C,0x00,0x00,0x00
 };
 #endif
  
@@ -92,14 +92,14 @@ unsigned char circle_12[10] PROGMEM =
  
 //  *** FileToArray 2.1, (C) Leif Claesson 2006-2020 ***
 
-#define cursor_10_size 8
+#define cursor_10_size 11
 
 #ifdef FILETOARRAY_EXTERN_ONLY
-extern unsigned char cursor_10[8];
+extern unsigned char cursor_10[11];
 #else
-unsigned char cursor_10[8] PROGMEM =
+unsigned char cursor_10[11] PROGMEM =
 {
-0x36,0x08,0x08,0x08,0x08,0x08,0x36,0x00
+0x00,0x28,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x28,0x00
 };
 #endif
  
@@ -132,14 +132,14 @@ unsigned char delete_symbol[18] PROGMEM =
  
 //  *** FileToArray 2.1, (C) Leif Claesson 2006-2020 ***
 
-#define execute_10_size 8
+#define execute_10_size 11
 
 #ifdef FILETOARRAY_EXTERN_ONLY
-extern unsigned char execute_10[8];
+extern unsigned char execute_10[11];
 #else
-unsigned char execute_10[8] PROGMEM =
+unsigned char execute_10[11] PROGMEM =
 {
-0x08,0x08,0x3E,0x1C,0x14,0x22,0x00,0x00
+0x00,0x00,0x08,0x08,0x3E,0x1C,0x14,0x22,0x00,0x00,0x00
 };
 #endif
  
@@ -158,14 +158,14 @@ unsigned char execute_12[10] PROGMEM =
  
 //  *** FileToArray 2.1, (C) Leif Claesson 2006-2020 ***
 
-#define leftarrow_10_size 8
+#define leftarrow_10_size 11
 
 #ifdef FILETOARRAY_EXTERN_ONLY
-extern unsigned char leftarrow_10[8];
+extern unsigned char leftarrow_10[11];
 #else
-unsigned char leftarrow_10[8] PROGMEM =
+unsigned char leftarrow_10[11] PROGMEM =
 {
-0x08,0x0C,0x0E,0x0F,0x0E,0x0C,0x08,0x00
+0x00,0x00,0x08,0x0C,0x0E,0x0F,0x0E,0x0C,0x08,0x00,0x00
 };
 #endif
  
@@ -197,14 +197,14 @@ unsigned char okay[7] PROGMEM =
  
 //  *** FileToArray 2.1, (C) Leif Claesson 2006-2020 ***
 
-#define rightarrow_10_size 8
+#define rightarrow_10_size 11
 
 #ifdef FILETOARRAY_EXTERN_ONLY
-extern unsigned char rightarrow_10[8];
+extern unsigned char rightarrow_10[11];
 #else
-unsigned char rightarrow_10[8] PROGMEM =
+unsigned char rightarrow_10[11] PROGMEM =
 {
-0x04,0x0C,0x1C,0x3C,0x1C,0x0C,0x04,0x00
+0x00,0x00,0x04,0x0C,0x1C,0x3C,0x1C,0x0C,0x04,0x00,0x00
 };
 #endif
  
@@ -223,14 +223,14 @@ unsigned char rightarrow_12[10] PROGMEM =
  
 //  *** FileToArray 2.1, (C) Leif Claesson 2006-2020 ***
 
-#define selection_10_size 8
+#define selection_10_size 11
 
 #ifdef FILETOARRAY_EXTERN_ONLY
-extern unsigned char selection_10[8];
+extern unsigned char selection_10[11];
 #else
-unsigned char selection_10[8] PROGMEM =
+unsigned char selection_10[11] PROGMEM =
 {
-0x00,0x1C,0x3E,0x3E,0x3E,0x1C,0x00,0x00
+0x00,0x00,0x00,0x1C,0x3E,0x3E,0x3E,0x1C,0x00,0x00,0x00
 };
 #endif
  
@@ -262,14 +262,14 @@ unsigned char spacebar[14] PROGMEM =
  
 //  *** FileToArray 2.1, (C) Leif Claesson 2006-2020 ***
 
-#define unchecked_10_size 8
+#define unchecked_10_size 11
 
 #ifdef FILETOARRAY_EXTERN_ONLY
-extern unsigned char unchecked_10[8];
+extern unsigned char unchecked_10[11];
 #else
-unsigned char unchecked_10[8] PROGMEM =
+unsigned char unchecked_10[11] PROGMEM =
 {
-0x3F,0x21,0x21,0x21,0x21,0x21,0x3F,0x00
+0x00,0x00,0x3F,0x21,0x21,0x21,0x21,0x21,0x3F,0x00,0x00
 };
 #endif
  

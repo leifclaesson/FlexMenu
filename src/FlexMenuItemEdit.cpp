@@ -34,7 +34,19 @@ void FlexMenuItemEdit::GetTitleText(String & strTitleDestination)
 
 void FlexMenuItemEdit::GetValueText(String & strValueDestination)
 {
-	strValueDestination=strEdit;
+	if(IsPassword())
+	{
+		strValueDestination="";
+		strValueDestination.reserve(strEdit.length());
+		for(int i=0;i<(int) strEdit.length();i++)
+		{
+			strValueDestination+='*';
+		}
+	}
+	else
+	{
+		strValueDestination=strEdit;
+	}
 }
 
 void FlexMenuItemEdit::OnEnter()
@@ -45,11 +57,5 @@ void FlexMenuItemEdit::OnEnter()
 
 	item.Reset();
 	item.pParent=this;
-}
-
-void FlexMenuItemEdit::HistoryBuffer(uintptr_t * data)
-{
-	csprintf("FlexMenuItemEdit::HistoryBuffer\n");
-
 }
 

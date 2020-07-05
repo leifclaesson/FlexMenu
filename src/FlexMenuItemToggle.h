@@ -27,26 +27,43 @@ public:
 	virtual void GetSaveString(String & strSave) override;
 	virtual bool LoadString(const String & strLoad) override;
 
+	virtual void SetSaveIdx( uint16_t idx ) override { derived_use_3 = (uint8_t) idx; }
+	virtual uint16_t GetSaveIdx( ) override { return derived_use_3; }
+
 private:
 
 };
 
 
-class FlexMenuItemToggleEx;
+class FlexMenuItemToggleCB;
 
 enum eFMIToggleCallback
 {
 	eFMIToggleCallback_ValueChanged,
 };
 
-typedef std::function<void(FlexMenuItemToggleEx *,eFMIToggleCallback)> FlexMenuItemToggleExCB;
+typedef std::function<void(FlexMenuItemToggleCB *,eFMIToggleCallback)> fn_FlexMenuItemToggleCB;
 
-class FlexMenuItemToggleEx : public FlexMenuItemToggle
+class FlexMenuItemToggleCB : public FlexMenuItemToggle
 {
 public:
 
 	virtual void OnValueChanged() override { if(fnCallback) fnCallback(this,eFMIToggleCallback_ValueChanged); }
 
-	FlexMenuItemToggleExCB fnCallback;
+	fn_FlexMenuItemToggleCB fnCallback;
 
 };
+
+
+class FlexMenuItemToggleModPtr : public FlexMenuItemToggle
+{
+public:
+
+	bool * pModified=0;
+
+	virtual void OnValueChanged() override { if(pModified) *pModified=true; }
+
+};
+
+
+

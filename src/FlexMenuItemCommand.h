@@ -5,7 +5,7 @@
 
 class FlexMenuItemCommand;
 
-typedef std::function<void(FlexMenuItemCommand *)> FlexMenuItemCommandCB;
+typedef std::function<void(FlexMenuItemCommand *)> fn_FlexMenuItemCommandCB;
 
 class FlexMenuItemCommandDummy :
 	public FlexMenuBase
@@ -35,7 +35,7 @@ public:
 
 	virtual eFlexMenuIcon UseIcon();
 
-	FlexMenuItemCommandCB cbExecuteCommand;
+	fn_FlexMenuItemCommandCB cbExecuteCommand;
 
 	virtual int16_t GetNumSubItems();
 	virtual FlexMenuBase * GetSubItem(int16_t idx);

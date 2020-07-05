@@ -54,7 +54,7 @@ public:
 	virtual int16_t GetNumSubItems();
 	virtual FlexMenuBase * GetSubItem(int16_t idx);
 
-	virtual void OnSelChange() {};
+	virtual void OnValueChanged() {};
 
 	std::vector <FMISelector_Item *> vecItems;
 
@@ -101,18 +101,31 @@ public:
 
 };
 
-class FlexMenuItemSelectorEx;
-typedef std::function<void(FlexMenuItemSelectorEx *)> FlexMenuItemSelectorExCB;
+class FlexMenuItemSelectorCB;
+typedef std::function<void(FlexMenuItemSelectorCB *)> fn_FlexMenuItemSelectorCB;
 
 
-class FlexMenuItemSelectorEx : public FlexMenuItemSelector
+class FlexMenuItemSelectorCB : public FlexMenuItemSelector
 {
 public:
-	FlexMenuItemSelectorExCB cbOnSelChange;
-	FlexMenuItemSelectorExCB cbOnActivityChange;
+	fn_FlexMenuItemSelectorCB cbOnValueChanged;
+	fn_FlexMenuItemSelectorCB cbOnActivityChange;
 protected:
 	virtual void UpdateStatus() override;
 
-	virtual void OnSelChange();
+	virtual void OnValueChanged();
 	bool bLastActive=false;
 };
+
+class FlexMenuItemSelectorModPtr : public FlexMenuItemSelector
+{
+public:
+
+	bool * pModified=0;
+
+	virtual void OnValueChanged() override { if(pModified) *pModified=true; }
+
+};
+
+
+

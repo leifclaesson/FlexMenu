@@ -4,6 +4,7 @@
 #include <SH1106.h>
 #include "FlexMenuBase.h"
 #include "FlexMenuItemSlider.h"
+#include "FlexMenuShowMessage.h"
 
 
 FlexMenuDisplay_OLED_Base::FlexMenuDisplay_OLED_Base()
@@ -87,6 +88,7 @@ void FlexMenuDisplay_OLED_Base::DrawScreen(FlexMenuBase * pCurMenu)
 
 	for(int i=0;i<GetVisibleItems();i++)
 	{
+		yield();
 
 		if(i+pCurMenu->GetScrollPos()>=0 && i+pCurMenu->GetScrollPos()<(int) pCurMenu->GetNumSubItems())
 		{
@@ -127,25 +129,38 @@ void FlexMenuDisplay_OLED_Base::DrawScreen(FlexMenuBase * pCurMenu)
 
 			display.setColor(WHITE);
 
-			display.setTextAlignment(TEXT_ALIGN_LEFT);
-			display.drawString(left, i*fLineHeight, strLeft );
-			int widthLeft=display.getStringWidth(strLeft);
-
-			display.setTextAlignment(TEXT_ALIGN_RIGHT);
-
-			int chars=getCharsForWidth(pFont,strRight.c_str(),strRight.length(),params.iScreenCX-(widthLeft+iIconCX+iWidthDots));
-
-			//csprintf("chars=%i scx=%i widthLeft=%i widthDots=%i iconCX=%i\n",chars,params.iScreenCX,widthLeft,widthDots,iIconCX);
-
-			if(chars!=(int) strRight.length())
+			if(pItem->DisplayCentered() && (!strLeft.length() || !strRight.length()))
 			{
-				String temp=strRight.substring(0,chars);
-				temp+="..";
-				display.drawString(right, i*fLineHeight, temp);
+				display.setTextAlignment(TEXT_ALIGN_CENTER);
+				display.drawString(params.iScreenCX/2, i*fLineHeight, strLeft.length()?strLeft:strRight );
 			}
 			else
 			{
-				display.drawString(right, i*fLineHeight, strRight);
+
+				display.setTextAlignment(TEXT_ALIGN_LEFT);
+				display.drawString(left, i*fLineHeight, strLeft );
+				int widthLeft=display.getStringWidth(strLeft);
+
+				display.setTextAlignment(TEXT_ALIGN_RIGHT);
+
+				int icon_width=iIconCX;
+				if(icon==eFlexMenuIcon_None) icon_width=0;
+
+				int chars=getCharsForWidth(pFont,strRight.c_str(),strRight.length(),params.iScreenCX-(widthLeft+icon_width));
+
+				//csprintf("chars=%i scx=%i widthLeft=%i widthDots=%i iconCX=%i\n",chars,params.iScreenCX,widthLeft,widthDots,iIconCX);
+
+				if(chars!=(int) strRight.length())
+				{
+					int chars=getCharsForWidth(pFont,strRight.c_str(),strRight.length(),params.iScreenCX-(widthLeft+icon_width+iWidthDots));
+					String temp=strRight.substring(0,chars);
+					temp+="..";
+					display.drawString(right, i*fLineHeight, temp);
+				}
+				else
+				{
+					display.drawString(right, i*fLineHeight, strRight);
+				}
 			}
 
 
@@ -155,6 +170,9 @@ void FlexMenuDisplay_OLED_Base::DrawScreen(FlexMenuBase * pCurMenu)
 
 
 	{
+
+		yield();
+
 		int iCurItem=pCurMenu->GetCurItem()-pCurMenu->GetScrollPos();
 
 		if(iCurItem>=0 && iCurItem<GetVisibleItems())
@@ -193,6 +211,7 @@ void FlexMenuDisplay_OLED_Base::DrawSliderScreen(FlexMenuBase * pCurMenu)
 
 	display.setFont(pUseFont);
 
+	yield();
 
 	String strTitle;
 	pCurMenu->GetTitleText(strTitle);
@@ -204,14 +223,21 @@ void FlexMenuDisplay_OLED_Base::DrawSliderScreen(FlexMenuBase * pCurMenu)
 	display.setTextAlignment(TEXT_ALIGN_CENTER);
 	display.drawString(params.iScreenCX/2, 0, strTitle);
 
+	yield();
+
 	display.drawString(params.iScreenCX/2, params.iScreenCY-iFontHeight, strValue);
 
 	int bar_height=(params.iScreenCY * 30) / 100;
 
 	int bar_y=(params.iScreenCY-bar_height)/2;
 
+
+	yield();
+
 	//draw frame around the progress bar
 	display.drawRect(0,bar_y,params.iScreenCX,bar_height);
+
+	yield();
 
 	//fill in the progress bar
 	int bar_pixels=pSlider->GetProgressBar(params.iScreenCX-4);
@@ -303,6 +329,8 @@ void FlexMenuDisplay_OLED_Base::ESCB_DrawOSK_Key(uint16_t x, uint16_t y, uint16_
 		break;
 	}
 
+	yield();
+
 	if(pIcon && pIcon->data)
 	{
 		display.setColor(INVERSE);
@@ -324,14 +352,21 @@ void FlexMenuDisplay_OLED_Base::DrawMessage(FlexMenuBase * pCurMenu)
 {
 	OLEDDisplay & display=*params.pOLEDDisplay;
 
+
+	eFlexMenuFont font=pCurMenu->GetFont();
+
+
+
 	const uint8_t * pUseFont=pFont;
-	if(pFontSlider)
+
+	if(font==eFlexMenuFont_Large)
 	{
 		pUseFont=pFontSlider;
 	}
 
-	display.setColor(WHITE);
 	display.setFont(pUseFont);
+
+	display.setColor(WHITE);
 
 
 	String strTemp1;
@@ -354,6 +389,8 @@ void FlexMenuDisplay_OLED_Base::DrawMessage(FlexMenuBase * pCurMenu)
 
 	int line2_y=0;
 
+	yield();
+
 	if(length1 && length2)
 	{
 		display.setTextAlignment(TEXT_ALIGN_CENTER);
@@ -365,6 +402,9 @@ void FlexMenuDisplay_OLED_Base::DrawMessage(FlexMenuBase * pCurMenu)
 	{
 		line2_y=params.iScreenCY>>1;
 	}
+
+
+	yield();
 
 	display.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
 	if(strTemp2.indexOf('\n')>=0)

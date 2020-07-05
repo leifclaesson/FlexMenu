@@ -66,8 +66,12 @@ void FlexMenuDisplay_OLED::InitResources_MenuIcons()
 	icons[eFlexMenuIcon_Cursor]=cursor_10;
 
 	iIconCX=6;
-	iIconCY=8;
-	iIconY=2;
+	iIconCY=11;
+	iIconY=0;
+
+
+
+
 }
 
 void FlexMenuDisplay_OLED::InitResources_MenuFonts()

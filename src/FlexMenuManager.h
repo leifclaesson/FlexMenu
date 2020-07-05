@@ -11,6 +11,7 @@ class FlexMenuDisplay;
 class FlexMenuSub;
 
 #include "FlexMenuShowMessage.h"
+#include "FlexMenuItemData.h"
 
 enum eShowMessageState
 {
@@ -21,6 +22,7 @@ enum eShowMessageState
 
 
 typedef std::function<bool(FlexMenuBase *, FlexMenuManager *)> FlexMenuManagerIterateCB;	//return false to stop iterating
+
 
 
 class FlexMenuManager
@@ -37,13 +39,18 @@ public:
 
 	void Navigate(eFlexMenuNav nav);
 	
-	void ShowPermanentErrorMessage(const String & strTitle, const String & strValue);	//never goes away, disables menu
+	void ShowPermanentErrorMessage(const String & strTitle, const String & strValue, eFlexMenuFont font);	//never goes away, disables menu
 
-	void ShowMessage(const String & strTitle, const String & strValue, uint32_t milliseconds);
+	void ShowMessage(const String & strTitle, const String & strValue, eFlexMenuFont font, uint32_t milliseconds);
+	void CancelMessage();
 
 	void IterateItems(FlexMenuManagerIterateCB fnCallback, FlexMenuBase * pStart=NULL);
 
+	void AddDataItem(FlexMenuBase * pDataItem) { data_items.vecDataItems.push_back(pDataItem); }
+
 private:
+
+	FlexMenuDataItems data_items;
 
 	void IterateItemsInternal(FlexMenuManagerIterateCB & fnCallback, FlexMenuBase * pStart);
 

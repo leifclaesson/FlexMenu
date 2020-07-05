@@ -24,6 +24,23 @@ void FlexMenuItemLabel::GetValueText(String & strValueDestination)
 	strValueDestination=strValue;
 }
 
+void FlexMenuItemLabel::UpdateTitle(String & strTitle)
+{
+	if(this->strTitle!=strTitle)
+	{
+		this->strTitle=strTitle;
+		SetNeedsRefresh(true);
+	}
+}
+void FlexMenuItemLabel::UpdateValue(String & strValue)
+{
+	if(this->strValue!=strValue)
+	{
+		this->strValue=strValue;
+		SetNeedsRefresh(true);
+	}
+}
+
 void FlexMenuItemLabelEx::OnVisibilityChange()
 {
 	if(cbOnVisiblilityChange) cbOnVisiblilityChange(this);

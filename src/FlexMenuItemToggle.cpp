@@ -50,11 +50,13 @@ bool FlexMenuItemToggle::LoadString(const String & strLoad)
 	if(strLoad=="1")
 	{
 		SetState(true);
+		OnValueChanged();
 		return true;
 	}
 	if(strLoad=="0")
 	{
 		SetState(false);
+		OnValueChanged();
 		return true;
 	}
 	return false;

@@ -86,7 +86,7 @@ void FlexMenuItemSelector::OnPushChild()
 		iCurSel=GetCurItem_History()-1;
 
 		SetNeedsRefresh(true);
-		OnSelChange();
+		OnValueChanged();
 	}
 }
 
@@ -183,6 +183,7 @@ bool FlexMenuItemSelector::LoadString(const String & strLoad)
 		}
 		break;
 	}
+	OnValueChanged();
 	return bRet;
 }
 
@@ -206,7 +207,7 @@ void FlexMenuItemSelector::HistoryBuffer(uintptr_t * data)
 
 
 
-void FlexMenuItemSelectorEx::UpdateStatus()
+void FlexMenuItemSelectorCB::UpdateStatus()
 {
 	FlexMenuBase::UpdateStatus();
 	if(bLastActive!=IsActive())
@@ -216,8 +217,8 @@ void FlexMenuItemSelectorEx::UpdateStatus()
 	}
 }
 
-void FlexMenuItemSelectorEx::OnSelChange()
+void FlexMenuItemSelectorCB::OnValueChanged()
 {
-	if(cbOnSelChange) cbOnSelChange(this);
+	if(cbOnValueChanged) cbOnValueChanged(this);
 }
 

@@ -26,6 +26,8 @@ public:
 	virtual void GetValueText(String & strValueDestination) { strValueDestination=inner.strValue; }
 
 	FMM_ShowMessage inner;
+
+	eFlexMenuFont font;
 };
 
 

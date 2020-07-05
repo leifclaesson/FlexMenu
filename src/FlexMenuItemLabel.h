@@ -17,6 +17,14 @@ public:
 	String strTitle;
 	String strValue;
 
+	virtual void UpdateTitle(String & strTitle);
+	virtual void UpdateValue(String & strValue);
+
+	bool GetDisplayCentered() { return (flags & 0x80)!=0; };
+	void SetDisplayCentered(bool bDisplayCentered) { if(bDisplayCentered) flags |= 0x80; else flags &=(0xFF-0x80); };
+
+	virtual bool DisplayCentered() { return GetDisplayCentered(); };
+
 };
 
 
