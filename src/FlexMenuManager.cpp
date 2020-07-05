@@ -452,12 +452,17 @@ uint8_t FlexMenuManager::HandleAcceleration(int8_t direction)
 	else
 	{
 
-		if(diff>80)
+		if(diff>90)
 		{
 			ctr-=3;
 		}
 
-		if(diff<50)
+		if(diff>60)
+		{
+			ctr-=3;
+		}
+
+		if(diff<40)
 		{
 			ctr+=1;
 		}

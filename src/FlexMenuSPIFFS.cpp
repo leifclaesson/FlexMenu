@@ -237,20 +237,20 @@ void FlexMenuSPIFFS_DoSave(FlexMenuManager & flexmenu)
 
 	//csprintf("Save %s: %s!\n",strIdentifier.c_str(),strSave.c_str());
 
-	delay(50);
+	//delay(50);
 
 	File config_file=FLEXMENU_FILESYSTEM.open( FlexMenuGetConfigFileName(), "w");
 
 	if(config_file)
 	{
 		csprintf("opened file %s\n",FlexMenuGetConfigFileName());
-		delay(50);
+		//delay(50);
 
 		for(int i=0;i<iItems;i++)
 		{
 			config_file.println(*file_buffer.begin());
 			csprintf("printed line %i\n",i);
-			delay(50);
+			//delay(50);
 			file_buffer.pop_front();
 		}
 

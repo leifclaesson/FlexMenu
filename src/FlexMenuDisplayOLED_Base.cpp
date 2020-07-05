@@ -88,6 +88,7 @@ void FlexMenuDisplay_OLED_Base::DrawScreen(FlexMenuBase * pCurMenu)
 
 	for(int i=0;i<GetVisibleItems();i++)
 	{
+		if(interimCallback) interimCallback();
 		yield();
 
 		if(i+pCurMenu->GetScrollPos()>=0 && i+pCurMenu->GetScrollPos()<(int) pCurMenu->GetNumSubItems())
@@ -100,6 +101,8 @@ void FlexMenuDisplay_OLED_Base::DrawScreen(FlexMenuBase * pCurMenu)
 			pItem->GetTitleText(strLeft);
 			pItem->GetValueText(strRight);
 			eFlexMenuIcon icon=pItem->UseIcon();
+
+			if(interimCallback) interimCallback();
 
 			int left=0;
 			int right=params.iScreenCX;
@@ -126,6 +129,7 @@ void FlexMenuDisplay_OLED_Base::DrawScreen(FlexMenuBase * pCurMenu)
 				}
 			}
 
+			if(interimCallback) interimCallback();
 
 			display.setColor(WHITE);
 
@@ -133,6 +137,9 @@ void FlexMenuDisplay_OLED_Base::DrawScreen(FlexMenuBase * pCurMenu)
 			{
 				display.setTextAlignment(TEXT_ALIGN_CENTER);
 				display.drawString(params.iScreenCX/2, i*fLineHeight, strLeft.length()?strLeft:strRight );
+
+				if(interimCallback) interimCallback();
+
 			}
 			else
 			{
@@ -143,12 +150,16 @@ void FlexMenuDisplay_OLED_Base::DrawScreen(FlexMenuBase * pCurMenu)
 
 				display.setTextAlignment(TEXT_ALIGN_RIGHT);
 
+				if(interimCallback) interimCallback();
+
 				int icon_width=iIconCX;
 				if(icon==eFlexMenuIcon_None) icon_width=0;
 
 				int chars=getCharsForWidth(pFont,strRight.c_str(),strRight.length(),params.iScreenCX-(widthLeft+icon_width));
 
 				//csprintf("chars=%i scx=%i widthLeft=%i widthDots=%i iconCX=%i\n",chars,params.iScreenCX,widthLeft,widthDots,iIconCX);
+
+				if(interimCallback) interimCallback();
 
 				if(chars!=(int) strRight.length())
 				{
@@ -161,6 +172,9 @@ void FlexMenuDisplay_OLED_Base::DrawScreen(FlexMenuBase * pCurMenu)
 				{
 					display.drawString(right, i*fLineHeight, strRight);
 				}
+
+				if(interimCallback) interimCallback();
+
 			}
 
 
@@ -168,6 +182,8 @@ void FlexMenuDisplay_OLED_Base::DrawScreen(FlexMenuBase * pCurMenu)
 
 	}
 
+
+	if(interimCallback) interimCallback();
 
 	{
 
@@ -212,6 +228,7 @@ void FlexMenuDisplay_OLED_Base::DrawSliderScreen(FlexMenuBase * pCurMenu)
 	display.setFont(pUseFont);
 
 	yield();
+	if(interimCallback) interimCallback();
 
 	String strTitle;
 	pCurMenu->GetTitleText(strTitle);
@@ -224,6 +241,7 @@ void FlexMenuDisplay_OLED_Base::DrawSliderScreen(FlexMenuBase * pCurMenu)
 	display.drawString(params.iScreenCX/2, 0, strTitle);
 
 	yield();
+	if(interimCallback) interimCallback();
 
 	display.drawString(params.iScreenCX/2, params.iScreenCY-iFontHeight, strValue);
 
@@ -233,11 +251,13 @@ void FlexMenuDisplay_OLED_Base::DrawSliderScreen(FlexMenuBase * pCurMenu)
 
 
 	yield();
+	if(interimCallback) interimCallback();
 
 	//draw frame around the progress bar
 	display.drawRect(0,bar_y,params.iScreenCX,bar_height);
 
 	yield();
+	if(interimCallback) interimCallback();
 
 	//fill in the progress bar
 	int bar_pixels=pSlider->GetProgressBar(params.iScreenCX-4);
@@ -330,6 +350,8 @@ void FlexMenuDisplay_OLED_Base::ESCB_DrawOSK_Key(uint16_t x, uint16_t y, uint16_
 	}
 
 	yield();
+
+	if(interimCallback) interimCallback();
 
 	if(pIcon && pIcon->data)
 	{

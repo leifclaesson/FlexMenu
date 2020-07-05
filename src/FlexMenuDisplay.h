@@ -5,6 +5,9 @@
 
 class FlexMenuBase;
 
+
+typedef std::function<void(void)> fn_FlexMenuDisplayInterimCallback;
+
 class FlexMenuDisplay
 {
 public:
@@ -32,5 +35,6 @@ public:
 	// The reason for FlexMenuDisplay having access to the HistoryBuffer, as opposed to just the current menu,
 	// is FlexMenuEditScreen (the on-screen keyboard).
 
+	fn_FlexMenuDisplayInterimCallback interimCallback;
 
 };
