@@ -18,6 +18,13 @@ public:
 	virtual eFlexMenuIcon UseIcon() { return icon; };
 	eFlexMenuIcon icon;
 
+	virtual bool IsLeave() override { return bIsLeave; }
+
+	bool bIsLeave=false;
+
+
+
+
 };
 
 
@@ -67,6 +74,7 @@ public:
 	FMISelector_Item * GetCurSelectorItem();
 
 	virtual void OnPushChild() override;
+	virtual void OnPushChildLeave() override;
 
 	virtual eFlexMenuIcon UseIcon() { return eFlexMenuIcon_RightArrow; };
 
@@ -85,6 +93,13 @@ public:
 
 	virtual int16_t GetCurItem_History();
 	virtual void HistoryBuffer(uintptr_t * data);
+
+	bool GetLeaveOnSelect() { return (flags & 0x80)!=0; };
+	void SetLeaveOnSelect(bool bLeaveOnSelect) { if(bLeaveOnSelect) flags |= 0x80; else flags &=(0xFF-0x80); };
+
+	bool GetInMenu() { return (flags & 0x40)!=0; };
+	void SetInMenu(bool bInMenu) { if(bInMenu) flags |= 0x40; else flags &=(0xFF-0x40); };
+
 
 private:
 

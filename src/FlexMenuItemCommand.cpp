@@ -31,13 +31,13 @@ void FlexMenuItemCommand::OnEnter()
 	derived_use_3=0;
 }
 
-void FlexMenuItemCommand::OnLeave()
+void FlexMenuItemCommand::OnPushChildLeave()
 {
 	csprintf("FlexMenuItemCommand::OnLeave()\n");
 
 	int cur=derived_use_3>0?(derived_use_3-1):derived_use_2;
 
-	if(cur==2+GetNumSpacers() && last_nav==eFlexMenuNav_Push)
+	if(cur==2+GetNumSpacers())
 	{
 		if(cbExecuteCommand) cbExecuteCommand(this);
 	}
@@ -130,13 +130,6 @@ bool FlexMenuItemCommand::GetConfirm()
 void FlexMenuItemCommand::SetConfirm(bool bConfirm)
 {
 	if(bConfirm) flags |= 0x80; else flags &= 0x7f;
-}
-
-bool FlexMenuItemCommand::CanNavigate(eFlexMenuNav direction, uint8_t accel)
-{
-	(void)(accel);
-	last_nav=direction;
-	return true;
 }
 
 void FlexMenuItemCommand::HistoryBuffer(uintptr_t * data)

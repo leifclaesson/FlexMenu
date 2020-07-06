@@ -293,6 +293,8 @@ re_navigate:
 
 				if(pCurMenu->CanLeave() && pCurItem->IsLeave())
 				{
+					pCurItem->OnPushLeave();
+					pCurMenu->OnPushChildLeave();
 					ClearVisible();
 					DoLeave();
 					nav=eFlexMenuNav_None;

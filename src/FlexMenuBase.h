@@ -125,6 +125,9 @@ public:
 	virtual void OnPush() {};
 	virtual void OnPushChild() {};
 
+	virtual void OnPushLeave() {};
+	virtual void OnPushChildLeave() {};
+
 	virtual void OnVisibilityChange() {};
 
 	virtual bool DisplayCentered() { return false; };

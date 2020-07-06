@@ -8,7 +8,6 @@
 #include <FlexMenuSPIFFS.h>
 
 #include "FlexMenu.h"
-#include <map>
 #include <list>
 
 FS & FlexMenuGetFileSystem()
@@ -93,24 +92,27 @@ bool FlexMenuSPIFFS_Init(FlexMenuManager & flexmenu)
 
 	}
 
-
-
 }
-
 
 void FlexMenuSPIFFS_DoLoad(FlexMenuManager & flexmenu)
 {
+	_mapConfig mapConfig;
+	if(FlexMenuSPIFFS_DoRead(mapConfig))
+	{
+		FlexMenuSPIFFS_DoApply(flexmenu,mapConfig);
+	}
+
+}
+
+bool FlexMenuSPIFFS_DoRead(_mapConfig & mapConfig)
+{
 	File config_file=FLEXMENU_FILESYSTEM.open( FlexMenuGetConfigFileName(), "r");
 
-	typedef std::map<String, String> _mapConfig;
 
-	_mapConfig mapConfig;
+	int iParametersRead=0;
 
 	if(config_file)
 	{
-
-		int iParametersRead=0;
-		int iParametersUsed=0;
 
 		String strText;
 		int i=0;
@@ -131,8 +133,26 @@ void FlexMenuSPIFFS_DoLoad(FlexMenuManager & flexmenu)
 			i++;
 		} while(strText.length());
 
+		csprintf("Config file found. %i parameters read.\n",iParametersRead);
 
+		return true;
+	}
+	else
+	{
+		csprintf("No config file found.\n");
+	}
 
+	return false;
+
+}
+
+void FlexMenuSPIFFS_DoApply(FlexMenuManager & flexmenu, const _mapConfig & mapConfig)
+{
+
+	int iParametersUsed=0;
+
+	if(mapConfig.size())
+	{
 
 		flexmenu.IterateItems([&mapConfig,&iParametersUsed] (FlexMenuBase * pItem, FlexMenuManager * pManager)->bool
 		{
@@ -159,22 +179,23 @@ void FlexMenuSPIFFS_DoLoad(FlexMenuManager & flexmenu)
 			return true;
 		}, 0);
 
-		csprintf("Config file found. %i parameters read, %i used.\n",iParametersRead,iParametersUsed);
+		csprintf("%i parameters used.\n",iParametersUsed);
 
 		String strTemp;
-		strTemp+=iParametersRead; strTemp+=" params read\n";
+		strTemp+=mapConfig.size(); strTemp+=" params read\n";
 		strTemp+=iParametersUsed; strTemp+=" params used";
 
 		flexmenu.ShowMessage("Gate Controller", strTemp, eFlexMenuFont_Large, 1000);
 
+
 	}
 	else
 	{
-		csprintf("No config file found.\n");
 
 		flexmenu.ShowMessage("Gate Controller", "No config file found.", eFlexMenuFont_Large, 1000);
 
 	}
+
 
 }
 

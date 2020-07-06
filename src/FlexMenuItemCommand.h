@@ -26,9 +26,9 @@ public:
 
 	virtual bool CanEnter() { return GetConfirm(); };
 	virtual void OnEnter();
-	virtual void OnLeave();
 
 	virtual void OnPush() override;
+	virtual void OnPushChildLeave() override;
 
 	String strTitle;
 	virtual void GetTitleText(String & strTitleDestination) override;
@@ -50,9 +50,6 @@ public:
 
 	virtual bool GetConfirm();
 	virtual void SetConfirm(bool bConfirm);
-
-	virtual bool CanNavigate(eFlexMenuNav direction, uint8_t accel) override;
-	eFlexMenuNav last_nav;
 
 	virtual void HistoryBuffer(uintptr_t * data);
 

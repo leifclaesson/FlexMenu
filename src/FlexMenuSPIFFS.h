@@ -16,10 +16,15 @@
 #define FLEXMENU_FILESYSTEM LittleFS
 #endif
 
+#include <map>
+
+typedef std::map<String, String> _mapConfig;
 
 class FlexMenuManager;
 
 bool FlexMenuSPIFFS_Init(FlexMenuManager & flexmenu);
+bool FlexMenuSPIFFS_DoRead(_mapConfig & _mapConfig);
+void FlexMenuSPIFFS_DoApply(FlexMenuManager & flexmenu, const _mapConfig & _mapConfig);
 void FlexMenuSPIFFS_DoLoad(FlexMenuManager & flexmenu);
 void FlexMenuSPIFFS_DoSave(FlexMenuManager & flexmenu);
 
