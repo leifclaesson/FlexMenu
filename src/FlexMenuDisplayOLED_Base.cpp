@@ -428,7 +428,7 @@ void FlexMenuDisplay_OLED_Base::DrawMessage(FlexMenuBase * pCurMenu)
 	int length1=display.getStringWidth(strTemp1);
 	int length2=display.getStringWidth(strTemp2);
 
-	csprintf("screenCX is %i\n",params.iScreenCX);
+	//csprintf("screenCX is %i\n",params.iScreenCX);
 
 	int line2_y=0;
 

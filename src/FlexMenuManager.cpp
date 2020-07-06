@@ -522,7 +522,7 @@ void FlexMenuManager::CancelMessage()
 
 void FlexMenuManager::ShowMessage(const String & strTitle, const String & strValue, eFlexMenuFont font, uint32_t milliseconds)
 {
-	csprintf("PE %i\n",bPermanentErrorMessage);
+	//csprintf("PE %i\n",bPermanentErrorMessage);
 	if(bPermanentErrorMessage) return;
 
 	if(strTitle.length() || strValue.length())
