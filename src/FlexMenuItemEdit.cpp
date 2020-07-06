@@ -15,7 +15,7 @@
 
 FlexMenuItemEdit::FlexMenuItemEdit() {
 	// TODO Auto-generated constructor stub
-	SetIsSaveable(true);
+	SetSaveable(true);
 }
 
 FlexMenuItemEdit::~FlexMenuItemEdit() {

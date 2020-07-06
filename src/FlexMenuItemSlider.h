@@ -51,7 +51,8 @@ public:
 	virtual void OnValueChanging() {}
 	virtual void OnValueChanged() {}
 
-	virtual bool IsSaveable() override { return true; }
+	void SetSaveable(bool bSaveable) { if(bSaveable) flags |= 0x40; else flags &=(0xFF-0x40); }
+	bool IsSaveable() override { return (flags & 0x40)!=0; }
 	virtual void GetSaveString(String & strSave) override;
 	virtual bool LoadString(const String & strLoad) override;
 

@@ -7,6 +7,7 @@
 
 FlexMenuItemSlider::FlexMenuItemSlider()
 {
+	SetSaveable(true);
 }
 
 

@@ -6,6 +6,7 @@
 
 FlexMenuItemToggle::FlexMenuItemToggle()
 {
+	SetSaveable(true);
 }
 
 

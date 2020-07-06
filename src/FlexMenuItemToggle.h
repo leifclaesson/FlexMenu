@@ -23,7 +23,9 @@ public:
 
 	virtual void OnValueChanged() {};
 
-	virtual bool IsSaveable() override { return true; }
+	void SetSaveable(bool bSaveable) { if(bSaveable) flags |= 0x80; else flags &=(0xFF-0x80); }
+	bool IsSaveable() override { return (flags & 0x80)!=0; }
+
 	virtual void GetSaveString(String & strSave) override;
 	virtual bool LoadString(const String & strLoad) override;
 

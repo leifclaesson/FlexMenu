@@ -36,7 +36,7 @@ public:
 	void SetIsPassword(bool bPassword) { if(bPassword) flags |= 0x40; else flags &=(0xFF-0x40); }
 	bool IsPassword() { return (flags & 0x40)!=0; }
 
-	void SetIsSaveable(bool bSaveable) { if(bSaveable) flags |= 0x80; else flags &=(0xFF-0x80); }
+	void SetSaveable(bool bSaveable) { if(bSaveable) flags |= 0x80; else flags &=(0xFF-0x80); }
 	bool IsSaveable() override { return (flags & 0x80)!=0; }
 	virtual void GetSaveString(String & strSave) override { strSave=strEdit; }
 	virtual bool LoadString(const String & strLoad) override { strEdit=strLoad; OnValueChanged(); return true; };
