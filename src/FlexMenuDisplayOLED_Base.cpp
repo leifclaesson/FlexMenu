@@ -155,7 +155,7 @@ void FlexMenuDisplay_OLED_Base::DrawScreen(FlexMenuBase * pCurMenu)
 				int icon_width=iIconCX;
 				if(icon==eFlexMenuIcon_None) icon_width=0;
 
-				int chars=getCharsForWidth(pFont,strRight.c_str(),strRight.length(),params.iScreenCX-(widthLeft+icon_width));
+				int chars=getCharsForWidth(pFont,strRight.c_str(),strRight.length(),params.iScreenCX-(widthLeft+icon_width-1));
 
 				//csprintf("chars=%i scx=%i widthLeft=%i widthDots=%i iconCX=%i\n",chars,params.iScreenCX,widthLeft,widthDots,iIconCX);
 
@@ -201,6 +201,36 @@ void FlexMenuDisplay_OLED_Base::DrawScreen(FlexMenuBase * pCurMenu)
 
 
 }
+
+const uint8_t * FlexMenuDisplay_OLED_Base::GetFont(eFlexMenuFont font)
+{
+
+	switch(font)
+	{
+	default:
+		return pFont;
+	case eFlexMenuFont_Large:
+		return pFontSlider;
+	}
+}
+
+int FlexMenuDisplay_OLED_Base::GetStringWidth(const String & strInput, eFlexMenuFont font)
+{
+	OLEDDisplay & display=*params.pOLEDDisplay;
+	display.setFont(GetFont(font));
+	return display.getStringWidth(strInput);
+}
+
+int FlexMenuDisplay_OLED_Base::GetCharsForWidth(const String & strInput, int width_pixels, eFlexMenuFont font)
+{
+	return getCharsForWidth(GetFont(font),strInput.c_str(),strInput.length(),width_pixels);
+}
+
+int FlexMenuDisplay_OLED_Base::GetWidth()
+{
+	return params.iScreenCX;
+}
+
 
 void FlexMenuDisplay_OLED_Base::DrawSliderScreen(FlexMenuBase * pCurMenu)
 {
@@ -375,16 +405,7 @@ void FlexMenuDisplay_OLED_Base::DrawMessage(FlexMenuBase * pCurMenu)
 	OLEDDisplay & display=*params.pOLEDDisplay;
 
 
-	eFlexMenuFont font=pCurMenu->GetFont();
-
-
-
-	const uint8_t * pUseFont=pFont;
-
-	if(font==eFlexMenuFont_Large)
-	{
-		pUseFont=pFontSlider;
-	}
+	const uint8_t * pUseFont=GetFont(pCurMenu->GetFont());
 
 	display.setFont(pUseFont);
 

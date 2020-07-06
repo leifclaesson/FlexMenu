@@ -35,6 +35,11 @@ public:
 	// The reason for FlexMenuDisplay having access to the HistoryBuffer, as opposed to just the current menu,
 	// is FlexMenuEditScreen (the on-screen keyboard).
 
+	virtual int GetStringWidth(const String & strInput, eFlexMenuFont font=eFlexMenuFont_Normal)=0;
+	virtual int GetCharsForWidth(const String & strInput, int width_pixels, eFlexMenuFont font=eFlexMenuFont_Normal)=0;
+
+	virtual int GetWidth()=0;
+
 	fn_FlexMenuDisplayInterimCallback interimCallback;
 
 };

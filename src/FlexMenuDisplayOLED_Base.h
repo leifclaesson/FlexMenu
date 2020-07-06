@@ -80,12 +80,19 @@ protected:
 
 	virtual bool DisplayNeedsRefresh(FlexMenuBase * pCurMenu) override;
 
+	virtual int GetStringWidth(const String & strInput, eFlexMenuFont font=eFlexMenuFont_Normal) override;
+	virtual int GetCharsForWidth(const String & strInput, int width_pixels, eFlexMenuFont font=eFlexMenuFont_Normal) override;
+
+	virtual int GetWidth() override;
+
+
 	int iVisibleItems=0;
 
 	virtual void DrawMessage(FlexMenuBase * pCurMenu);
 
 	virtual void Output() override;
 
+	const uint8_t * GetFont(eFlexMenuFont font);
 
 };
 

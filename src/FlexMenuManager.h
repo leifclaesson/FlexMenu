@@ -48,6 +48,8 @@ public:
 
 	void AddDataItem(FlexMenuBase * pDataItem) { data_items.vecDataItems.push_back(pDataItem); }
 
+	FlexMenuDisplay * GetDisplay() { return pDisplay; }
+
 private:
 
 	FlexMenuDataItems data_items;
@@ -88,6 +90,8 @@ private:
 	uint32_t timestampRepeat=0;
 
 
+	uint32_t timestampLoop=0;
+
 	bool bSkipFirstIgnoreInput=true;
 
 
@@ -106,6 +110,8 @@ private:
 
 	void HandleHistoryBuffer();
 	void ClearHistoryBuffer();
+
+	bool bNavigated=false;
 
 };
 

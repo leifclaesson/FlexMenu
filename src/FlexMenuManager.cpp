@@ -65,6 +65,10 @@ bool FlexMenuManager::Loop(bool bForceRefresh)
 {
 	InitialEnterMenu();
 
+	if(!bNavigated && millis()-timestampLoop<10) return false;
+	timestampLoop=millis();
+	bNavigated=false;
+
 	HandleHistoryBuffer();
 
 	bool bNeedsRefresh=false;
@@ -95,8 +99,6 @@ bool FlexMenuManager::Loop(bool bForceRefresh)
 	}
 
 
-	if(pDisplay->DisplayNeedsRefresh(pCurMenu)) bNeedsRefresh=true;
-
 
 	HandleRepeat();
 
@@ -119,8 +121,22 @@ bool FlexMenuManager::Loop(bool bForceRefresh)
 	}
 	vecUpdateStatus.clear();
 
-	if(bWeNeedRefresh || bNeedsRefresh || bForceRefresh || pLastMenu!=pCurMenu || iLastItem!=pCurMenu->GetCurItem() || iLastScrollPos!=pCurMenu->GetScrollPos() || pCurMenu->GetNeedsRefresh())
+
+	if(bWeNeedRefresh || pDisplay->DisplayNeedsRefresh(pCurMenu) || bNeedsRefresh || bForceRefresh || pLastMenu!=pCurMenu || iLastItem!=pCurMenu->GetCurItem() || iLastScrollPos!=pCurMenu->GetScrollPos() || pCurMenu->GetNeedsRefresh())
 	{
+
+		/*
+		if(bWeNeedRefresh) csprintf("W");
+		if(bNeedsRefresh) csprintf("N");
+		if(bForceRefresh ) csprintf("F");
+		if( pLastMenu!=pCurMenu) csprintf("M");
+		if(iLastItem!=pCurMenu->GetCurItem()) csprintf("I");
+		if( iLastScrollPos!=pCurMenu->GetScrollPos()) csprintf("S");
+		if(pCurMenu->GetNeedsRefresh()) csprintf("R");
+		if(pDisplay->DisplayNeedsRefresh(pCurMenu)) csprintf("D");
+		csprintf(".");
+		*/
+
 		bWeNeedRefresh=false;
 		pCurMenu->SetNeedsRefresh(false);
 		pLastMenu=pCurMenu;
@@ -153,6 +169,8 @@ void FlexMenuManager::Navigate(eFlexMenuNav nav)
 	InitialEnterMenu();
 
 	if(bPermanentErrorMessage) return;
+
+	bNavigated=true;
 
 	if(nav==eFlexMenuNav_Release)	//handle this first, so we never ignore release and keep repeating!
 	{
