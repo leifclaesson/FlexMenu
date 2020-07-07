@@ -7,80 +7,64 @@
 static FMISelector_DummySubItem dummy;
 
 
-FlexMenuItemSelector::FlexMenuItemSelector()
+FlexMenuItemSelectorBase::FlexMenuItemSelectorBase()
 {
 }
 
 
-FlexMenuItemSelector::~FlexMenuItemSelector()
+FlexMenuItemSelectorBase::~FlexMenuItemSelectorBase()
 {
 }
 
-void FlexMenuItemSelector::OnEnter()
+void FlexMenuItemSelectorBase::OnEnter()
 {
 	SetInMenu(true);
 	UpdateStatus();
 	iCurItem=iCurSel+1;
 }
 
-void FlexMenuItemSelector::OnLeave()
+void FlexMenuItemSelectorBase::OnLeave()
 {
 	SetInMenu(false);
 }
 
-int16_t FlexMenuItemSelector::GetNumSubItems()
+int16_t FlexMenuItemSelectorBase::GetNumSubItems()
 {
-	return vecItems.size()+(GetLeaveOnSelect()?1:2);
+	return SelectorItem_GetCount()+(GetLeaveOnSelect()?1:2);
 }
 
-FlexMenuBase * FlexMenuItemSelector::GetSubItem(int16_t idx)
+FlexMenuBase * FlexMenuItemSelectorBase::GetSubItem(int16_t idx)
 {
-	if(idx==0 || idx>(int) vecItems.size()) return GetLeaveItem();
+	if(idx==0 || idx>(int) SelectorItem_GetCount()) return GetLeaveItem();
 
 	idx--;
 
 	dummy.icon=idx==iCurSel?eFlexMenuIcon_Selection:eFlexMenuIcon_Blank;
-	dummy.pReturnTitle=&vecItems[idx]->strText;
+	dummy.pReturnTitle=SelectorItem_GetText(idx);
 	dummy.bIsLeave=GetLeaveOnSelect();
 	
 	return &dummy;
 }
 
-void FlexMenuItemSelector::GetTitleText(String & strTitleDestination)
+void FlexMenuItemSelectorBase::GetTitleText(String & strTitleDestination)
 {
-	strTitleDestination=strText;
+	strTitleDestination=strTitle;
 
 }
 
-FMISelector_Item * FlexMenuItemSelector::GetCurSelectorItem()
+void FlexMenuItemSelectorBase::GetValueText(String & strValueDestination)
 {
-	if(iCurSel>=0 && iCurSel<(int) vecItems.size())
+	if(iCurSel>=0 && iCurSel<SelectorItem_GetCount())
 	{
-		return vecItems[iCurSel];
-	}
-	else
-	{
-		return 0;
-	}
-}
-
-
-void FlexMenuItemSelector::GetValueText(String & strValueDestination)
-{
-	FMISelector_Item * pItem=GetCurSelectorItem();
-
-	if(pItem)
-	{
-		strValueDestination=pItem->strText;
+		strValueDestination=SelectorItem_GetText(iCurSel);
 	}
 	else
 	{
 		strValueDestination="INVALID";
 	}
-
 }
 
-void FlexMenuItemSelector::OnPushChild()
+void FlexMenuItemSelectorBase::OnPushChild()
 {
 	if(iCurSel!=GetCurItem()-1)
 	{
@@ -91,38 +75,38 @@ void FlexMenuItemSelector::OnPushChild()
 	}
 }
 
-void FlexMenuItemSelector::OnPushChildLeave()
+void FlexMenuItemSelectorBase::OnPushChildLeave()
 {
 	if(GetCurItem()>0 && GetLeaveOnSelect())
 	{
-		csprintf("FlexMenuItemSelector::OnPushChildLeave()\n");
+		csprintf("FlexMenuItemSelectorBase::OnPushChildLeave()\n");
 		OnPushChild();
 	}
 }
 
-int16_t FlexMenuItemSelector::GetScrollPos()
+int16_t FlexMenuItemSelectorBase::GetScrollPos()
 {
 	return iScrollPos;
 }
 
-void FlexMenuItemSelector::SetScrollPos(int16_t iNewScrollPos)
+void FlexMenuItemSelectorBase::SetScrollPos(int16_t iNewScrollPos)
 {
 	iScrollPos=iNewScrollPos;
 }
 
-void FlexMenuItemSelector::SetCurItem(int16_t iNewCurItem)
+void FlexMenuItemSelectorBase::SetCurItem(int16_t iNewCurItem)
 {
 	iCurItem=iNewCurItem;
 }
 
-bool FlexMenuItemSelector::IsActive()
+bool FlexMenuItemSelectorBase::IsActive()
 {
 	return GetInMenu() /*in_menu*/ || GetVisible();
 }
 
 
 
-void FlexMenuItemSelector::GetSaveString(String & strSave)
+void FlexMenuItemSelectorBase::GetSaveString(String & strSave)
 {
 	switch(GetMode())
 	{
@@ -136,22 +120,22 @@ void FlexMenuItemSelector::GetSaveString(String & strSave)
 		strSave=iCurSel;
 		break;
 	case eFMISelector_Mode_SaveID:
-		FMISelector_Item * pItem=GetCurSelectorItem();
 
-		if(pItem)
+		if(iCurSel>=0 && iCurSel<(int) SelectorItem_GetCount())
 		{
-			strSave=pItem->id;
+			strSave=SelectorItem_GetID(iCurSel);
 		}
 		else
 		{
 			strSave="INVALID";
 		}
+
 		break;
 	}
 
 }
 
-bool FlexMenuItemSelector::LoadString(const String & strLoad)
+bool FlexMenuItemSelectorBase::LoadString(const String & strLoad)
 {
 	bool bRet=false;
 	switch(GetMode())
@@ -160,9 +144,9 @@ bool FlexMenuItemSelector::LoadString(const String & strLoad)
 		break;
 	case eFMISelector_Mode_SaveText:
 		iCurSel=-1;
-		for(int i=0;i<(int) vecItems.size();i++)
+		for(int i=0;i<(int) SelectorItem_GetCount();i++)
 		{
-			if(vecItems[i]->strText==strLoad)
+			if(!strcmp(SelectorItem_GetText(i),strLoad.c_str()))
 			{
 				iCurSel=i;
 				bRet=true;
@@ -172,7 +156,7 @@ bool FlexMenuItemSelector::LoadString(const String & strLoad)
 		break;
 	case eFMISelector_Mode_SaveIndex:
 		iCurSel=strLoad.toInt();
-		if(iCurSel>=0 && iCurSel<(int) vecItems.size())
+		if(iCurSel>=0 && iCurSel<(int) SelectorItem_GetCount())
 		{
 			bRet=true;
 		}
@@ -182,9 +166,9 @@ bool FlexMenuItemSelector::LoadString(const String & strLoad)
 
 		int load_id=strLoad.toInt();
 
-		for(int i=0;i<(int) vecItems.size();i++)
+		for(int i=0;i<(int) SelectorItem_GetCount();i++)
 		{
-			if(vecItems[i]->id==load_id)
+			if(SelectorItem_GetID(i)==load_id)
 			{
 				iCurSel=i;
 				bRet=true;
@@ -198,21 +182,36 @@ bool FlexMenuItemSelector::LoadString(const String & strLoad)
 }
 
 
-int16_t FlexMenuItemSelector::GetCurItem()
+int16_t FlexMenuItemSelectorBase::GetCurItem()
 {
 	return iCurItem;
 }
 
-int16_t FlexMenuItemSelector::GetCurItem_History()
+int16_t FlexMenuItemSelectorBase::GetCurItem_History()
 {
 	if(iCurItem_History>=0) return iCurItem_History; else return iCurItem;
 }
 
-void FlexMenuItemSelector::HistoryBuffer(uintptr_t * data)
+void FlexMenuItemSelectorBase::HistoryBuffer(uintptr_t * data)
 {
 	iCurItem_History=(int16_t) *data;
 	*data=iCurItem;
 }
+
+
+FMISelector_Item * FlexMenuItemSelector::GetCurSelectorItem()
+{
+
+	if(iCurSel>=0 && iCurSel<(int) vecItems.size())
+	{
+		return vecItems[iCurSel];
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 
 
 

@@ -446,6 +446,7 @@ void FlexMenuDisplay_OLED_Base::DrawMessage(FlexMenuBase * pCurMenu)
 		line2_y=params.iScreenCY>>1;
 	}
 
+	csprintf("l1=%i  l2=%i  y=%i\n",length1,length2,line2_y);
 
 	yield();
 
@@ -456,7 +457,8 @@ void FlexMenuDisplay_OLED_Base::DrawMessage(FlexMenuBase * pCurMenu)
 	}
 	else
 	{
-		display.drawStringMaxWidth(params.iScreenCX>>1 /*middle*/, line2_y, params.iScreenCX, strTemp2);
+		display.setTextAlignment(TEXT_ALIGN_CENTER);
+		display.drawStringMaxWidth(params.iScreenCX>>1 /*middle*/, iLineHeight+(iLineHeight>>1), params.iScreenCX-1, strTemp2);
 	}
 
 

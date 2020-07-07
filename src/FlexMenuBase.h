@@ -91,7 +91,10 @@ public:
 	virtual FlexMenuBase * GetSubItem(int16_t idx) { (void)(idx); return 0; }
 
 	virtual int16_t GetScrollPos() { return 0; }
+	virtual void SetScrollPos( int16_t iNewScrollPos ) { (void)(iNewScrollPos); }
+
 	virtual int16_t GetCurItem() { return 0; }
+	virtual void SetCurItem( int16_t iNewCurItem ) { (void)(iNewCurItem); }
 
 	virtual int16_t GetCurItem_History() { return GetCurItem(); }	//used by FlexMenuManager to enter menus. History buffer is to prevent accidental nudging as you push the knob.
 
@@ -113,9 +116,6 @@ public:
 		return 0;
 	}
 
-	virtual void SetScrollPos( int16_t iNewScrollPos ) { (void)(iNewScrollPos); }
-
-	virtual void SetCurItem( int16_t iNewCurItem ) { (void)(iNewCurItem); }
 
 	virtual void GetTitleText(String & strTitleDestination)=0;
 	virtual void GetValueText(String & strValueDestination) { strValueDestination=""; }
@@ -127,6 +127,8 @@ public:
 
 	virtual void OnPushLeave() {};
 	virtual void OnPushChildLeave() {};
+
+	virtual void OnEnterChild() {};
 
 	virtual void OnVisibilityChange() {};
 

@@ -9,11 +9,11 @@ class FMISelector_DummySubItem : public FlexMenuBase
 {
 public:
 
-	String * pReturnTitle=NULL;
-	String * pReturnValue=NULL;
+	const char * pReturnTitle=NULL;
+	const char * pReturnValue=NULL;
 
-	virtual void GetTitleText(String & strTitleDestination) override { strTitleDestination=*pReturnTitle; };
-	//virtual void GetValueText(String & strValueDestination) override { strValueDestination=*pReturnValue; };
+	virtual void GetTitleText(String & strTitleDestination) override { strTitleDestination=pReturnTitle; };
+	//virtual void GetValueText(String & strValueDestination) override { strValueDestination=pReturnValue; };
 
 	virtual eFlexMenuIcon UseIcon() { return icon; };
 	eFlexMenuIcon icon;
@@ -46,12 +46,12 @@ enum eFMISelector_Mode
 	eFMISelector_Mode_SaveID,
 };
 
-class FlexMenuItemSelector :
+class FlexMenuItemSelectorBase :
 	public FlexMenuBase
 {
 public:
-	FlexMenuItemSelector();
-	~FlexMenuItemSelector();
+	FlexMenuItemSelectorBase();
+	~FlexMenuItemSelectorBase();
 
 	virtual bool CanEnter() { return true; };
 
@@ -63,21 +63,16 @@ public:
 
 	virtual void OnValueChanged() {};
 
-	std::vector <FMISelector_Item *> vecItems;
-
-	String strText;
+	String strTitle;
 
 	// Inherited via FlexMenuBase
 	virtual void GetTitleText(String & strTitleDestination) override;
 	virtual void GetValueText(String & strValueDestination) override;
 
-	FMISelector_Item * GetCurSelectorItem();
-
 	virtual void OnPushChild() override;
 	virtual void OnPushChildLeave() override;
 
 	virtual eFlexMenuIcon UseIcon() { return eFlexMenuIcon_RightArrow; };
-
 
 	virtual int16_t GetScrollPos() override;
 	virtual int16_t GetCurItem() override;
@@ -100,6 +95,9 @@ public:
 	bool GetInMenu() { return (flags & 0x40)!=0; };
 	void SetInMenu(bool bInMenu) { if(bInMenu) flags |= 0x40; else flags &=(0xFF-0x40); };
 
+	virtual int16_t SelectorItem_GetCount()=0;
+	virtual const char * SelectorItem_GetText(int16_t idx)=0;
+	virtual int16_t SelectorItem_GetID(int16_t idx)=0;
 
 private:
 
@@ -111,10 +109,28 @@ public:
 	int16_t iCurSel=0;
 	void SetMode(eFMISelector_Mode mode) { derived_use_2=mode; }
 	eFMISelector_Mode GetMode() { return (eFMISelector_Mode) derived_use_2; };
+};
 
 
+
+class FlexMenuItemSelector :
+	public FlexMenuItemSelectorBase
+{
+public:
+
+	virtual int16_t SelectorItem_GetCount() override { return (int16_t) vecItems.size(); }
+	virtual const char * SelectorItem_GetText(int16_t idx) override { return vecItems[idx]->strText.c_str(); }
+	virtual int16_t SelectorItem_GetID(int16_t idx) override { return vecItems[idx]->id; }
+
+	FMISelector_Item * GetCurSelectorItem();
+
+
+	std::vector <FMISelector_Item *> vecItems;
 
 };
+
+
+
 
 class FlexMenuItemSelectorCB;
 typedef std::function<void(FlexMenuItemSelectorCB *)> fn_FlexMenuItemSelectorCB;

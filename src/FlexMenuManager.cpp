@@ -244,7 +244,10 @@ re_navigate:
 		if(nav==eFlexMenuNav_Push && bLeave)
 		{
 			ClearVisible();
-			DoLeave();
+			if(pCurMenu->CanLeave())
+			{
+				DoLeave();
+			}
 			nav=eFlexMenuNav_None;
 			goto re_navigate;
 		}
@@ -303,6 +306,7 @@ re_navigate:
 				else if(pCurItem->CanEnter())
 				{
 					ClearVisible();
+					pCurMenu->OnEnterChild();
 					menustack_count++;
 					menustack.push_front(pCurMenu);
 					pCurMenu=pCurItem;
@@ -411,7 +415,7 @@ void FlexMenuManager::HandleRepeat()
 
 void FlexMenuManager::DoLeave()
 {
-	if(pCurMenu->CanLeave() && menustack_count>0 )
+	if(menustack_count>0 )
 	{
 
 		pCurMenu->OnLeave();
