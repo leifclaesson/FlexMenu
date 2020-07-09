@@ -106,6 +106,8 @@ void FlexMenuSPIFFS_DoLoad(FlexMenuManager & flexmenu)
 
 bool FlexMenuSPIFFS_DoRead(_mapConfig & mapConfig)
 {
+	csprintf("Opening %s\n",FlexMenuGetConfigFileName());
+
 	File config_file=FLEXMENU_FILESYSTEM.open( FlexMenuGetConfigFileName(), "r");
 
 
@@ -114,11 +116,56 @@ bool FlexMenuSPIFFS_DoRead(_mapConfig & mapConfig)
 	if(config_file)
 	{
 
+
+		csprintf("File opened.\n");
+
+		String strFile;
+
+
+		int size=config_file.size();
+
+		if(size>8192)
+		{
+			csprintf("File too big. Reset to default instead.\n");
+			return false;
+		}
+
+
+		{
+		    String & ret=strFile;
+		    ret.reserve(config_file.size() - config_file.position());
+		    char temp[256+1];
+		    int countRead = config_file.readBytes(temp, sizeof(temp)-1);
+		    while (countRead > 0)
+		    {
+		        temp[countRead] = 0;
+		        ret += temp;
+		        countRead = config_file.readBytes(temp, sizeof(temp)-1);
+		    }
+		}
+
+
+//		config_file.read((uint8_t *) strFile.begin(), size);
+
+//		strFile=config_file.readString();
+		csprintf("Read string. %i chars\n",strFile.length());
+
+
+
+
 		String strText;
 		int i=0;
+		int read_ofs=0;
 		do
 		{
-			strText=config_file.readStringUntil('\n');
+//			strText=config_file.readStringUntil('\n');
+
+			int newline=strFile.indexOf('\n',read_ofs);
+			strText=strFile.substring(read_ofs, newline);
+			read_ofs=newline+1;
+
+
+
 			int equ=strText.indexOf('=');
 
 			if(equ>0)
