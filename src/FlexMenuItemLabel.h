@@ -23,6 +23,9 @@ public:
 	bool GetDisplayCentered() { return (flags & 0x80)!=0; };
 	void SetDisplayCentered(bool bDisplayCentered) { if(bDisplayCentered) flags |= 0x80; else flags &=(0xFF-0x80); };
 
+	bool AllowLand() override { return (flags & 0x40)==0; };
+	void SetAllowLand(bool bAllowLand) { if(!bAllowLand) flags |= 0x40; else flags &=(0xFF-0x40); };
+
 	virtual bool DisplayCentered() { return GetDisplayCentered(); };
 
 };
