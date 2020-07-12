@@ -77,6 +77,62 @@ enum eFMISliderCallback
 
 typedef std::function<int(FlexMenuItemSliderCB *, eFMISliderCallback, String *)> fn_FlexMenuItemSliderCB;
 
+/*
+ * Example LAMBDA (simple):
+ * 		p->fnCallback=[this](FlexMenuItemSliderCB * pSource, eFMISliderCallback code, String * pText) -> int
+		{
+			(void)(pText);
+			if(code==eFMISliderCallback_ValueChanged)
+			{
+				Serial.printf("Slider %s changed to %i\n",pSource->strTitle.c_str(),pSource->value);
+			}
+			return 0;
+		};
+ *
+ *
+ *
+ */
+
+
+/*
+ * Example LAMBDA with display text override
+ *
+ * 		p->fnCallback=[this](FlexMenuItemSliderCB * pSource, eFMISliderCallback code, String * pText) -> int
+		{
+			(void)(pText);
+			switch(code)
+			{
+			default:
+				break;
+			case eFMISliderCallback_ValueChanged:	//happens when the knob is pushed after adjustment
+			{
+				Serial.printf("Slider \"%s\" changed to %i\n",pSource->strTitle.c_str(),pSource->value);
+				break;
+			}
+			case eFMISliderCallback_ValueChanging:	//happens for every value change as the knob is turned
+			{
+				break;
+			}
+			case eFMISliderCallback_DisplayValue:	//Use to override the displayed text, in this case to present a decimal value
+			{
+				//single decimal.
+				(*pText)=String(pSource->value/10);
+				(*pText)+='.';
+				(*pText)+=String(pSource->value%10);
+
+				//alternative solution using floating point
+				//char temp[16];
+				//sprintf(temp,"%.01f",pSource->value*0.1);
+
+				break;
+			}
+			}
+
+			return 0;
+		};
+ *
+ *
+ */
 
 class FlexMenuItemSliderCB : public FlexMenuItemSlider
 {

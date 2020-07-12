@@ -26,6 +26,8 @@ public:
 
 	virtual void Output()=0;
 
+	virtual void SetBacklight(uint8_t brightness, bool bMute)=0;
+
 	virtual bool HistoryBuffer(FlexMenuBase * pCurMenu, uintptr_t * data) { (void)(pCurMenu); (void)(data); return false; };
 	// The HistoryBuffer is used to prevent accidentally selecting an unintended value as the user pushes the rotary encoder.
 	// HistoryBuffer() is called by FlexMenuManager at regular intervals, pointing to a value in the circular buffer.

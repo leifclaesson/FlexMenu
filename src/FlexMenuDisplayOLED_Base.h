@@ -85,6 +85,7 @@ protected:
 
 	virtual int GetWidth() override;
 
+	virtual void SetBacklight(uint8_t brightness, bool bMute) override;
 
 	int iVisibleItems=0;
 
@@ -93,6 +94,8 @@ protected:
 	virtual void Output() override;
 
 	const uint8_t * GetFont(eFlexMenuFont font);
+
+	bool bDisplayMute=false;
 
 };
 

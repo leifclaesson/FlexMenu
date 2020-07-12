@@ -17,8 +17,13 @@
 #endif
 
 #include <map>
+#include <functional>
 
 typedef std::map<String, String> _mapConfig;
+
+
+typedef std::function<void(void)> fn_FlexMenuSPIFFSInterimCallback;
+
 
 class FlexMenuManager;
 

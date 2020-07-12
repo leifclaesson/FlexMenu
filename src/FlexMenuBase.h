@@ -142,7 +142,7 @@ public:
 	virtual void HistoryBuffer(uintptr_t * data) {(void)(data);};
 	virtual bool AllowRewriteHistory() { return true; }
 
-	bool GetNeedsRefresh();
+	virtual bool GetNeedsRefresh();
 	void SetNeedsRefresh(bool bSet);
 
 	bool GetVisible();

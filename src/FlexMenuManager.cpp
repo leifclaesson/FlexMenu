@@ -1,5 +1,6 @@
 // * Copyright 2020 Leif Claesson. Licenced under the GNU GPL Version 3.
 
+#include <LeifESPBase.h>
 #include <FlexMenuGlobalItems.h>
 #include "stdafx.h"
 #include "FlexMenuManager.h"
@@ -109,6 +110,12 @@ bool FlexMenuManager::Loop(bool bForceRefresh)
 			int iCurItem=i+pCurMenu->GetScrollPos();
 			FlexMenuBase * pItem=pCurMenu->GetSubItem(iCurItem);
 			bNeedsRefresh |= pItem->GetNeedsRefresh();
+			if(pItem->GetNeedsRefresh())
+			{
+				String strTitle;
+				pItem->GetTitleText(strTitle);
+				//csprintf("%s needs refresh\n",strTitle.c_str());
+			}
 			pItem->SetNeedsRefresh(false);
 			pItem->SetVisible(true);
 			vecUpdateStatus.push_back(pItem);
@@ -121,11 +128,14 @@ bool FlexMenuManager::Loop(bool bForceRefresh)
 	}
 	vecUpdateStatus.clear();
 
+	bWeNeedRefresh |= HandleBacklight();
+
+
 
 	if(bWeNeedRefresh || pDisplay->DisplayNeedsRefresh(pCurMenu) || bNeedsRefresh || bForceRefresh || pLastMenu!=pCurMenu || iLastItem!=pCurMenu->GetCurItem() || iLastScrollPos!=pCurMenu->GetScrollPos() || pCurMenu->GetNeedsRefresh())
 	{
 
-		/*
+/*
 		if(bWeNeedRefresh) csprintf("W");
 		if(bNeedsRefresh) csprintf("N");
 		if(bForceRefresh ) csprintf("F");
@@ -135,7 +145,8 @@ bool FlexMenuManager::Loop(bool bForceRefresh)
 		if(pCurMenu->GetNeedsRefresh()) csprintf("R");
 		if(pDisplay->DisplayNeedsRefresh(pCurMenu)) csprintf("D");
 		csprintf(".");
-		*/
+*/
+
 
 		bWeNeedRefresh=false;
 		pCurMenu->SetNeedsRefresh(false);
@@ -190,6 +201,13 @@ void FlexMenuManager::Navigate(eFlexMenuNav nav)
 	if(nav!=eFlexMenuNav_None)
 	{
 		run_history=0;	//wake up the history buffer
+		lastNavigateTimestamp=millis();
+	}
+
+
+	if(millis()-lastNavigateTimestamp>0x40000000)
+	{
+		lastNavigateTimestamp=millis()-0x40000000;	//drag the timestamp along so it the difference never wraps around
 	}
 
 
@@ -291,7 +309,9 @@ re_navigate:
 
 				if(pCurMenu->AllowRewriteHistory() && pCurMenu->GetCurItem_History()!=pCurMenu->GetCurItem())
 				{
+					csprintf("rewrite history! cur_item was %i, will be %i\n",cur_item,pCurMenu->GetCurItem_History());
 					cur_item=pCurMenu->GetCurItem_History();	//go back to the intended (historic) item!
+					pCurMenu->SetCurItem(cur_item);	//apply now in case we're leaving
 				}
 
 				if(pCurMenu->CanLeave() && pCurItem->IsLeave())
@@ -622,4 +642,56 @@ void FlexMenuManager::HandleHistoryBuffer()
 void FlexMenuManager::ClearHistoryBuffer()
 {
 	pCurMenu->ClearHistoryBuffer(vpHistoryBuffer, sizeof(vpHistoryBuffer)/sizeof(vpHistoryBuffer[0]));
+}
+
+bool FlexMenuManager::HandleBacklight()
+{
+
+	bool bRet=false;
+
+	static bool bLastBlankDisplay=false;
+	bool bBlankDisplay=false;
+
+	int32_t age=(int) (millis()-lastNavigateTimestamp);
+
+	int subtract=(age - 60000) / 200;
+	bBlankDisplay=age>(1000*60*60*4);
+
+//	uncomment for fast backlight timeout (development)
+//	subtract=(age - 5000) / 20;
+//	bBlankDisplay=age>20000;
+
+	if(subtract<0) subtract=0;
+	if(subtract>254) subtract=254;
+
+	uint16_t brightness[1]={(uint8_t) (255-subtract)};
+	uint16_t filtered[1];
+
+	filterBacklight.run(brightness, filtered);
+
+	static uint16_t last_filtered=0;
+
+
+	bool bDoCallback=false;
+
+	if(last_filtered!=filtered[0])
+	{
+		last_filtered=filtered[0];
+		bDoCallback=true;
+	}
+
+	if(bLastBlankDisplay!=bBlankDisplay)
+	{
+		bLastBlankDisplay=bBlankDisplay;
+		bRet=true;
+		bDoCallback=true;
+	}
+
+	if(bDoCallback)
+	{
+		pDisplay->SetBacklight(last_filtered, bLastBlankDisplay);
+	}
+
+	return bRet;
+
 }

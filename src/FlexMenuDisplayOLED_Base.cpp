@@ -61,6 +61,12 @@ void FlexMenuDisplay_OLED_Base::DrawScreen(FlexMenuBase * pCurMenu)
 	display.clear();
 	display.setFont(pFont);
 
+	if(bDisplayMute)
+	{
+		return;
+	}
+
+
 	int iWidthDots=display.getStringWidth("..");
 
 
@@ -483,4 +489,11 @@ void FlexMenuDisplay_OLED_Base::Output()
 }
 
 
+void FlexMenuDisplay_OLED_Base::SetBacklight(uint8_t brightness, bool bMute)
+{
+	OLEDDisplay & display=*params.pOLEDDisplay;
+	bDisplayMute=bMute;
+
+	display.setBrightness(brightness);
+}
 

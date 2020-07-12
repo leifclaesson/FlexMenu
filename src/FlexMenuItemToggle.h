@@ -46,6 +46,22 @@ enum eFMIToggleCallback
 
 typedef std::function<void(FlexMenuItemToggleCB *,eFMIToggleCallback)> fn_FlexMenuItemToggleCB;
 
+/*
+ * LAMBDA example
+ *
+ * 		p->fnCallback=[this](FlexMenuItemToggleCB * pSource,eFMIToggleCallback code)
+		{
+			(void)(pSource);
+			if(code==eFMIToggleCallback_ValueChanged)
+			{
+				Serial.printf("Toggle switch %s changed to %i\n",pSource->strTitle.c_str(),pSource->GetState());
+
+			}
+		};
+ *
+ *
+ */
+
 class FlexMenuItemToggleCB : public FlexMenuItemToggle
 {
 public:

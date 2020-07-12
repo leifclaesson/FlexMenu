@@ -10,6 +10,15 @@
 #include "FlexMenu.h"
 #include <list>
 
+
+fn_FlexMenuSPIFFSInterimCallback fmsInterimCallback;
+
+
+static void DoInterimCallback()
+{
+	if(fmsInterimCallback) fmsInterimCallback();
+}
+
 FS & FlexMenuGetFileSystem()
 {
 	return FLEXMENU_FILESYSTEM;
@@ -246,6 +255,9 @@ void FlexMenuSPIFFS_DoApply(FlexMenuManager & flexmenu, const _mapConfig & mapCo
 
 }
 
+
+
+
 void FlexMenuSPIFFS_DoSave(FlexMenuManager & flexmenu)
 {
 
@@ -257,6 +269,9 @@ void FlexMenuSPIFFS_DoSave(FlexMenuManager & flexmenu)
 	{
 
 		(void)(pManager);
+
+		DoInterimCallback();
+
 		if(pItem)
 		{
 			if(pItem->IsSaveable())
@@ -297,9 +312,13 @@ void FlexMenuSPIFFS_DoSave(FlexMenuManager & flexmenu)
 	char temp[64];
 	sprintf(temp,"Saving %i items",iItems);
 
+	DoInterimCallback();
 	flexmenu.ShowMessage("Save Settings", temp, eFlexMenuFont_Large, 0);
+	DoInterimCallback();
 	flexmenu.Loop(false);
+	DoInterimCallback();
 	flexmenu.Output();
+	DoInterimCallback();
 
 
 
@@ -308,6 +327,7 @@ void FlexMenuSPIFFS_DoSave(FlexMenuManager & flexmenu)
 	//delay(50);
 
 	File config_file=FLEXMENU_FILESYSTEM.open( FlexMenuGetConfigFileName(), "w");
+	DoInterimCallback();
 
 	if(config_file)
 	{
@@ -316,6 +336,7 @@ void FlexMenuSPIFFS_DoSave(FlexMenuManager & flexmenu)
 
 		for(int i=0;i<iItems;i++)
 		{
+			DoInterimCallback();
 			config_file.println(*file_buffer.begin());
 			csprintf("printed line %i\n",i);
 			//delay(50);

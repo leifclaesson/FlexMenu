@@ -6,6 +6,7 @@
 
 #include "FlexMenuBase.h"
 #include "FlexMenuDisplay.h"
+#include "FlexMenuTransitionFilter.h"
 
 class FlexMenuDisplay;
 class FlexMenuSub;
@@ -112,6 +113,12 @@ private:
 	void ClearHistoryBuffer();
 
 	bool bNavigated=false;
+
+	bool HandleBacklight();
+
+	FlexMenuTransitionFilter<1,8,10> filterBacklight;
+
+	uint32_t lastNavigateTimestamp=0;
 
 };
 
