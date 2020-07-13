@@ -25,7 +25,6 @@ enum eShowMessageState
 typedef std::function<bool(FlexMenuBase *, FlexMenuManager *)> FlexMenuManagerIterateCB;	//return false to stop iterating
 
 
-
 class FlexMenuManager
 {
 public:
@@ -35,6 +34,9 @@ public:
 	FlexMenuSub * Init(FlexMenuDisplay * pDisplay);	//returns the top menu!
 
 	bool Loop(bool bForceRefresh);	//return true if the display needs to be updated
+
+	void SetBacklightDimDelay(int seconds) { iBacklightDimSeconds=seconds; };
+	void SetDisplayMuteDelay(int seconds) { iDisplayMuteSeconds=seconds; };
 
 	void Output();	//write to the screen
 
@@ -51,7 +53,19 @@ public:
 
 	FlexMenuDisplay * GetDisplay() { return pDisplay; }
 
+	void RegisterOnSettingsLoadedCallback(std::function<void(void)> fn);
+	void RegisterOnLoopCallback(std::function<void(void)> fn);
+
+	void DoOnSettingsLoadedCallback();
+
 private:
+
+	std::vector<std::function<void(void)>> vecFnOnSettingsLoaded;
+	std::vector<std::function<void(void)>> vecFnOnLoop;
+	void DoOnLoopCallback();
+
+	int iBacklightDimSeconds=60*15;	//default 15 minutes
+	int iDisplayMuteSeconds=60*60*4;	//default 4 hours
 
 	FlexMenuDataItems data_items;
 

@@ -452,7 +452,7 @@ void FlexMenuDisplay_OLED_Base::DrawMessage(FlexMenuBase * pCurMenu)
 		line2_y=params.iScreenCY>>1;
 	}
 
-	csprintf("l1=%i  l2=%i  y=%i\n",length1,length2,line2_y);
+	//csprintf("l1=%i  l2=%i  y=%i\n",length1,length2,line2_y);
 
 	yield();
 

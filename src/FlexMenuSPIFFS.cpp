@@ -111,6 +111,8 @@ void FlexMenuSPIFFS_DoLoad(FlexMenuManager & flexmenu)
 		FlexMenuSPIFFS_DoApply(flexmenu,mapConfig);
 	}
 
+	flexmenu.DoOnSettingsLoadedCallback();
+
 }
 
 bool FlexMenuSPIFFS_DoRead(_mapConfig & mapConfig)
@@ -338,12 +340,13 @@ void FlexMenuSPIFFS_DoSave(FlexMenuManager & flexmenu)
 		{
 			DoInterimCallback();
 			config_file.println(*file_buffer.begin());
-			csprintf("printed line %i\n",i);
+			//csprintf("printed line %i\n",i);
 			//delay(50);
 			file_buffer.pop_front();
 		}
 
 
+		csprintf("Saved %i items\n",iItems);
 		sprintf(temp,"Saved %i items",iItems);
 		flexmenu.ShowMessage("Save Settings", temp, eFlexMenuFont_Large, 2000);
 

@@ -72,6 +72,8 @@ bool FlexMenuManager::Loop(bool bForceRefresh)
 
 	HandleHistoryBuffer();
 
+	DoOnLoopCallback();
+
 	bool bNeedsRefresh=false;
 
 
@@ -654,12 +656,8 @@ bool FlexMenuManager::HandleBacklight()
 
 	int32_t age=(int) (millis()-lastNavigateTimestamp);
 
-	int subtract=(age - 60000) / 200;
-	bBlankDisplay=age>(1000*60*60*4);
-
-//	uncomment for fast backlight timeout (development)
-//	subtract=(age - 5000) / 20;
-//	bBlankDisplay=age>20000;
+	int subtract=(age - (1000*iBacklightDimSeconds)) / 500;
+	bBlankDisplay=age>(1000*iDisplayMuteSeconds);
 
 	if(subtract<0) subtract=0;
 	if(subtract>254) subtract=254;
@@ -695,3 +693,30 @@ bool FlexMenuManager::HandleBacklight()
 	return bRet;
 
 }
+
+void FlexMenuManager::DoOnSettingsLoadedCallback()
+{
+	for(size_t i=0;i<vecFnOnSettingsLoaded.size();i++)
+	{
+		if(vecFnOnSettingsLoaded[i]) vecFnOnSettingsLoaded[i]();
+	}
+}
+
+void FlexMenuManager::RegisterOnSettingsLoadedCallback(std::function<void(void)> fn)
+{
+	vecFnOnSettingsLoaded.push_back(fn);
+}
+
+void FlexMenuManager::DoOnLoopCallback()
+{
+	for(size_t i=0;i<vecFnOnLoop.size();i++)
+	{
+		if(vecFnOnLoop[i]) vecFnOnLoop[i]();
+	}
+}
+
+void FlexMenuManager::RegisterOnLoopCallback(std::function<void(void)> fn)
+{
+	vecFnOnLoop.push_back(fn);
+}
+
