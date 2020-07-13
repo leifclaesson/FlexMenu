@@ -92,7 +92,7 @@ bool FlexMenuManager::Loop(bool bForceRefresh)
 		}
 		break;
 	case eShowMessageState_PostDisplaying_IgnoreInput:
-		if((int) (millis()-timestampShowMessage)>=500 || bSkipFirstIgnoreInput)	//ignore input for 500 milliseconds to prevent accidental selection if a user clicks to dismiss a message just as it's going away
+		if((int) (millis()-timestampShowMessage)>=250 || bSkipFirstIgnoreInput)	//ignore input for 250 milliseconds to prevent accidental selection if a user clicks to dismiss a message just as it's going away
 		{
 			bSkipFirstIgnoreInput=false;
 			bWeNeedRefresh=true;
@@ -227,7 +227,12 @@ void FlexMenuManager::Navigate(eFlexMenuNav nav)
 				bWeNeedRefresh=true;
 			}
 		}
-		return;
+
+
+		if(stateShowMessage==eShowMessageState_Displaying || nav==eFlexMenuNav_Push)	//ignore push if during the eShowMessageState_PostDisplaying_IgnoreInput period
+		{
+			return;
+		}
 
 	}
 
@@ -696,6 +701,8 @@ bool FlexMenuManager::HandleBacklight()
 
 void FlexMenuManager::DoOnSettingsLoadedCallback()
 {
+	if(bOnSettingsLoadedDone) return;
+	bOnSettingsLoadedDone=true;
 	for(size_t i=0;i<vecFnOnSettingsLoaded.size();i++)
 	{
 		if(vecFnOnSettingsLoaded[i]) vecFnOnSettingsLoaded[i]();

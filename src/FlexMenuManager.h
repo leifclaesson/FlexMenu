@@ -61,6 +61,7 @@ public:
 private:
 
 	std::vector<std::function<void(void)>> vecFnOnSettingsLoaded;
+	bool bOnSettingsLoadedDone=false;
 	std::vector<std::function<void(void)>> vecFnOnLoop;
 	void DoOnLoopCallback();
 

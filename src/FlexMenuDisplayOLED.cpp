@@ -25,7 +25,23 @@ osk_icondef osk_icons[7]=	//must match eFlexMenuEdit.
 	{okay,8,6,0,1},
 };
 
+char PROGMEM _osk_table[]={
+		"0123456789_+=*"
+		"ABCDEFGHIJKLMN"
+		"OPQRSTUVWXYZ.-"
+		"\1\2\3\4\5\6\0\0\0\0\0\0\0\0"
+		"abcdefghijklmn"
+		"opqrstuvwxyz.-"
+		"0123456789-+=*"
+		"\1\2\3\4\5\6\0\0\0\0\0\0\0\0"
+		"!?#$%&:;/\\()[]"
+		"åäöæøüÅÄÖÆØÜßµ"
+		"<>@'`{|}~^\"_.,"
+		"\1\2\3\4\5\6\0\0\0\0\0\0\0\0"
+		};
 
+
+/*
 char PROGMEM _osk_table[]={
 		"ABCDEFGHIJKLMN"
 		"OPQRSTUVWXYZ.-"
@@ -40,8 +56,7 @@ char PROGMEM _osk_table[]={
 		"åäöæøüÅÄÖÆØÜßµ"
 		"\1\2\3\4\5\6\0\0\0\0\0\0\0\0"
 		};
-
-
+*/
 
 
 FlexMenuDisplay_OLED::FlexMenuDisplay_OLED()
@@ -102,6 +117,8 @@ void FlexMenuDisplay_OLED::InitResources_Edit(FlexMenuEditScreenParams & ep)
 
 	ep.pFontEdit=(const uint8_t *) Monospaced_14;
 	ep.iFontHeightEdit=15;
+
+	ep.initial_osk_selection=(ep.osk_width*3)+4;	//start on the X (cancel/exit) key
 
 
 }

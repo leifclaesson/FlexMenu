@@ -254,6 +254,7 @@ void FlexMenuSPIFFS_DoApply(FlexMenuManager & flexmenu, const _mapConfig & mapCo
 
 	}
 
+	flexmenu.DoOnSettingsLoadedCallback();
 
 }
 

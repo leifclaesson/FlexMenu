@@ -342,7 +342,7 @@ void FlexMenuEditScreen::EditScreen_OnEditMode(FlexMenuBase * pCurMenu, bool bEn
 	{
 		csprintf("pItemEdit->strEdit=%s\n",pItemEdit->strEdit.c_str());
 		strEdit=pItemEdit->strEdit;
-		selection=28+4;
+		selection=params.initial_osk_selection;
 		iCursor=strEdit.length();
 		iScrollX=iCursor-params.iMaxCharsX+1;
 		CursorNav(0);
