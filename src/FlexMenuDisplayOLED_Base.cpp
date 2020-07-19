@@ -132,6 +132,12 @@ void FlexMenuDisplay_OLED_Base::DrawScreen(FlexMenuBase * pCurMenu)
 					{
 						display.drawXbm(right, i*fLineHeight+iIconY, iIconCX, iIconCY, icons[icon]);
 					}
+
+					if(icon==eFlexMenuIcon_Cursor)
+					{
+						right+=iIconCX/2;
+					}
+
 				}
 			}
 

@@ -8,6 +8,7 @@
 #include "FlexMenuDisplay.h"
 #include "FlexMenuTransitionFilter.h"
 
+class FlexMenuItemCommand;
 class FlexMenuDisplay;
 class FlexMenuSub;
 
@@ -58,7 +59,12 @@ public:
 
 	void DoOnSettingsLoadedCallback();
 
+	void SetSaveCommand(FlexMenuItemCommand * pSaveCommand) { this->pSaveCommand=pSaveCommand; }
+	FlexMenuItemCommand * GetSaveCommand() { return pSaveCommand; }
+
 private:
+
+	FlexMenuItemCommand * pSaveCommand=NULL;
 
 	std::vector<std::function<void(void)>> vecFnOnSettingsLoaded;
 	bool bOnSettingsLoadedDone=false;
