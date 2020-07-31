@@ -11,49 +11,36 @@ void FlexMenuItemCommandDummy::GetTitleText(String & strTitleDestination)
 }
 
 
-FlexMenuItemCommand::FlexMenuItemCommand()
-{
-}
-
-
-FlexMenuItemCommand::~FlexMenuItemCommand()
-{
-}
-
-int FlexMenuItemCommand::GetNumSpacers()
+int FlexMenuItemCommandBase::GetNumSpacers()
 {
 	return 1;
 }
 
-void FlexMenuItemCommand::OnEnter()
+void FlexMenuItemCommandBase::OnEnter()
 {
 	derived_use_2=3+GetNumSpacers();
 	derived_use_3=0;
 }
 
-void FlexMenuItemCommand::OnPushChildLeave()
+void FlexMenuItemCommandBase::OnPushChildLeave()
 {
-	csprintf("FlexMenuItemCommand::OnLeave()\n");
+	csprintf("FlexMenuItemCommandBase::OnLeave()\n");
 
 	int cur=derived_use_3>0?(derived_use_3-1):derived_use_2;
 
 	if(cur==2+GetNumSpacers())
 	{
-		if(cbExecuteCommand) cbExecuteCommand(this);
+		OnExecute();
 	}
 }
 
-void FlexMenuItemCommand::OnPush()
+void FlexMenuItemCommandBase::OnPush()
 {
-	if(cbExecuteCommand) cbExecuteCommand(this);
+	OnExecute();
 }
 
-void FlexMenuItemCommand::GetTitleText(String & strTitleDestination)
-{
-	strTitleDestination=strTitle;
-}
 
-eFlexMenuIcon FlexMenuItemCommand::UseIcon()
+eFlexMenuIcon FlexMenuItemCommandBase::UseIcon()
 {
 	if(GetConfirm())
 	{
@@ -65,17 +52,17 @@ eFlexMenuIcon FlexMenuItemCommand::UseIcon()
 	}
 }
 
-int16_t FlexMenuItemCommand::GetNumSubItems()
+int16_t FlexMenuItemCommandBase::GetNumSubItems()
 {
 	return 4+GetNumSpacers();
 }
 
-FlexMenuBase * FlexMenuItemCommand::GetSubItem(int16_t idx)
+FlexMenuBase * FlexMenuItemCommandBase::GetSubItem(int16_t idx)
 {
 	if(idx==0)
 	{
 		dummy.bIsLeave=false;
-		dummy.strTitle=strTitle;
+		GetTitleText(dummy.strTitle);
 	}
 	else if(idx==1+(GetNumSpacers()!=0))
 	{
@@ -101,38 +88,38 @@ FlexMenuBase * FlexMenuItemCommand::GetSubItem(int16_t idx)
 	return &dummy;
 }
 
-int16_t FlexMenuItemCommand::GetScrollPos()
+int16_t FlexMenuItemCommandBase::GetScrollPos()
 {
 	return derived_use_1;
 }
 
-int16_t FlexMenuItemCommand::GetCurItem()
+int16_t FlexMenuItemCommandBase::GetCurItem()
 {
 	return derived_use_2;
 }
 
-void FlexMenuItemCommand::SetScrollPos(int16_t iNewScrollPos)
+void FlexMenuItemCommandBase::SetScrollPos(int16_t iNewScrollPos)
 {
 	derived_use_1=iNewScrollPos;
 }
 
-void FlexMenuItemCommand::SetCurItem(int16_t iNewCurItem)
+void FlexMenuItemCommandBase::SetCurItem(int16_t iNewCurItem)
 {
 	if(iNewCurItem<2+GetNumSpacers()) iNewCurItem=2+GetNumSpacers();
 	derived_use_2=iNewCurItem;
 }
 
-bool FlexMenuItemCommand::GetConfirm()
+bool FlexMenuItemCommandBase::GetConfirm()
 {
-	return (flags & 128) != 0;
+	return (flags & 0x80) != 0;
 }
 
-void FlexMenuItemCommand::SetConfirm(bool bConfirm)
+void FlexMenuItemCommandBase::SetConfirm(bool bConfirm)
 {
 	if(bConfirm) flags |= 0x80; else flags &= 0x7f;
 }
 
-void FlexMenuItemCommand::HistoryBuffer(uintptr_t * data)
+void FlexMenuItemCommandBase::HistoryBuffer(uintptr_t * data)
 {
 	derived_use_3=((int16_t) *data)+1;
 	*data=derived_use_2;

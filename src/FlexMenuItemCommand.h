@@ -5,8 +5,6 @@
 
 class FlexMenuItemCommand;
 
-typedef std::function<void(FlexMenuItemCommand *)> fn_FlexMenuItemCommandCB;
-
 class FlexMenuItemCommandDummy :
 	public FlexMenuBase
 {
@@ -17,12 +15,11 @@ public:
 	bool bIsLeave=false;
 };
 
-class FlexMenuItemCommand :
+
+class FlexMenuItemCommandBase :
 	public FlexMenuBase
 {
 public:
-	FlexMenuItemCommand();
-	~FlexMenuItemCommand();
 
 	virtual bool CanEnter() { return GetConfirm(); };
 	virtual void OnEnter();
@@ -30,12 +27,9 @@ public:
 	virtual void OnPush() override;
 	virtual void OnPushChildLeave() override;
 
-	String strTitle;
-	virtual void GetTitleText(String & strTitleDestination) override;
-
 	virtual eFlexMenuIcon UseIcon();
 
-	fn_FlexMenuItemCommandCB cbExecuteCommand;
+	virtual void OnExecute()=0;
 
 	virtual int16_t GetNumSubItems();
 	virtual FlexMenuBase * GetSubItem(int16_t idx);
@@ -55,3 +49,17 @@ public:
 
 };
 
+typedef std::function<void(FlexMenuItemCommand *)> fn_FlexMenuItemCommandCB;
+
+class FlexMenuItemCommand :
+	public FlexMenuItemCommandBase
+{
+public:
+
+	String strTitle;
+	virtual void GetTitleText(String & strTitleDestination) override { strTitleDestination=strTitle; }
+
+	virtual void OnExecute() { if(cbExecuteCommand) cbExecuteCommand(this); }
+	fn_FlexMenuItemCommandCB cbExecuteCommand;
+
+};
