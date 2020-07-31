@@ -1,6 +1,7 @@
 // * Copyright 2020 Leif Claesson. Licenced under the GNU GPL Version 3.
 #pragma once
 
+#include <FlexMenuItemSlider.h>
 #include "FlexMenuGlobalItems.h"
 #include "FlexMenuManager.h"
 #include "FlexMenuDisplay.h"
@@ -8,7 +9,6 @@
 #include "FlexMenuSub.h"
 #include "FlexMenuItemToggle.h"
 #include "FlexMenuItemSelector.h"
-#include "FlexMenuItemSlider.h"
 #include "FlexMenuItemCommand.h"
 #include "FlexMenuItemEdit.h"
 #include "FlexMenuItemData.h"

@@ -1,26 +1,26 @@
 // * Copyright 2020 Leif Claesson. Licenced under the GNU GPL Version 3.
 
+#include <FlexMenuItemSlider.h>
 #include "stdafx.h"
-#include "FlexMenuItemSlider.h"
 #include "FlexMenuGlobalItems.h"
 
 
-FlexMenuItemSlider::FlexMenuItemSlider()
+FlexMenuItemSliderBase::FlexMenuItemSliderBase()
 {
 	SetSaveable(true);
 }
 
 
-FlexMenuItemSlider::~FlexMenuItemSlider()
+FlexMenuItemSliderBase::~FlexMenuItemSliderBase()
 {
 }
 
-eFlexMenuScreenType FlexMenuItemSlider::GetScreenType()
+eFlexMenuScreenType FlexMenuItemSliderBase::GetScreenType()
 {
 	return eFlexMenuScreenType_Slider;
 }
 
-bool FlexMenuItemSlider::CanNavigate(eFlexMenuNav direction, uint8_t accel)
+bool FlexMenuItemSliderBase::CanNavigate(eFlexMenuNav direction, uint8_t accel)
 {
 	switch(direction)
 	{
@@ -37,13 +37,13 @@ bool FlexMenuItemSlider::CanNavigate(eFlexMenuNav direction, uint8_t accel)
 	return true;
 }
 
-bool FlexMenuItemSlider::CanEnter()
+bool FlexMenuItemSliderBase::CanEnter()
 {
 	return true;
 }
 
 
-void FlexMenuItemSlider::OnEnter()
+void FlexMenuItemSliderBase::OnEnter()
 {
 	SetModified(false);
 
@@ -55,39 +55,34 @@ void FlexMenuItemSlider::OnEnter()
 
 }
 
-void FlexMenuItemSlider::OnLeave()
+void FlexMenuItemSliderBase::OnLeave()
 {
 	if(GetModified())
 	{
-		if(history_value!=(int) 0x80000000)
+		if(GetHistoryValue()!=(int) 0x80000000)
 		{
-			value=history_value;
+			SetValue(GetHistoryValue());
 		}
 		OnValueChanged();
 	}
 	SetModified(false);
 }
 
-void FlexMenuItemSlider::GetTitleText(String & strTitleDestination)
-{
-	strTitleDestination=strTitle;
-}
-
-void FlexMenuItemSlider::GetValueText(String & strValueDestination)
+void FlexMenuItemSliderBase::GetValueText(String & strValueDestination)
 {
 	if(!OnDisplayValue(strValueDestination))
 	{
 #ifdef WIN32
 		char temp[16];
-		sprintf(temp,"%i",value);
+		sprintf(temp,"%i",GetValue());
 		strValueDestination=temp;
 #else
-		strValueDestination=value;
+		strValueDestination=GetValue();
 #endif
 	}
 }
 
-void FlexMenuItemSlider::DoAdjust(int8_t direction, uint8_t accel)
+void FlexMenuItemSliderBase::DoAdjust(int8_t direction, uint8_t accel)
 {
 	int multiplier=1;
 	if(accel>10)
@@ -95,7 +90,8 @@ void FlexMenuItemSlider::DoAdjust(int8_t direction, uint8_t accel)
 		multiplier=2;
 	}
 
-	if(abs(range_max-range_min)>=4000)
+
+	if(GetAbsRange()>=4000)
 	{
 		if(accel>20)
 		{
@@ -107,62 +103,110 @@ void FlexMenuItemSlider::DoAdjust(int8_t direction, uint8_t accel)
 			multiplier=13;
 		}
 
-		if(accel>50)
+		if(GetAbsRange()<100000)
 		{
-			multiplier=23;
+
+			if(accel>50)
+			{
+				multiplier=23;
+			}
+
+
+			if(accel>70)
+			{
+				multiplier=53;
+			}
+
+			if(accel>110)
+			{
+				multiplier=73;
+			}
+
+			if(accel>148)
+			{
+				multiplier=107;
+			}
+		}
+		else
+		{
+			if(accel>50)
+			{
+				multiplier=49;
+			}
+
+			if(accel>70)
+			{
+				multiplier=153;
+			}
+
+			if(accel>110)
+			{
+				multiplier=1163;
+			}
+
+			if(GetAbsRange()<500000)
+			{
+				if(accel>148)
+				{
+					multiplier=4177;
+				}
+			}
+			else
+			{
+				if(accel>118)
+				{
+					multiplier=3177;
+				}
+
+				if(accel>128)
+				{
+					multiplier=11779;
+				}
+				if(accel>148)
+				{
+					multiplier=41779;
+				}
+
+			}
 		}
 
-		if(accel>70)
-		{
-			multiplier=53;
-		}
-
-		if(accel>110)
-		{
-			multiplier=73;
-		}
-
-		if(accel>148)
-		{
-			multiplier=107;
-		}
 	}
 	else
 	{
-		if(accel>30 && abs(range_max-range_min)>=200)
+		if(accel>30 && GetAbsRange()>=200)
 		{
 			multiplier=5;
 		}
 
-		if(accel>50 && abs(range_max-range_min)>=500)
+		if(accel>50 && GetAbsRange()>=500)
 		{
 			multiplier=13;
 		}
 
-		if(accel>80 && abs(range_max-range_min)>=1000)
+		if(accel>80 && GetAbsRange()>=1000)
 		{
 			multiplier=23;
 		}
 	}
 
-	int val=value;
+	int val=GetValue();
 
-	if(range_max<range_min)
+	if(GetRangeMax()<GetRangeMin())
 	{
-		val=value-(direction*multiplier);
-		if(val>range_min) val=range_min;
-		if(val<range_max) val=range_max;
+		val=GetValue()-(direction*multiplier);
+		if(val>GetRangeMin()) val=GetRangeMin();
+		if(val<GetRangeMax()) val=GetRangeMax();
 	}
 	else
 	{
-		val=value+(direction*multiplier);
-		if(val<range_min) val=range_min;
-		if(val>range_max) val=range_max;
+		val=GetValue()+(direction*multiplier);
+		if(val<GetRangeMin()) val=GetRangeMin();
+		if(val>GetRangeMax()) val=GetRangeMax();
 	}
 
-	if(value!=val)
+	if(GetValue()!=val)
 	{
-		value=val;
+		SetValue(val);
 		OnValueChanging();
 		SetModified(true);
 		SetNeedsRefresh(true);
@@ -170,47 +214,51 @@ void FlexMenuItemSlider::DoAdjust(int8_t direction, uint8_t accel)
 
 }
 
-int FlexMenuItemSlider::GetProgressBar(int iPixelWidth)
+int FlexMenuItemSliderBase::GetProgressBar(int iPixelWidth)
 {
 	uint8_t downshift_bits=0;
 
+	if(GetAbsRange()>=10000) downshift_bits=5;
+	if(GetAbsRange()>=1000000) downshift_bits=10;
+
+
 	int fraction=0;
 
-	if(range_max>range_min)
+	if(GetRangeMax()>GetRangeMin())
 	{
-		fraction=((value - range_min)<<(10-downshift_bits)) / ((range_max - range_min)>>downshift_bits);
+		fraction=((GetValue() - GetRangeMin())<<(10-downshift_bits)) / ((GetRangeMax() - GetRangeMin())>>downshift_bits);
 	}
 	else
 	{
-		fraction=(1<<10) - (((value - range_max)<<(10-downshift_bits)) / ((-(range_max - range_min))>>downshift_bits));
+		fraction=(1<<10) - (((GetValue() - GetRangeMax())<<(10-downshift_bits)) / ((-(GetRangeMax() - GetRangeMin()))>>downshift_bits));
 	}
 
 	return (fraction*iPixelWidth)>>10;
 }
 
-void FlexMenuItemSlider::GetSaveString(String & strSave)
+void FlexMenuItemSliderBase::GetSaveString(String & strSave)
 {
-	strSave=value;
+	strSave=GetValue();
 }
 
-bool FlexMenuItemSlider::LoadString(const String & strLoad)
+bool FlexMenuItemSliderBase::LoadString(const String & strLoad)
 {
 	bool bRet=true;
 
 	int val=strLoad.toInt();
 
-	if(range_max<range_min)
+	if(GetRangeMax()<GetRangeMin())
 	{
-		if(val>range_min) { bRet=false; val=range_min; }
-		if(val<range_max) { bRet=false; val=range_max; }
+		if(val>GetRangeMin()) { bRet=false; val=GetRangeMin(); }
+		if(val<GetRangeMax()) { bRet=false; val=GetRangeMax(); }
 	}
 	else
 	{
-		if(val<range_min) { bRet=false; val=range_min; }
-		if(val>range_max) { bRet=false; val=range_max; }
+		if(val<GetRangeMin()) { bRet=false; val=GetRangeMin(); }
+		if(val>GetRangeMax()) { bRet=false; val=GetRangeMax(); }
 	}
 
-	value=val;
+	SetValue(val);
 
 	OnValueChanged();
 
@@ -218,14 +266,14 @@ bool FlexMenuItemSlider::LoadString(const String & strLoad)
 
 }
 
-void FlexMenuItemSlider::HistoryBuffer(uintptr_t * data)
+void FlexMenuItemSliderBase::HistoryBuffer(uintptr_t * data)
 {
-	history_value=(int16_t) *data;
-	*data=value;
+	SetHistoryValue((int) *data);
+	*data=GetValue();
 
 }
 
-void FlexMenuItemSlider::ClearHistoryBuffer(uintptr_t * data, int count)
+void FlexMenuItemSliderBase::ClearHistoryBuffer(uintptr_t * data, int count)
 {
 	for(int i=0;i<count;i++)
 	{

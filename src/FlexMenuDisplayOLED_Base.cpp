@@ -1,9 +1,9 @@
 // * Copyright 2020 Leif Claesson. Licenced under the GNU GPL Version 3.
 
 #include <FlexMenuDisplayOLED_Base.h>
+#include <FlexMenuItemSlider.h>
 #include <SH1106.h>
 #include "FlexMenuBase.h"
-#include "FlexMenuItemSlider.h"
 #include "FlexMenuShowMessage.h"
 
 

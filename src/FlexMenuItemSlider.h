@@ -7,21 +7,24 @@
 
 
 
-class FlexMenuItemSlider :
+class FlexMenuItemSliderBase :
 	public FlexMenuBase
 {
 public:
 
-	FlexMenuItemSlider();
-	~FlexMenuItemSlider();
+	FlexMenuItemSliderBase();
+	~FlexMenuItemSliderBase();
 
-	int value=0;
-	int history_value=-1;
+	virtual int GetValue()=0;
+	virtual void SetValue(int value)=0;
 
-	int range_min=0;
-	int range_max=100;
+	virtual int GetHistoryValue()=0;
+	virtual void SetHistoryValue(int value)=0;
 
-	String strTitle;
+	virtual int GetRangeMin()=0;
+	virtual int GetRangeMax()=0;
+	virtual void SetRange(int min, int max)=0;
+	virtual int GetAbsRange() { return abs(GetRangeMax()-GetRangeMin()); }
 
 	virtual bool CanEnter() override;
 	virtual void OnEnter() override;
@@ -35,7 +38,6 @@ public:
 
 
 	// Inherited via FlexMenuBase
-	virtual void GetTitleText(String & strTitleDestination) override;
 	virtual void GetValueText(String & strValueDestination) override;
 
 	virtual int16_t GetNumSubItems() override { return 1; };
@@ -62,6 +64,39 @@ public:
 	virtual void SetSaveIdx( uint16_t idx ) override { derived_use_3 = (uint8_t) idx; }
 	virtual uint16_t GetSaveIdx( ) override { return derived_use_3; }
 
+
+};
+
+class FlexMenuItemSlider :
+	public FlexMenuItemSliderBase
+{
+public:
+
+	int GetValue() override { return _value; };
+	void SetValue(int value) override { _value=value; };
+
+	int GetRangeMin() override { return _range_min; };
+	int GetRangeMax() override { return _range_max; };
+	void SetRange(int min, int max) override { _range_min=min; _range_max=max; };
+
+	// Inherited via FlexMenuBase
+	void SetTitleText(const char * szTitle) { _strTitle=szTitle; }
+	virtual void GetTitleText(String & strTitleDestination) override { strTitleDestination=_strTitle; }
+
+
+	virtual int GetHistoryValue() override { return _history_value; }
+	virtual void SetHistoryValue(int historyvalue) override { _history_value=historyvalue; }
+
+
+private:
+	int _value=0;
+
+	int _range_min=0;
+	int _range_max=100;
+
+	String _strTitle;
+
+	int _history_value=-1;
 
 };
 
