@@ -62,6 +62,19 @@ public:
 
 };
 
+class FlexMenuItemSliderBase8 : public FlexMenuItemSliderBase
+{
+public:
+
+	virtual int GetValue() override { return derived_use_1; };
+	virtual void SetValue(int value) override { derived_use_1=(uint8_t) value; };
+
+	virtual int GetHistoryValue() override { return derived_use_2; }
+	virtual void SetHistoryValue(int value) override { derived_use_2=(uint8_t) value; }
+
+};
+
+
 class FlexMenuItemSlider :
 	public FlexMenuItemSliderBase
 {
