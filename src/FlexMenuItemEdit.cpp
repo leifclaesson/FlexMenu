@@ -13,26 +13,21 @@
 
 
 
-FlexMenuItemEdit::FlexMenuItemEdit() {
+FlexMenuItemEditBase::FlexMenuItemEditBase() {
 	// TODO Auto-generated constructor stub
 	SetSaveable(true);
 }
 
-FlexMenuItemEdit::~FlexMenuItemEdit() {
+FlexMenuItemEditBase::~FlexMenuItemEditBase() {
 	// TODO Auto-generated destructor stub
 }
 
-void FlexMenuItemEdit::SetManager(FlexMenuManager * pManager)
+void FlexMenuItemEditBase::SetManager(FlexMenuManager * pManager)
 {
 	this->pManager=pManager;
 }
 
-void FlexMenuItemEdit::GetTitleText(String & strTitleDestination)
-{
-	strTitleDestination=strTitle;
-}
-
-void FlexMenuItemEdit::GetValueText(String & strValueDestination)
+void FlexMenuItemEditBase::GetValueText(String & strValueDestination)
 {
 	if(IsPassword())
 	{
@@ -49,9 +44,9 @@ void FlexMenuItemEdit::GetValueText(String & strValueDestination)
 	}
 }
 
-void FlexMenuItemEdit::OnEnter()
+void FlexMenuItemEditBase::OnEnter()
 {
-	Serial.printf("FlexMenuItemEdit::OnEnter()\n");
+	Serial.printf("FlexMenuItemEditBase::OnEnter()\n");
 
 	FlexMenuTempItem & item=*((FlexMenuTempItem *)GetTempItem());
 

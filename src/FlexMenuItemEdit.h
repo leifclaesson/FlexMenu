@@ -7,15 +7,14 @@
 class FlexMenuItemEdit;
 
 
-class FlexMenuItemEdit :
+class FlexMenuItemEditBase :
 	public FlexMenuBase
 {
 public:
-	FlexMenuItemEdit();
-	virtual ~FlexMenuItemEdit();
+	FlexMenuItemEditBase();
+	virtual ~FlexMenuItemEditBase();
 
 	// Inherited via FlexMenuBase
-	virtual void GetTitleText(String & strTitleDestination) override;
 	virtual void GetValueText(String & strValueDestination) override;
 
 	virtual eFlexMenuIcon UseIcon() override { return eFlexMenuIcon_Cursor; }
@@ -26,7 +25,6 @@ public:
 	virtual int16_t GetNumSubItems() override { return 1; }
 	virtual FlexMenuBase * GetSubItem(int16_t idx) override { (void)(idx); return GetTempItem(); }
 
-	String strTitle;
 	String strEdit;
 
 	virtual void SetManager(FlexMenuManager * pManager) override;
@@ -50,6 +48,14 @@ public:
 	virtual void OskSetString(const String & str) { LoadString(str); }
 
 
+
+};
+
+class FlexMenuItemEdit : public FlexMenuItemEditBase
+{
+public:
+	String strTitle;
+	void GetTitleText(String & strTitleDestination) { strTitleDestination=strTitle; }
 
 };
 
