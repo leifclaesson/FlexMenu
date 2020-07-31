@@ -4,24 +4,19 @@
 #include "FlexMenuBase.h"
 
 
-class FlexMenuItemToggle :
-	public FlexMenuBase
+class FlexMenuItemToggleBase : public FlexMenuBase
 {
 public:
-	FlexMenuItemToggle();
-	~FlexMenuItemToggle();
+	FlexMenuItemToggleBase();
 
-	virtual bool GetState();
-	virtual void SetState(bool bState);
-
-	virtual void GetTitleText(String & strTitleDestination);
 	virtual void OnPush();
-
-	String strTitle;
 
 	virtual eFlexMenuIcon UseIcon();
 
 	virtual void OnValueChanged() {};
+
+	void SetState(bool bState) { if(bState) flags |= 0x40; else flags &=(0xFF-0x40); }
+	bool GetState() { return (flags & 0x40)!=0; }
 
 	void SetSaveable(bool bSaveable) { if(bSaveable) flags |= 0x80; else flags &=(0xFF-0x80); }
 	bool IsSaveable() override { return (flags & 0x80)!=0; }
@@ -29,10 +24,18 @@ public:
 	virtual void GetSaveString(String & strSave) override;
 	virtual bool LoadString(const String & strLoad) override;
 
+private:
+
+};
+
+class FlexMenuItemToggle : public FlexMenuItemToggleBase
+{
+public:
+	virtual void GetTitleText(String & strTitleDestination) { strTitleDestination=strTitle; }
+	String strTitle;
+
 	virtual void SetSaveIdx( uint16_t idx ) override { derived_use_3 = (uint8_t) idx; }
 	virtual uint16_t GetSaveIdx( ) override { return derived_use_3; }
-
-private:
 
 };
 

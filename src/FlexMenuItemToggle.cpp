@@ -4,49 +4,30 @@
 #include "FlexMenuItemToggle.h"
 
 
-FlexMenuItemToggle::FlexMenuItemToggle()
+FlexMenuItemToggleBase::FlexMenuItemToggleBase()
 {
 	SetSaveable(true);
 }
 
 
-FlexMenuItemToggle::~FlexMenuItemToggle()
+void FlexMenuItemToggleBase::OnPush()
 {
-}
-
-bool FlexMenuItemToggle::GetState()
-{
-	return (bool) derived_use_1;
-}
-
-void FlexMenuItemToggle::SetState(bool bState)
-{
-	derived_use_1=bState;
-}
-
-void FlexMenuItemToggle::GetTitleText(String & strTitleDestination)
-{
-	strTitleDestination=strTitle;
-}
-
-void FlexMenuItemToggle::OnPush()
-{
-	derived_use_1=derived_use_1==false;
+	SetState(GetState()==false);
 	OnValueChanged();
 	SetNeedsRefresh(true);
 }
 
-eFlexMenuIcon FlexMenuItemToggle::UseIcon()
+eFlexMenuIcon FlexMenuItemToggleBase::UseIcon()
 {
-	return derived_use_1?eFlexMenuIcon_Checked:eFlexMenuIcon_Unchecked;
+	return GetState()?eFlexMenuIcon_Checked:eFlexMenuIcon_Unchecked;
 }
 
-void FlexMenuItemToggle::GetSaveString(String & strSave)
+void FlexMenuItemToggleBase::GetSaveString(String & strSave)
 {
 	strSave=GetState();
 }
 
-bool FlexMenuItemToggle::LoadString(const String & strLoad)
+bool FlexMenuItemToggleBase::LoadString(const String & strLoad)
 {
 	if(strLoad=="1")
 	{
