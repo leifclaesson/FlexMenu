@@ -38,8 +38,6 @@ public:
 	bool IsSaveable() override { return (flags & 0x80)!=0; }
 	virtual void GetSaveString(String & strSave) override { strSave=strEdit; }
 	virtual bool LoadString(const String & strLoad) override { strEdit=strLoad; OnValueChanged(); return true; };
-	virtual void SetSaveIdx( uint16_t idx ) override { derived_use_3 = (uint8_t) idx; }
-	virtual uint16_t GetSaveIdx( ) override { return derived_use_3; }
 
 	virtual eFlexMenuScreenType GetScreenType() { return eFlexMenuScreenType_Edit; }
 
@@ -56,6 +54,9 @@ class FlexMenuItemEdit : public FlexMenuItemEditBase
 public:
 	String strTitle;
 	void GetTitleText(String & strTitleDestination) { strTitleDestination=strTitle; }
+
+	virtual void SetSaveIdx( uint16_t idx ) override { derived_use_3 = (uint8_t) idx; }
+	virtual uint16_t GetSaveIdx( ) override { return derived_use_3; }
 
 };
 

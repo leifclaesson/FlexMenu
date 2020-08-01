@@ -183,6 +183,10 @@ bool FlexMenuSPIFFS_DoRead(_mapConfig & mapConfig)
 			{
 				String strValue=strText.substring(equ+1);
 				int cr=strValue.indexOf('\r');
+				if(mapConfig[strText.substring(0, equ)]!="")
+				{
+					csprintf("CONFIG KEY DUPE! '%s' already exists\n",strText.substring(0,equ).c_str());
+				}
 				mapConfig[strText.substring(0, equ)]=strValue.substring(0,cr);
 
 				iParametersRead++;

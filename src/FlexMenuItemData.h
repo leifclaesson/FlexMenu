@@ -25,14 +25,11 @@ public:
 };
 
 
-class FlexMenuItemData : public FlexMenuBase
+class FlexMenuItemDataBase : public FlexMenuBase
 {
 public:
-	FlexMenuItemData();
-	virtual ~FlexMenuItemData();
 
 	virtual void GetTitleText(String & strTitleDestination) override { strTitleDestination=""; }
-	virtual void GetIdentifier(String & strIdentifier) override { strIdentifier=strID; }
 
 	virtual bool IsSaveable() override { return true; }
 	virtual void GetSaveString(String & strSave) override { strSave=strData; }
@@ -40,9 +37,16 @@ public:
 
 	virtual void OnValueChanged() {};
 
-	String strID;
 	String strData;
 
+};
+
+class FlexMenuItemData : public FlexMenuItemDataBase
+{
+public:
+
+	virtual void GetIdentifier(String & strIdentifier) override { strIdentifier=strID; }
+	String strID;
 };
 
 
