@@ -172,7 +172,10 @@ bool FlexMenuSPIFFS_DoRead(_mapConfig & mapConfig)
 //			strText=config_file.readStringUntil('\n');
 
 			int newline=strFile.indexOf('\n',read_ofs);
+			if(newline<0) newline=strFile.length();
+			//csprintf("newline at %i\n",newline);
 			strText=strFile.substring(read_ofs, newline);
+			//csprintf("text is %s\n",strText.c_str());
 			read_ofs=newline+1;
 
 
@@ -193,6 +196,9 @@ bool FlexMenuSPIFFS_DoRead(_mapConfig & mapConfig)
 				//Serial.printf("%i %i %i %s '%s'\n",i,equ,cr,strText.substring(0, equ).c_str(),mapConfig[strText.substring(0, equ)].c_str());
 			}
 			i++;
+
+			yield();
+
 		} while(strText.length());
 
 		csprintf("Config file found. %i parameters read.\n",iParametersRead);
@@ -231,9 +237,10 @@ void FlexMenuSPIFFS_DoApply(FlexMenuManager & flexmenu, const _mapConfig & mapCo
 
 					if(pos!=mapConfig.end())
 					{
+						csprintf("Found %s = '%s'\n",strIdentifier.c_str(),pos->second.c_str());
 						pItem->LoadString(pos->second);
 						iParametersUsed++;
-						//Serial.printf("Found %s = '%s'\n",strIdentifier.c_str(),pos->second.c_str());
+
 					}
 
 				}
