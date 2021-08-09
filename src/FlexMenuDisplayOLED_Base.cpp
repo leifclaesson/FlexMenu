@@ -498,6 +498,17 @@ void FlexMenuDisplay_OLED_Base::Output()
 void FlexMenuDisplay_OLED_Base::SetBacklight(uint8_t brightness, bool bMute)
 {
 	OLEDDisplay & display=*params.pOLEDDisplay;
+	if(bDisplayMute!=bMute)
+	{
+		if(bMute)
+		{
+			display.displayOff();
+		}
+		else
+		{
+			display.displayOn();
+		}
+	}
 	bDisplayMute=bMute;
 
 	display.setBrightness(brightness);

@@ -22,7 +22,6 @@ FlexMenuBase * GetTempItem()
 	return &g_tempitem;
 }
 
-
 FlexMenuItemSpacer g_spaceritem;
 
 FlexMenuBase * GetSpacerItem()
@@ -205,13 +204,6 @@ void FlexMenuManager::Navigate(eFlexMenuNav nav)
 		run_history=0;	//wake up the history buffer
 		lastNavigateTimestamp=millis();
 	}
-
-
-	if(millis()-lastNavigateTimestamp>0x40000000)
-	{
-		lastNavigateTimestamp=millis()-0x40000000;	//drag the timestamp along so it the difference never wraps around
-	}
-
 
 
 	if(stateShowMessage!=eShowMessageState_Idle)
@@ -526,7 +518,7 @@ uint8_t FlexMenuManager::HandleAcceleration(int8_t direction)
 	}
 
 	if(ctr<0) ctr=0;
-	if(ctr>150) ctr=150;
+	if(ctr>255) ctr=255;
 
 	accel_counter=ctr;
 	
@@ -659,10 +651,20 @@ bool FlexMenuManager::HandleBacklight()
 	static bool bLastBlankDisplay=false;
 	bool bBlankDisplay=false;
 
+	if(millis()-lastNavigateTimestamp>0x40000000)
+	{
+		lastNavigateTimestamp=millis()-0x40000000;	//drag the timestamp along so the difference never wraps around
+	}
+
 	int32_t age=(int) (millis()-lastNavigateTimestamp);
 
-	int subtract=(age - (1000*iBacklightDimSeconds)) / 500;
 	bBlankDisplay=age>(1000*iDisplayMuteSeconds);
+	if(age>(1000*iDisplayMuteSeconds))
+	{
+		age=(1000*iDisplayMuteSeconds);
+	}
+
+	int subtract=(age - (1000*iBacklightDimSeconds)) / 500;
 
 	if(subtract<0) subtract=0;
 	if(subtract>254) subtract=254;
