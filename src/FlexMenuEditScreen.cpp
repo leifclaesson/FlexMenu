@@ -235,7 +235,7 @@ uint8_t FlexMenuEditScreen::ReadOskTable(int selection)
 #else
 	const void * ptr=&params.osk_table[selection];	//second byte of font is height
 	uint8_t test=0;
-	pgm_read_with_offset(ptr,test)	//it's in flash so we need to call the helper function to read it
+	pgm_read_with_offset(ptr,test);	//it's in flash so we need to call the helper function to read it
 
 	return test;
 #endif

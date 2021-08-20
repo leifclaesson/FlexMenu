@@ -262,7 +262,7 @@ void FlexMenuDisplay_OLED_Base::DrawSliderScreen(FlexMenuBase * pCurMenu)
 
 		const void * ptr=&pUseFont[1];	//second byte of font is height
 		uint8_t test=0;
-		pgm_read_with_offset(ptr,test)	//it's in flash so we need to call the helper function to read it
+		pgm_read_with_offset(ptr,test);	//it's in flash so we need to call the helper function to read it
 		iFontHeight=test-1;
 #endif
 	}
