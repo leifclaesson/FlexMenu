@@ -141,5 +141,7 @@ private:
 
 	uint32_t lastNavigateTimestamp=0;
 
+	bool bLastBlankDisplay=false;
+
 };
 

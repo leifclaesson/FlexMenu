@@ -110,14 +110,17 @@ bool FlexMenuManager::Loop(bool bForceRefresh)
 		{
 			int iCurItem=i+pCurMenu->GetScrollPos();
 			FlexMenuBase * pItem=pCurMenu->GetSubItem(iCurItem);
-			bNeedsRefresh |= pItem->GetNeedsRefresh();
-			if(pItem->GetNeedsRefresh())
+			if(!bLastBlankDisplay)
 			{
-				String strTitle;
-				pItem->GetTitleText(strTitle);
-				//csprintf("%s needs refresh\n",strTitle.c_str());
+				if(pItem->GetNeedsRefresh())
+				{
+					bNeedsRefresh=true;
+					//String strTitle;
+					//pItem->GetTitleText(strTitle);
+					//csprintf("%s needs refresh\n",strTitle.c_str());
+				}
+				pItem->SetNeedsRefresh(false);
 			}
-			pItem->SetNeedsRefresh(false);
 			pItem->SetVisible(true);
 			vecUpdateStatus.push_back(pItem);
 		}
@@ -648,7 +651,7 @@ bool FlexMenuManager::HandleBacklight()
 
 	bool bRet=false;
 
-	static bool bLastBlankDisplay=false;
+
 	bool bBlankDisplay=false;
 
 	if(millis()-lastNavigateTimestamp>0x40000000)
