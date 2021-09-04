@@ -163,13 +163,13 @@ typedef std::function<int(FlexMenuItemSliderCB *, eFMISliderCallback, String *)>
 			case eFMISliderCallback_DisplayValue:	//Use to override the displayed text, in this case to present a decimal value
 			{
 				//single decimal.
-				(*pText)=String(pSource->value/10);
+				(*pText)=String(pSource->GetValue()/10);
 				(*pText)+='.';
-				(*pText)+=String(pSource->value%10);
+				(*pText)+=String(pSource->GetValue()%10);
 
 				//alternative solution using floating point
 				//char temp[16];
-				//sprintf(temp,"%.01f",pSource->value*0.1);
+				//sprintf(temp,"%.01f",pSource->GetValue()*0.1);
 
 				break;
 			}

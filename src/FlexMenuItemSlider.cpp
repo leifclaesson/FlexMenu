@@ -77,7 +77,7 @@ void FlexMenuItemSliderBase::GetValueText(String & strValueDestination)
 		sprintf(temp,"%i",GetValue());
 		strValueDestination=temp;
 #else
-		strValueDestination=GetValue();
+		strValueDestination=String(GetValue(),10);
 #endif
 	}
 }
@@ -238,7 +238,7 @@ int FlexMenuItemSliderBase::GetProgressBar(int iPixelWidth)
 
 void FlexMenuItemSliderBase::GetSaveString(String & strSave)
 {
-	strSave=GetValue();
+	strSave=String(GetValue(),10);
 }
 
 bool FlexMenuItemSliderBase::LoadString(const String & strLoad)

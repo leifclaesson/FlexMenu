@@ -24,10 +24,18 @@ FS & FlexMenuGetFileSystem()
 	return FLEXMENU_FILESYSTEM;
 }
 
+const char * szFlexMenuConfigFilename="/config.txt";
+
+void FlexMenuSetConfigFileName(const char * szFileName)
+{
+	szFlexMenuConfigFilename=szFileName;
+}
+
 const char * FlexMenuGetConfigFileName()
 {
-	return "/config.txt";
+	return szFlexMenuConfigFilename;
 }
+
 
 
 bool FlexMenuSPIFFS_Init(FlexMenuManager & flexmenu)
@@ -36,14 +44,15 @@ bool FlexMenuSPIFFS_Init(FlexMenuManager & flexmenu)
 	if(!FLEXMENU_FILESYSTEM.begin())
 	{
 		csprintf("SPIFFS Mount Failed. Attempting to format.\n");
-		flexmenu.ShowMessage("SPIFFS", "Formatting file system, please wait.",eFlexMenuFont_Large,0);
+		flexmenu.ShowMessage(flexmenu.strTitle, "Formatting file system, please wait.",eFlexMenuFont_Large,0);
+
 		flexmenu.Loop(false);
 		flexmenu.Output();
 
 		if(FLEXMENU_FILESYSTEM.format())
 		{
 			csprintf("format successful\n");
-			flexmenu.ShowMessage("SPIFFS", "Format Successful.",eFlexMenuFont_Large,1000);
+			flexmenu.ShowMessage(flexmenu.strTitle, "Format Successful.",eFlexMenuFont_Large,1000);
 			flexmenu.Loop(false);
 			flexmenu.Output();
 			delay(3000);
@@ -51,7 +60,7 @@ bool FlexMenuSPIFFS_Init(FlexMenuManager & flexmenu)
 			if(FLEXMENU_FILESYSTEM.begin())
 			{
 				csprintf("file system opened\n");
-				flexmenu.ShowMessage("SPIFFS", "File system opened.",eFlexMenuFont_Large,1000);
+				flexmenu.ShowMessage(flexmenu.strTitle, "File system opened.",eFlexMenuFont_Large,1000);
 				flexmenu.Loop(false);
 				flexmenu.Output();
 				delay(3000);
@@ -62,7 +71,7 @@ bool FlexMenuSPIFFS_Init(FlexMenuManager & flexmenu)
 				if(config_file)
 				{
 					config_file.println("placeholder=0");
-					flexmenu.ShowMessage("SPIFFS", "Placeholder Written",eFlexMenuFont_Large,1000);
+					flexmenu.ShowMessage(flexmenu.strTitle, "Placeholder Written",eFlexMenuFont_Large,1000);
 					flexmenu.Loop(false);
 					flexmenu.Output();
 					delay(3000);
@@ -72,7 +81,7 @@ bool FlexMenuSPIFFS_Init(FlexMenuManager & flexmenu)
 			else
 			{
 				csprintf("unable to open file system\n");
-				flexmenu.ShowPermanentErrorMessage("SPIFFS", "Unable to open file system", eFlexMenuFont_Large);
+				flexmenu.ShowPermanentErrorMessage(flexmenu.strTitle, "Unable to open file system", eFlexMenuFont_Large);
 				flexmenu.Loop(false);
 				flexmenu.Output();
 			}
@@ -81,12 +90,13 @@ bool FlexMenuSPIFFS_Init(FlexMenuManager & flexmenu)
 		else
 		{
 			csprintf("error, format failed\n");
-			flexmenu.ShowPermanentErrorMessage("SPIFFS", "ERROR: FORMAT FAILED", eFlexMenuFont_Large);
+			flexmenu.ShowPermanentErrorMessage(flexmenu.strTitle, "ERROR: FORMAT FAILED", eFlexMenuFont_Large);
 			flexmenu.Loop(false);
 			flexmenu.Output();
 		}
 
 		flexmenu.Loop(false);
+		flexmenu.Output();
 
 		return false;
 
@@ -96,6 +106,7 @@ bool FlexMenuSPIFFS_Init(FlexMenuManager & flexmenu)
 		csprintf("mounted existing file system on the first try\n");
 
 		flexmenu.Loop(false);
+		flexmenu.Output();
 
 		return true;
 
@@ -254,14 +265,14 @@ void FlexMenuSPIFFS_DoApply(FlexMenuManager & flexmenu, const _mapConfig & mapCo
 		strTemp+=mapConfig.size(); strTemp+=" params read\n";
 		strTemp+=iParametersUsed; strTemp+=" params used";
 
-		flexmenu.ShowMessage("Gate Controller", strTemp, eFlexMenuFont_Large, 1000);
+		flexmenu.ShowMessage(flexmenu.strTitle, strTemp, eFlexMenuFont_Large, 1000);
 
 
 	}
 	else
 	{
 
-		flexmenu.ShowMessage("Gate Controller", "No config file found.", eFlexMenuFont_Large, 1000);
+		flexmenu.ShowMessage(flexmenu.strTitle, "No config file found.", eFlexMenuFont_Large, 1000);
 
 	}
 

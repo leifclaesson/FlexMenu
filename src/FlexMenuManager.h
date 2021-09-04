@@ -32,6 +32,8 @@ public:
 	FlexMenuManager();
 	~FlexMenuManager();
 
+	String strTitle="FlexMenu";
+
 	FlexMenuSub * Init(FlexMenuDisplay * pDisplay);	//returns the top menu!
 
 	bool Loop(bool bForceRefresh);	//return true if the display needs to be updated

@@ -24,7 +24,7 @@ eFlexMenuIcon FlexMenuItemToggleBase::UseIcon()
 
 void FlexMenuItemToggleBase::GetSaveString(String & strSave)
 {
-	strSave=GetState();
+	strSave=String(GetState());
 }
 
 bool FlexMenuItemToggleBase::LoadString(const String & strLoad)

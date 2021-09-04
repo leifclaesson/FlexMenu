@@ -1,10 +1,9 @@
 // * Copyright 2020 Leif Claesson. Licenced under the GNU GPL Version 3.
 
-#include <LeifESPBase.h>
+#include <Arduino.h>
 #include <FlexMenuGlobalItems.h>
 #include "stdafx.h"
 #include "FlexMenuManager.h"
-
 #include "FlexMenuSub.h"
 
 FlexMenuItemLeave g_leave;

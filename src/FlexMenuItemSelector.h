@@ -101,7 +101,7 @@ class FlexMenuItemSelectorBase8 : public FlexMenuItemSelectorBase
 public:
 
 	virtual int16_t GetScrollPos() override { return derived_use_1; }
-	virtual void SetScrollPos(uint16_t iNewScrollPos) { derived_use_1=(uint8_t) iNewScrollPos; };
+	virtual void SetScrollPos(int16_t iNewScrollPos) override { derived_use_1=(uint8_t) iNewScrollPos; };
 
 	virtual int16_t GetCurItem() override { return derived_use_2; }
 	virtual void SetCurItem(int16_t iNewCurItem) { derived_use_2=(uint8_t) iNewCurItem; };

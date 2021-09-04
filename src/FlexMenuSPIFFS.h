@@ -35,6 +35,7 @@ void FlexMenuSPIFFS_DoSave(FlexMenuManager & flexmenu);
 
 FS & FlexMenuGetFileSystem();
 const char * FlexMenuGetConfigFileName();
+void FlexMenuSetConfigFileName(const char * szFileName);
 
 
 

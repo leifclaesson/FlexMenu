@@ -9,7 +9,11 @@
 #else
 #include <Arduino.h>
 #ifndef HAS_CSPRINTF
-#define csprintf Serial.printf
+	#ifdef FLEXMENU_DEBUG_PRINT
+	#define csprintf Serial.printf
+	#else
+	#define csprintf(...)
+	#endif
 #endif
 #endif
 

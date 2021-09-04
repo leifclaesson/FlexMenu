@@ -96,13 +96,13 @@ void FlexMenuItemSelectorBase::GetSaveString(String & strSave)
 		GetValueText(strSave);
 		break;
 	case eFMISelector_Mode_SaveIndex:
-		strSave=GetCurSel();
+		strSave=String(GetCurSel());
 		break;
 	case eFMISelector_Mode_SaveID:
 
 		if(GetCurSel()>=0 && GetCurSel()<(int) SelectorItem_GetCount())
 		{
-			strSave=SelectorItem_GetID(GetCurSel());
+			strSave=String(SelectorItem_GetID(GetCurSel()));
 		}
 		else
 		{
