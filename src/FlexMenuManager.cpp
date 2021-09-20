@@ -178,6 +178,16 @@ void FlexMenuManager::Output()
 	pDisplay->Output();
 }
 
+void FlexMenuManager::ForceRefresh()
+{
+	lastNavigateTimestamp=millis();
+	if(pCurMenu)
+	{
+		pCurMenu->SetNeedsRefresh(true);
+	}
+	last_filtered=0xFFFF;
+}
+
 void FlexMenuManager::Navigate(eFlexMenuNav nav)
 {
 	InitialEnterMenu();
@@ -676,7 +686,6 @@ bool FlexMenuManager::HandleBacklight()
 
 	filterBacklight.run(brightness, filtered);
 
-	static uint16_t last_filtered=0;
 
 
 	bool bDoCallback=false;

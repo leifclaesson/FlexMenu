@@ -64,6 +64,8 @@ public:
 	void SetSaveCommand(FlexMenuItemCommand * pSaveCommand) { this->pSaveCommand=pSaveCommand; }
 	FlexMenuItemCommand * GetSaveCommand() { return pSaveCommand; }
 
+	void ForceRefresh();
+
 private:
 
 	FlexMenuItemCommand * pSaveCommand=NULL;
@@ -144,6 +146,8 @@ private:
 	uint32_t lastNavigateTimestamp=0;
 
 	bool bLastBlankDisplay=false;
+
+	uint16_t last_filtered=0;
 
 };
 
