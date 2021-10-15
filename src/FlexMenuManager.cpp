@@ -701,6 +701,15 @@ bool FlexMenuManager::HandleBacklight()
 		bLastBlankDisplay=bBlankDisplay;
 		bRet=true;
 		bDoCallback=true;
+
+		if(!bBlankDisplay)
+		{
+			if(fnWakingDisplay)
+			{
+				fnWakingDisplay();
+			}
+		}
+
 	}
 
 	if(bDoCallback)
@@ -740,3 +749,7 @@ void FlexMenuManager::RegisterOnLoopCallback(std::function<void(void)> fn)
 	vecFnOnLoop.push_back(fn);
 }
 
+void FlexMenuManager::SetWakingDisplayCallback(std::function<void(void)> fn)
+{
+	fnWakingDisplay=fn;
+}

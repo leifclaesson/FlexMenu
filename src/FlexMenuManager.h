@@ -59,6 +59,8 @@ public:
 	void RegisterOnSettingsLoadedCallback(std::function<void(void)> fn);
 	void RegisterOnLoopCallback(std::function<void(void)> fn);
 
+	void SetWakingDisplayCallback(std::function<void(void)> fn);
+
 	void DoOnSettingsLoadedCallback();
 
 	void SetSaveCommand(FlexMenuItemCommand * pSaveCommand) { this->pSaveCommand=pSaveCommand; }
@@ -74,6 +76,9 @@ private:
 	bool bOnSettingsLoadedDone=false;
 	std::vector<std::function<void(void)>> vecFnOnLoop;
 	void DoOnLoopCallback();
+
+
+	std::function<void(void)> fnWakingDisplay;
 
 	int iBacklightDimSeconds=60*15;	//default 15 minutes
 	int iDisplayMuteSeconds=60*60*4;	//default 4 hours
