@@ -84,6 +84,7 @@ void setup()
 	CreateMenuStructure();
 
 
+	pinMode(ROTARY_PIN_BTN,INPUT);
 	pinMode(ROTARY_PIN_I,INPUT);
 	pinMode(ROTARY_PIN_Q,INPUT);
 
