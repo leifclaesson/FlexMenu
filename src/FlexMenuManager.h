@@ -68,7 +68,19 @@ public:
 
 	void ForceRefresh();
 
+	FlexMenuBase * GetCurMenu();
+
+	void SetLoopSafety(int count);	//how many times to allow while re-navigating to skip items with AllowLand()==false. default 10.
+
+	int GetBottomBumpCount();
+	int GetTopBumpCount();
+
 private:
+	int iLoopSafety=10;
+
+	int iBottomBumpCount;
+	int iTopBumpCount;
+	uint32_t timestampBump=0;
 
 	FlexMenuItemCommand * pSaveCommand=NULL;
 
@@ -153,6 +165,8 @@ private:
 	bool bLastBlankDisplay=false;
 
 	uint16_t last_filtered=0;
+
+	FlexMenuBase * pCurFocusItem=0;
 
 };
 

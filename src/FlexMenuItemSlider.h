@@ -100,7 +100,7 @@ public:
 
 
 
-private:
+protected:
 	int _value=0;
 
 	int _range_min=0;

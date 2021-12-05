@@ -2,6 +2,7 @@
 #pragma once
 
 #include <functional>
+#include <vector>
 
 #ifdef WIN32
 #define String std::string
@@ -27,6 +28,8 @@ enum eFlexMenuNav
 	eFlexMenuNav_Push,		//rotary encoder push
 	eFlexMenuNav_Release,	//rotary encoder release
 	eFlexMenuNav_Back,		//discrete back key
+	eFlexMenuNav_First,		//go to first menu item in current menu
+	eFlexMenuNav_Last,		//go to last menu item in current menu
 
 	eFlexMenuNav_PushRepeat,	//FlexMenuManager feeds to child objects while rotary encoder is pushed
 };
@@ -88,6 +91,9 @@ public:
 	virtual void OnEnter();
 	virtual void OnReturn();
 	virtual void OnLeave();
+
+	virtual void OnFocusGain() {};
+	virtual void OnFocusLoss() {};
 
 	virtual bool AllowLand() { return true; }
 

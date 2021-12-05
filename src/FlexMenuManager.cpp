@@ -218,6 +218,50 @@ void FlexMenuManager::Navigate(eFlexMenuNav nav)
 	}
 
 
+	//Check for top / bottom bumping here, i.e. are we being asked to navigate past the end?
+	switch(nav)
+	{
+	case eFlexMenuNav_Prev:
+		if(pCurMenu && pCurMenu->GetScreenType()==eFlexMenuScreenType_Normal && pCurMenu->GetNumSubItems()>1 && pCurMenu->GetCurItem()==0 && pCurMenu->GetCurItemPtr()->CanNavigate(eFlexMenuNav_Prev, 0))
+		{
+			iTopBumpCount++;
+			timestampBump=millis();
+		}
+		else
+		{
+			iTopBumpCount=0;
+		}
+		iBottomBumpCount=0;
+		break;
+	case eFlexMenuNav_Next:
+		if(pCurMenu && pCurMenu->GetScreenType()==eFlexMenuScreenType_Normal && pCurMenu->GetNumSubItems()>1 && pCurMenu->GetCurItem()==pCurMenu->GetNumSubItems()-1 && pCurMenu->GetCurItemPtr()->CanNavigate(eFlexMenuNav_Next, 0))
+		{
+			iBottomBumpCount++;
+			timestampBump=millis();
+		}
+		else
+		{
+			iBottomBumpCount=0;
+		}
+		iTopBumpCount=0;
+		break;
+	default:
+		iBottomBumpCount=0;
+		iTopBumpCount=0;
+		break;
+	}
+
+	if(iBottomBumpCount || iTopBumpCount)
+	{
+		if((millis()-timestampBump) > 500)
+		{
+			iBottomBumpCount=0;
+			iTopBumpCount=0;
+		}
+	}
+
+
+
 	if(stateShowMessage!=eShowMessageState_Idle)
 	{
 
@@ -245,7 +289,12 @@ void FlexMenuManager::Navigate(eFlexMenuNav nav)
 re_navigate:
 	safety++;
 
-	if(safety>10) return;
+	if((safety & 15) == 15)	//if iLoopSafety is above 15 then make sure we give the OS some time to run while we're looping
+	{
+		delay(0);	//yield
+	}
+
+	if(safety>iLoopSafety) return;
 	
 	int cur_item=pCurMenu->GetCurItem();
 	int scrollpos=pCurMenu->GetScrollPos();
@@ -296,6 +345,19 @@ re_navigate:
 			if(pCurMenu->CanNavigate(eFlexMenuNav_Next,HandleAcceleration(1)))
 			{
 				cur_item++;
+			}
+			break;
+		case eFlexMenuNav_First:
+			if(pCurMenu->CanNavigate(eFlexMenuNav_Prev,HandleAcceleration(1)) && pCurMenu->CanNavigate(eFlexMenuNav_First,HandleAcceleration(1)))
+			{
+				cur_item=0;
+			}
+			break;
+		case eFlexMenuNav_Last:
+			if(pCurMenu->CanNavigate(eFlexMenuNav_Next,HandleAcceleration(1)) && pCurMenu->CanNavigate(eFlexMenuNav_Last,HandleAcceleration(1)))
+			{
+				cur_item=pCurMenu->GetNumSubItems()-1;
+				if(cur_item<0) cur_item=0;
 			}
 			break;
 		case eFlexMenuNav_Back:
@@ -381,6 +443,14 @@ re_navigate:
 	pCurMenu->SetCurItem(cur_item);
 	pCurMenu->SetScrollPos(scrollpos);
 
+	FlexMenuBase * pNewFocusItem=pCurMenu->GetCurItemPtr();
+	if(pNewFocusItem!=pCurFocusItem)
+	{
+		if(pCurFocusItem) pCurFocusItem->OnFocusLoss();
+		pCurFocusItem=pNewFocusItem;
+		if(pCurFocusItem) pCurFocusItem->OnFocusGain();
+	}
+
 	if(last_scrollpos!=scrollpos)
 	{
 		int bumped_item=-1;
@@ -402,12 +472,21 @@ re_navigate:
 		}
 	}
 
-	if(nav==eFlexMenuNav_Prev || nav==eFlexMenuNav_Next)
+	if(nav==eFlexMenuNav_Prev || nav==eFlexMenuNav_Next || nav==eFlexMenuNav_First || nav==eFlexMenuNav_Last)
 	{
 		int cur_item=pCurMenu->GetCurItem();
 		FlexMenuBase * pCurItem=pCurMenu->GetSubItem(cur_item);
 		if(pCurItem && !pCurItem->AllowLand() && cur_item>=0 && cur_item<pCurMenu->GetNumSubItems()-1 && cur_item!=last_cur_item)
 		{
+			if(nav==eFlexMenuNav_First)
+			{
+				nav=eFlexMenuNav_Next;	//just in case we can't land on the first item
+			}
+			else if(nav==eFlexMenuNav_Last)
+			{
+				nav=eFlexMenuNav_Prev;	//just in case we can't land on the last item
+			}
+
 			goto re_navigate;
 		}
 	}
@@ -752,4 +831,32 @@ void FlexMenuManager::RegisterOnLoopCallback(std::function<void(void)> fn)
 void FlexMenuManager::SetWakingDisplayCallback(std::function<void(void)> fn)
 {
 	fnWakingDisplay=fn;
+}
+
+FlexMenuBase * FlexMenuManager::GetCurMenu()
+{
+	return pCurMenu;
+}
+
+void FlexMenuManager::SetLoopSafety(int count)
+{
+	iLoopSafety=count;
+}
+
+int FlexMenuManager::GetBottomBumpCount()
+{
+	if(iBottomBumpCount && (millis()-timestampBump)>500)
+	{
+		iBottomBumpCount=0;
+	}
+	return iBottomBumpCount;
+}
+
+int FlexMenuManager::GetTopBumpCount()
+{
+	if(iTopBumpCount && (millis()-timestampBump)>500)
+	{
+		iTopBumpCount=0;
+	}
+	return iTopBumpCount;
 }
