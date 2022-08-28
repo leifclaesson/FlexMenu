@@ -57,6 +57,9 @@ public:
 	virtual void GetSaveString(String & strSave) override;
 	virtual bool LoadString(const String & strLoad) override;
 
+	void SetActiveFlag(bool bActive) { if(bActive) flags |= 0x20; else flags &=(0xFF-0x20); }
+	bool IsActiveFlag() { return (flags & 0x20)!=0; }
+
 	virtual void ClearHistoryBuffer(uintptr_t * data, int count) override;
 	virtual void HistoryBuffer(uintptr_t * data) override;
 

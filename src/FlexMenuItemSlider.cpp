@@ -27,10 +27,10 @@ bool FlexMenuItemSliderBase::CanNavigate(eFlexMenuNav direction, uint8_t accel)
 	default:
 		break;
 	case eFlexMenuNav_Prev:
-		DoAdjust(-1,accel);
+		if(IsActiveFlag()) DoAdjust(-1,accel);
 		return false;
 	case eFlexMenuNav_Next:
-		DoAdjust(1,accel);
+		if(IsActiveFlag()) DoAdjust(1,accel);
 		return false;
 	};
 
@@ -53,6 +53,7 @@ void FlexMenuItemSliderBase::OnEnter()
 	item.pParent=this;
 	item.bIsLeave=true;
 
+	SetActiveFlag(true);
 }
 
 void FlexMenuItemSliderBase::OnLeave()
@@ -65,7 +66,11 @@ void FlexMenuItemSliderBase::OnLeave()
 		}
 		OnValueChanged();
 	}
+
 	SetModified(false);
+
+	SetActiveFlag(false);
+
 }
 
 void FlexMenuItemSliderBase::GetValueText(String & strValueDestination)
