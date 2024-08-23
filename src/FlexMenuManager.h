@@ -38,6 +38,7 @@ public:
 
 	bool Loop(bool bForceRefresh);	//return true if the display needs to be updated
 
+	void ResetDisplayTimeout();
 	void SetBacklightDimDelay(int seconds) { iBacklightDimSeconds=seconds; };
 	void SetDisplayMuteDelay(int seconds) { iDisplayMuteSeconds=seconds; };
 

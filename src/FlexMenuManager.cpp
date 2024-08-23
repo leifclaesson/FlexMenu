@@ -188,6 +188,11 @@ void FlexMenuManager::ForceRefresh()
 	last_filtered=0xFFFF;
 }
 
+void FlexMenuManager::ResetDisplayTimeout()
+{
+	lastNavigateTimestamp=millis();
+}
+
 void FlexMenuManager::Navigate(eFlexMenuNav nav)
 {
 	InitialEnterMenu();
@@ -739,6 +744,8 @@ bool FlexMenuManager::HandleBacklight()
 
 	bool bRet=false;
 
+	if(stateShowMessage==eShowMessageState_Displaying) return bRet;
+
 
 	bool bBlankDisplay=false;
 
@@ -748,6 +755,7 @@ bool FlexMenuManager::HandleBacklight()
 	}
 
 	int32_t age=(int) (millis()-lastNavigateTimestamp);
+
 
 	bBlankDisplay=age>(1000*iDisplayMuteSeconds);
 	if(age>(1000*iDisplayMuteSeconds))
