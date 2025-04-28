@@ -72,7 +72,7 @@ bool FlexMenuManager::Loop(bool bForceRefresh)
 
 	DoOnLoopCallback();
 
-	bool bNeedsRefresh=false;
+	bool bItemNeedsRefresh=false;
 
 
 
@@ -113,7 +113,7 @@ bool FlexMenuManager::Loop(bool bForceRefresh)
 			{
 				if(pItem->GetNeedsRefresh())
 				{
-					bNeedsRefresh=true;
+					bItemNeedsRefresh=true;
 					//String strTitle;
 					//pItem->GetTitleText(strTitle);
 					//csprintf("%s needs refresh\n",strTitle.c_str());
@@ -135,15 +135,15 @@ bool FlexMenuManager::Loop(bool bForceRefresh)
 
 
 
-	if(bWeNeedRefresh || pDisplay->DisplayNeedsRefresh(pCurMenu) || bNeedsRefresh || bForceRefresh || pLastMenu!=pCurMenu || iLastItem!=pCurMenu->GetCurItem() || iLastScrollPos!=pCurMenu->GetScrollPos() || pCurMenu->GetNeedsRefresh())
+	if(bWeNeedRefresh || pDisplay->DisplayNeedsRefresh(pCurMenu) || bItemNeedsRefresh || bForceRefresh || pLastMenu!=pCurMenu || iLastItem!=pCurMenu->GetCurItem() || iLastScrollPos!=pCurMenu->GetScrollPos() || pCurMenu->GetNeedsRefresh())
 	{
 
 /*
 		if(bWeNeedRefresh) csprintf("W");
-		if(bNeedsRefresh) csprintf("N");
+		if(bItemNeedsRefresh) csprintf("I");
 		if(bForceRefresh ) csprintf("F");
 		if( pLastMenu!=pCurMenu) csprintf("M");
-		if(iLastItem!=pCurMenu->GetCurItem()) csprintf("I");
+		if(iLastItem!=pCurMenu->GetCurItem()) csprintf("D");
 		if( iLastScrollPos!=pCurMenu->GetScrollPos()) csprintf("S");
 		if(pCurMenu->GetNeedsRefresh()) csprintf("R");
 		if(pDisplay->DisplayNeedsRefresh(pCurMenu)) csprintf("D");

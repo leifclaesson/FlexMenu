@@ -7,6 +7,8 @@
 
 #include <FlexMenuDisplayOLED.h>
 
+#ifdef FLEXMENU_OLED
+
 #include "fonts\Regular_10.h"
 #include "fonts\Bold_12.h"
 #include "fonts\Monospaced_14.h"
@@ -35,7 +37,7 @@ char PROGMEM _osk_table[]={
 		"0123456789-+=*"
 		"\1\2\3\4\5\6\0\0\0\0\0\0\0\0"
 		"!?#$%&:;/\\()[]"
-		"åäöæøüÅÄÖÆØÜßµ"
+		"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ßµ"
 		"<>@'`{|}~^\"_.,"
 		"\1\2\3\4\5\6\0\0\0\0\0\0\0\0"
 		};
@@ -53,7 +55,7 @@ char PROGMEM _osk_table[]={
 		"<>@'`{|}~^\"_.,"
 		"\1\2\3\4\5\6\0\0\0\0\0\0\0\0"
 		"0123456789-+=*"
-		"åäöæøüÅÄÖÆØÜßµ"
+		"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ßµ"
 		"\1\2\3\4\5\6\0\0\0\0\0\0\0\0"
 		};
 */
@@ -122,3 +124,5 @@ void FlexMenuDisplay_OLED::InitResources_Edit(FlexMenuEditScreenParams & ep)
 
 
 }
+
+#endif

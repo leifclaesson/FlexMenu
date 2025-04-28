@@ -1,5 +1,31 @@
 //  *** FileToArray 2.1, (C) Leif Claesson 2006-2020 ***
 
+#define blank_10_size 11
+
+#ifdef FILETOARRAY_EXTERN_ONLY
+extern unsigned char blank_10[11];
+#else
+unsigned char blank_10[11] PROGMEM =
+{
+0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+};
+#endif
+
+//  *** FileToArray 2.1, (C) Leif Claesson 2006-2020 ***
+
+#define blank_12_size 10
+
+#ifdef FILETOARRAY_EXTERN_ONLY
+extern unsigned char blank_12[10];
+#else
+unsigned char blank_12[10] PROGMEM =
+{
+0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+};
+#endif
+
+//  *** FileToArray 2.1, (C) Leif Claesson 2006-2020 ***
+
 #define arrows_size 16
 
 #ifdef FILETOARRAY_EXTERN_ONLY

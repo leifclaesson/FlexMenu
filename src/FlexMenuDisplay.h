@@ -5,6 +5,11 @@
 
 class FlexMenuBase;
 
+#if defined(FLEXMENU_U8G2)
+#elif defined(FLEXMENU_OLED)
+#else
+#define FLEXMENU_OLED
+#endif
 
 typedef std::function<void(void)> fn_FlexMenuDisplayInterimCallback;
 

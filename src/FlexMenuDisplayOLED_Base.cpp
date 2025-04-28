@@ -1,6 +1,10 @@
 // * Copyright 2020 Leif Claesson. Licenced under the GNU GPL Version 3.
 
 #include <FlexMenuDisplayOLED_Base.h>
+
+
+#ifdef FLEXMENU_OLED
+
 #include <FlexMenuItemSlider.h>
 #include <SH1106.h>
 #include "FlexMenuBase.h"
@@ -374,7 +378,7 @@ void FlexMenuDisplay_OLED_Base::ESCB_DrawEditBox(const FlexMenuEditScreenParams 
 }
 
 
-void FlexMenuDisplay_OLED_Base::ESCB_DrawOSK_Key(uint16_t x, uint16_t y, uint16_t cx, uint16_t cy, eEditOskDrawKey mode, const osk_icondef * pIcon, const String * pText)
+void FlexMenuDisplay_OLED_Base::ESCB_DrawOSK_Key(const FlexMenuEditScreenParams & editparams, uint16_t x, uint16_t y, uint16_t cx, uint16_t cy, eEditOskDrawKey mode, const osk_icondef * pIcon, const String * pText)
 {
 	OLEDDisplay & display=*params.pOLEDDisplay;
 	display.setColor(INVERSE);
@@ -514,3 +518,4 @@ void FlexMenuDisplay_OLED_Base::SetBacklight(uint8_t brightness, bool bMute)
 	display.setBrightness(brightness);
 }
 
+#endif

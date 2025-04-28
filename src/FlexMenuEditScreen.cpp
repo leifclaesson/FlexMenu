@@ -263,7 +263,7 @@ void FlexMenuEditScreen::EditScreen_Draw(FlexMenuBase * pCurMenu)
 
 	for(int y=0;y<cells_y;y++)
 	{
-		int cur_y=(y*iFontHeight)+edit_height;
+		int cur_y=(y*iFontHeight)+edit_height+params.osk_shift_y;
 
 		//index of the beginning of this row
 		int table_idx=(((y+scroll_y)*params.osk_width)+params.osk_table_length) % params.osk_table_length;
@@ -290,7 +290,7 @@ void FlexMenuEditScreen::EditScreen_Draw(FlexMenuBase * pCurMenu)
 
 				osk_icondef & icon=params.osk_icons[ReadOskTable(table_idx+i)];
 
-				ESCB_DrawOSK_Key(cur_x, cur_y, cur_cx, iFontHeight, mode, &icon, NULL);
+				ESCB_DrawOSK_Key(params, cur_x, cur_y, cur_cx, iFontHeight, mode, &icon, NULL);
 
 			}
 
@@ -311,7 +311,7 @@ void FlexMenuEditScreen::EditScreen_Draw(FlexMenuBase * pCurMenu)
 					mode=eEditOskDrawKey_Selected;
 				}
 
-				ESCB_DrawOSK_Key(cur_x, cur_y, (cell_width_lsh10)>>10, iFontHeight, mode, NULL, &str);
+				ESCB_DrawOSK_Key(params, cur_x, cur_y, (cell_width_lsh10)>>10, iFontHeight, mode, NULL, &str);
 
 			}
 		}
@@ -340,7 +340,7 @@ void FlexMenuEditScreen::EditScreen_OnEditMode(FlexMenuBase * pCurMenu, bool bEn
 	FlexMenuItemEdit * pItemEdit=(FlexMenuItemEdit *) pCurMenu;
 	if(bEnable)
 	{
-		csprintf("pItemEdit->strEdit=%s\n",pItemEdit->strEdit.c_str());
+		//csprintf("pItemEdit->strEdit=%s\n",pItemEdit->strEdit.c_str());
 		strEdit=pItemEdit->strEdit;
 		selection=params.initial_osk_selection;
 		iCursor=strEdit.length();

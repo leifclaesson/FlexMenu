@@ -5,10 +5,13 @@
  *      Author: user
  */
 
+
 #ifndef LIBRARIES_FLEXMENU_SRC_FLEXMENUDISPLAYOLED_H_
 #define LIBRARIES_FLEXMENU_SRC_FLEXMENUDISPLAYOLED_H_
 
 #include "FlexMenuDisplayOLED_Base.h"
+
+#ifdef FLEXMENU_OLED
 
 class FlexMenuDisplay_OLED : public FlexMenuDisplay_OLED_Base
 {
@@ -21,5 +24,7 @@ public:
 	virtual void InitResources_Edit(FlexMenuEditScreenParams & ep);
 
 };
+
+#endif
 
 #endif /* LIBRARIES_FLEXMENU_SRC_FLEXMENUDISPLAYOLED_H_ */

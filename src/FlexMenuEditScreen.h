@@ -1,3 +1,4 @@
+#pragma once
 // * Copyright 2020 Leif Claesson. Licenced under the GNU GPL Version 3.
 
 #include "FlexMenuBase.h"
@@ -31,6 +32,8 @@ public:
 	int osk_width;
 	int osk_height;
 
+	int osk_shift_y;
+
 	int initial_osk_selection=0;
 
 	osk_icondef * osk_icons;
@@ -41,6 +44,7 @@ public:
 
 	int iMaxCharsX=0;
 	int iEditTextShiftX=0;
+	int iEditTextShiftY=0;
 
 };
 
@@ -66,7 +70,7 @@ public:
 private:
 
 	virtual void ESCB_DrawEditBox(const FlexMenuEditScreenParams & editparams, const String & strDisplayText, const String & strBeforeCursor, bool bDrawCursor)=0;
-	virtual void ESCB_DrawOSK_Key(uint16_t x, uint16_t y, uint16_t cx, uint16_t cy, eEditOskDrawKey mode, const osk_icondef * pIcon, const String * pText)=0;
+	virtual void ESCB_DrawOSK_Key(const FlexMenuEditScreenParams & editparams, uint16_t x, uint16_t y, uint16_t cx, uint16_t cy, eEditOskDrawKey mode, const osk_icondef * pIcon, const String * pText)=0;
 
 
 	FlexMenuEditScreenParams params;

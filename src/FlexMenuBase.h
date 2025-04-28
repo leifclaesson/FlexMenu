@@ -15,6 +15,8 @@
 	#else
 	#define csprintf(...)
 	#endif
+#else
+#include <LeifESPBase.h>
 #endif
 #endif
 
@@ -130,7 +132,7 @@ public:
 	virtual void GetTitleText(String & strTitleDestination)=0;
 	virtual void GetValueText(String & strValueDestination) { strValueDestination=""; }
 
-	virtual eFlexMenuIcon UseIcon() { return eFlexMenuIcon_Blank; }
+	virtual eFlexMenuIcon UseIcon() { return eFlexMenuIcon_None; }
 
 	virtual void OnPush() {};
 	virtual void OnPushChild() {};

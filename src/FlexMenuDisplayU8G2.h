@@ -1,7 +1,6 @@
-// * Copyright 2020 Leif Claesson. Licenced under the GNU GPL Version 3.
+#pragma once
 
-#ifndef LIBRARIES_FLEXMENU_SRC_FLEXMENUDISPLAY_OLED_BASE_H_
-#define LIBRARIES_FLEXMENU_SRC_FLEXMENUDISPLAY_OLED_BASE_H_
+#ifdef FLEXMENU_U8G2
 
 #include <Arduino.h>
 #include "FlexMenuDisplay.h"
@@ -9,42 +8,37 @@
 #include "FlexMenuEditScreen.h"
 
 
-#ifdef FLEXMENU_OLED
 
+class U8G2;
 
-class OLEDDisplay;
-class FlexMenuItemEdit;
-
-
-class FlexMenuDisplay_OLED_Base_Params
+class FlexMenuDisplay_U8G2_Params
 {
 public:
-	FlexMenuDisplay_OLED_Base_Params()
+	FlexMenuDisplay_U8G2_Params()
 	{
 	}
 
 	int iScreenCX=128;
-	int iScreenCY=64;
+	int iScreenCY=128;
 
-	OLEDDisplay * pOLEDDisplay;
+	U8G2 * pU8G2=nullptr;
 
 };
 
-class FlexMenuDisplay_OLED_Base : public FlexMenuDisplay, public FlexMenuEditScreen
+class FlexMenuDisplay_U8G2 : public FlexMenuDisplay, public FlexMenuEditScreen
 {
 public:
-	FlexMenuDisplay_OLED_Base();
-	virtual ~FlexMenuDisplay_OLED_Base();
+	FlexMenuDisplay_U8G2();
 
-	virtual void SetParams(FlexMenuDisplay_OLED_Base_Params * pParams);
+	virtual void SetParams(FlexMenuDisplay_U8G2_Params * pParams);
 
 protected:
 
-	FlexMenuDisplay_OLED_Base_Params params;
+	FlexMenuDisplay_U8G2_Params params;
 
-	virtual void InitResources_MenuIcons()=0;
-	virtual void InitResources_MenuFonts()=0;
-	virtual void InitResources_Edit(FlexMenuEditScreenParams & ep)=0;
+	void InitResources_MenuIcons();
+	void InitResources_MenuFonts();
+	void InitResources_Edit(FlexMenuEditScreenParams & ep);
 
 	virtual bool HistoryBuffer(FlexMenuBase * pCurMenu, uintptr_t * data) override;
 
@@ -58,6 +52,8 @@ protected:
 
 	const uint8_t * pFontSlider=NULL;
 	int iFontHeightSlider=0;
+
+	int iFontShiftY=0;
 
 	int iIconCX=0;
 	int iIconCY=0;
@@ -101,9 +97,12 @@ protected:
 
 	bool bDisplayMute=false;
 
+	void printwords(const char * msg, int xloc, int yloc);
+
 };
 
+
+
+
+
 #endif
-
-#endif /* LIBRARIES_FLEXMENU_SRC_FLEXMENUDISPLAY_OLED_BASE_H_ */
-
