@@ -166,6 +166,15 @@ void FlexMenuDisplay_U8G2::DrawScreen(FlexMenuBase * pCurMenu)
 {
 	U8G2 & u = *params.pU8G2;
 
+	if(params.pCallback)
+	{
+		if(params.pCallback->OverrideDrawScreen(pCurMenu))
+		{
+			return;
+		}
+	}
+
+
 	u.clearBuffer();
 	u.setFont(pFont);
 
@@ -645,7 +654,12 @@ void FlexMenuDisplay_U8G2::DrawMessage(FlexMenuBase * pCurMenu)
 
 	yield();
 
+
+	drawStrWordWrap(&u, 64, 32, 128, 8, strTemp2.c_str(), 1);
+
 	//display.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
+
+/*
 	if(strTemp2.indexOf('\n') >= 0)
 	{
 		printwords(strTemp2.c_str(), 0, 32);
@@ -657,7 +671,7 @@ void FlexMenuDisplay_U8G2::DrawMessage(FlexMenuBase * pCurMenu)
 		u.drawStr(params.iScreenCX / 2 - u.getStrWidth(strTemp2.c_str()) / 2, line2_y + iFontShiftY, strTemp2.c_str());
 		//u.drawStr(params.iScreenCX / 2 - u.getStrWidth(strTemp2.c_str()) / 2, iLineHeight+(iLineHeight>>1) + iFontShiftY, params.iScreenCX-1, strTemp2.c_str());
 	}
-
+*/
 
 }
 
@@ -704,56 +718,102 @@ void FlexMenuDisplay_U8G2::SetBacklight(uint8_t brightness, bool bMute)
 
 
 
-// display a string on multiple lines, keeping words intact where possible
-void FlexMenuDisplay_U8G2::printwords(const char * msg, int xloc, int yloc)
+void drawStrWordWrap(U8G2 * pU8G2, int16_t x, int16_t y, uint16_t xmax_pixels, uint16_t max_lines, const char * text, int align)
 {
-/*
-	U8G2 & u8g2 = *params.pU8G2;
-	int dspwidth = u8g2.getDisplayWidth(); // display width in pixels
-	int strwidth = 0;  // string width in pixels
+	//align: 0 = left, 1 = center, 2 = right
+
+	uint16_t uLineHeight = pU8G2->getMaxCharHeight();
+
 	char glyph[2];
 	glyph[1] = 0;
-	for(const char * ptr = msg, *lastblank = NULL; *ptr; ++ptr)
-	{
-		while(xloc == 0 && (*msg == ' ' || *msg == '\n'))
-			if(ptr == msg++)
-			{
-				++ptr;    // skip blanks and newlines at the left edge
-			}
-		glyph[0] = *ptr;
-		strwidth += u8g2.getStrWidth(glyph); // accumulate the pixel width
-		if(*ptr == ' ')
-		{
-			lastblank = ptr;    // remember where the last blank was
-		}
-		else
-		{
-			++strwidth;    // non-blanks will be separated by one additional pixel
-		}
-		if(*ptr == '\n' ||    // if we found a newline character,
-		        xloc + strwidth > dspwidth)   // or if we ran past the right edge of the display
-		{
-			int starting_xloc = xloc;
-			// print to just before the last blank, or to just before where we got to
-			while(msg < (lastblank ? lastblank : ptr))
-			{
-				glyph[0] = *msg++;
-				xloc += u8g2.drawStr(xloc, yloc, glyph);
-			}
-			strwidth -= xloc - starting_xloc; // account for what we printed
-			yloc += u8g2.getMaxCharHeight(); // advance to the next line
-			xloc = 0;
-			lastblank = NULL;
-		}
-	}
-	while(*msg)    // print any characters left over
-	{
-		glyph[0] = *msg++;
-		xloc += u8g2.drawStr(xloc, yloc, glyph);
-	}
-	*/
-}
 
+	uint16_t len = (uint16_t) strlen(text);
+	uint16_t uCharOffset = 0;
+	uint16_t uCurLine = 0;
+	uint16_t uAckumulatedWidth = 0;
+
+	uint16_t uSplitPos = 0;
+	uint16_t uCurWidth = 0;
+
+	for(uint16_t i = 0; i < len; i++)
+	{
+		if(uCurLine>=max_lines) return;
+
+		glyph[0]=text[i];
+		uAckumulatedWidth += pU8G2->getStrWidth(glyph) - 1;	//it seems getStrWidth adds an extra pixel for each call
+
+		// try to break on a space, dash, or newline character
+		switch(text[i])
+		{
+		case '\n':
+		case ' ':
+		case '-':
+			uSplitPos = i;
+			uCurWidth = uAckumulatedWidth;
+			break;
+		default:
+			break;
+		}
+
+		if(uAckumulatedWidth >= xmax_pixels || text[i]=='\n')
+		{
+			if(uSplitPos == 0)
+			{
+				uSplitPos = i;
+				uCurWidth = uAckumulatedWidth;
+			}
+
+			const char * usetext=&text[uCharOffset];
+			uint16_t textLength=uSplitPos - uCharOffset;
+
+			char nextchar[2]={ usetext[textLength], 0 };
+
+			char * doprint=(char *) malloc(textLength+1);
+			strncpy(doprint,usetext,textLength+1);
+			doprint[textLength]=0;
+			int use_x=x;
+			if(align==1) use_x -= pU8G2->getStrWidth(doprint) >> 1;
+			if(align==2) use_x -= pU8G2->getStrWidth(doprint);
+			pU8G2->drawStr(use_x,y + (uCurLine++) * uLineHeight,doprint);
+			free(doprint);
+
+			uCharOffset = uSplitPos + 1;	//skip the next space character
+
+			switch( nextchar[0] )
+			{
+			case ' ':
+			case '\n':
+				break;
+			default:	//but if it wasn't a space then we do need to draw it next time
+				uCharOffset -= 1;
+				uCurWidth -= pU8G2->getStrWidth(nextchar) - 1;	//we didn't draw it. still need to account for that extra pixel though.
+				break;
+			}
+
+			// subtract the actual width of what we just drew
+			uAckumulatedWidth -= uCurWidth;
+			uSplitPos = 0;
+
+		}
+	}
+
+	// draw any remaining characters
+	if(uCharOffset < len)
+	{
+		const char * usetext=&text[uCharOffset];
+		uint16_t textLength=len - uCharOffset;
+
+		char * doprint=(char *) malloc(textLength+1);
+		strncpy(doprint,usetext,textLength+1);
+		doprint[textLength]=0;
+		int use_x = x;
+		if(align==1) use_x -= pU8G2->getStrWidth(doprint) >> 1;
+		if(align==2) use_x -= pU8G2->getStrWidth(doprint);
+
+		pU8G2->drawStr(use_x,y + uCurLine * uLineHeight, doprint);
+		free(doprint);
+	}
+}
 
 
 

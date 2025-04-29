@@ -11,6 +11,15 @@
 
 class U8G2;
 
+class FlexMenuDisplay_U8G2_Callback
+{
+public:
+
+	virtual bool OverrideDrawScreen(FlexMenuBase * pCurMenu) { return false; };
+
+};
+
+
 class FlexMenuDisplay_U8G2_Params
 {
 public:
@@ -23,7 +32,11 @@ public:
 
 	U8G2 * pU8G2=nullptr;
 
+	FlexMenuDisplay_U8G2_Callback * pCallback=nullptr;
+
 };
+
+void drawStrWordWrap(U8G2 * pU8G2, int16_t x, int16_t y, uint16_t xmax_pixels, uint16_t max_lines, const char * text, int align);
 
 class FlexMenuDisplay_U8G2 : public FlexMenuDisplay, public FlexMenuEditScreen
 {
@@ -96,8 +109,6 @@ protected:
 	const uint8_t * GetFont(eFlexMenuFont font);
 
 	bool bDisplayMute=false;
-
-	void printwords(const char * msg, int xloc, int yloc);
 
 };
 
