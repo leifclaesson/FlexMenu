@@ -49,6 +49,15 @@ FlexMenuSub * FlexMenuManager::Init(FlexMenuDisplay * pDisplay)
 	return (FlexMenuSub *) pTopMenu;
 }
 
+void FlexMenuManager::Init(FlexMenuDisplay * pDisplay, FlexMenuBase * pTopMenu)
+{
+	this->pDisplay=pDisplay;
+	pDisplay->Init();
+
+	this->pTopMenu=pTopMenu;
+	this->pTopMenu->SetManager(this);
+}
+
 
 void FlexMenuManager::InitialEnterMenu()
 {

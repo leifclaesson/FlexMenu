@@ -319,12 +319,15 @@ void FlexMenuEditScreen::EditScreen_Draw(FlexMenuBase * pCurMenu)
 
 }
 
+
+uint16_t uFlexMenuEditCursorFlash=1000;
+
 bool FlexMenuEditScreen::EditScreen_NeedsRefresh(FlexMenuBase * pCurMenu)
 {
 
 	if(pCurMenu->GetScreenType()==eFlexMenuScreenType_Edit)
 	{
-		bDrawCursor=((millis()-cursor_millis) & 1023)<512;
+		bDrawCursor=((millis()-cursor_millis) % uFlexMenuEditCursorFlash)<(uFlexMenuEditCursorFlash>>1);
 		if(bLastDrawCursor!=bDrawCursor)
 		{
 			bLastDrawCursor=bDrawCursor;

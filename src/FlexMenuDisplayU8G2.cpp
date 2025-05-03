@@ -236,6 +236,9 @@ void FlexMenuDisplay_U8G2::DrawScreen(FlexMenuBase * pCurMenu)
 			int left = 0;
 			int right = params.iScreenCX;
 
+			int iDrawIconX=0;
+			uint8_t * pDrawIcon=nullptr;
+
 			if(icon < eFlexMenuIcon_Count && icon > eFlexMenuIcon_None && icons[icon])
 			{
 				if(icon == eFlexMenuIcon_LeftArrow)
@@ -243,7 +246,8 @@ void FlexMenuDisplay_U8G2::DrawScreen(FlexMenuBase * pCurMenu)
 					left += iIconCX;
 					if(icons[icon])
 					{
-						u.drawXBM(0, i * fLineHeight + iIconY, iIconCX, iIconCY, icons[icon]);
+						iDrawIconX=0;
+						pDrawIcon=icons[icon];
 					}
 				}
 				else
@@ -255,7 +259,8 @@ void FlexMenuDisplay_U8G2::DrawScreen(FlexMenuBase * pCurMenu)
 					//right-=iIconCX;
 					if(icons[icon])
 					{
-						u.drawXBM(right, i * fLineHeight + iIconY, iIconCX, iIconCY, icons[icon]);
+						iDrawIconX=right;
+						pDrawIcon=icons[icon];
 					}
 
 					if(icon == eFlexMenuIcon_Cursor)
@@ -340,6 +345,11 @@ void FlexMenuDisplay_U8G2::DrawScreen(FlexMenuBase * pCurMenu)
 					interimCallback();
 				}
 
+			}
+
+			if(pDrawIcon)
+			{
+				u.drawXBM(iDrawIconX, i * fLineHeight + iIconY, iIconCX, iIconCY, pDrawIcon);
 			}
 
 
@@ -737,7 +747,6 @@ void drawStrWordWrap(U8G2 * pU8G2, int16_t x, int16_t y, uint16_t xmax_pixels, u
 
 	for(uint16_t i = 0; i < len; i++)
 	{
-		if(uCurLine>=max_lines) return;
 
 		glyph[0]=text[i];
 		uAckumulatedWidth += pU8G2->getStrWidth(glyph) - 1;	//it seems getStrWidth adds an extra pixel for each call
@@ -795,6 +804,9 @@ void drawStrWordWrap(U8G2 * pU8G2, int16_t x, int16_t y, uint16_t xmax_pixels, u
 			uSplitPos = 0;
 
 		}
+
+		if(uCurLine>=max_lines) return;
+
 	}
 
 	// draw any remaining characters

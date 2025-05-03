@@ -35,6 +35,7 @@ public:
 	String strTitle="FlexMenu";
 
 	FlexMenuSub * Init(FlexMenuDisplay * pDisplay);	//returns the top menu!
+	void Init(FlexMenuDisplay * pDisplay, FlexMenuBase * pTopMenu);	//supply your own top menu, for example if you want the top menu to be dynamic
 
 	bool Loop(bool bForceRefresh);	//return true if the display needs to be updated
 
