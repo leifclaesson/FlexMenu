@@ -665,7 +665,7 @@ void FlexMenuDisplay_U8G2::DrawMessage(FlexMenuBase * pCurMenu)
 	yield();
 
 
-	drawStrWordWrap(&u, 64, 32, 128, 8, strTemp2.c_str(), 1);
+	drawStrWordWrap(&u, 64, 32, 120, 8, strTemp2.c_str(), 1);
 
 	//display.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
 
