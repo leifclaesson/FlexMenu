@@ -14,11 +14,13 @@ FlexMenuBase * GetLeaveItem()
 }
 
 
-FlexMenuTempItem g_tempitem;
+
+
+FlexMenuTempItem * pUseTempItem=nullptr;
 
 FlexMenuBase * GetTempItem()
 {
-	return &g_tempitem;
+	return pUseTempItem;
 }
 
 FlexMenuItemSpacer g_spaceritem;
@@ -61,6 +63,8 @@ void FlexMenuManager::Init(FlexMenuDisplay * pDisplay, FlexMenuBase * pTopMenu)
 
 void FlexMenuManager::InitialEnterMenu()
 {
+	pUseTempItem=&tempitem;
+
 	if(!pCurMenu)
 	{
 		pCurMenu=pTopMenu;

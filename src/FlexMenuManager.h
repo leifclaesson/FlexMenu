@@ -170,5 +170,7 @@ private:
 
 	FlexMenuBase * pCurFocusItem=0;
 
+	FlexMenuTempItem tempitem;
+
 };
 
