@@ -144,7 +144,10 @@ bool FlexMenuManager::Loop(bool bForceRefresh)
 	}
 	vecUpdateStatus.clear();
 
-	bWeNeedRefresh |= HandleBacklight();
+	if(!bExternalBacklightControl)
+	{
+		bWeNeedRefresh |= HandleBacklight();
+	}
 
 
 
@@ -204,6 +207,11 @@ void FlexMenuManager::ForceRefresh()
 void FlexMenuManager::ResetDisplayTimeout()
 {
 	lastNavigateTimestamp=millis();
+}
+
+uint32_t FlexMenuManager::GetLastNavigateAge()
+{
+	return millis()-lastNavigateTimestamp;
 }
 
 void FlexMenuManager::Navigate(eFlexMenuNav nav)
@@ -596,7 +604,7 @@ uint8_t FlexMenuManager::HandleAcceleration(int8_t direction)
 	int ctr=accel_counter;
 
 
-	if(direction!=last_direction || diff>300)
+	if(direction!=last_direction || diff>400)
 	{
 		ctr=0;
 		accel_counter=0;
@@ -757,8 +765,7 @@ bool FlexMenuManager::HandleBacklight()
 
 	bool bRet=false;
 
-	if(stateShowMessage==eShowMessageState_Displaying) return bRet;
-
+	//if(stateShowMessage==eShowMessageState_Displaying) return bRet;
 
 	bool bBlankDisplay=false;
 
@@ -776,13 +783,20 @@ bool FlexMenuManager::HandleBacklight()
 		age=(1000*iDisplayMuteSeconds);
 	}
 
-	int subtract=(age - (1000*iBacklightDimSeconds)) / 500;
+
+	int subtract=(age - (1000*iBacklightDimSeconds)) / iBacklightDimDivisor;
 
 	if(subtract<0) subtract=0;
 	if(subtract>254) subtract=254;
 
+
+	if(stateShowMessage==eShowMessageState_Displaying) subtract=0;
+
+
 	uint16_t brightness[1]={(uint8_t) (255-subtract)};
 	uint16_t filtered[1];
+
+	brightness[0] = (brightness[0] * uBacklightScale) >> 8;
 
 	filterBacklight.run(brightness, filtered);
 
@@ -794,6 +808,7 @@ bool FlexMenuManager::HandleBacklight()
 	{
 		last_filtered=filtered[0];
 		bDoCallback=true;
+
 	}
 
 	if(bLastBlankDisplay!=bBlankDisplay)

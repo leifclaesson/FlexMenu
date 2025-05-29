@@ -452,7 +452,10 @@ void FlexMenuDisplay_U8G2::DrawSliderScreen(FlexMenuBase * pCurMenu)
 
 	int iSliderTextEdgeDistance = 20;
 
-	u.drawStr(params.iScreenCX / 2 - u.getStrWidth(strTitle.c_str()) / 2, 0 + iFontShiftY + iSliderTextEdgeDistance, strTitle.c_str());
+	//u.drawStr(params.iScreenCX / 2 - u.getStrWidth(strTitle.c_str()) / 2, 0 + iFontShiftY + iSliderTextEdgeDistance, strTitle.c_str());
+
+	drawStrWordWrap(&u, 64, 0 + iFontShiftY + iSliderTextEdgeDistance, 120, 2, strTitle.c_str(), 1);
+
 
 	//display.setTextAlignment(TEXT_ALIGN_CENTER);
 	//display.drawString(params.iScreenCX/2, 0, strTitle);
@@ -706,23 +709,27 @@ void FlexMenuDisplay_U8G2::Output()
 
 void FlexMenuDisplay_U8G2::SetBacklight(uint8_t brightness, bool bMute)
 {
-	/*
 	U8G2 & u=*params.pU8G2;
 	if(bDisplayMute!=bMute)
 	{
 		if(bMute)
 		{
-			display.displayOff();
+			u.setPowerSave(true);
 		}
 		else
 		{
-			display.displayOn();
+			u.setPowerSave(false);
 		}
 	}
 	bDisplayMute=bMute;
 
-	display.setBrightness(brightness);
-	*/
+	if(!bMute)
+	{
+		u.setContrast(brightness);
+	}
+
+	//csprintf("brightness %i  mute %i\n",brightness,bMute);
+
 }
 
 

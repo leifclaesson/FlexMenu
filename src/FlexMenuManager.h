@@ -77,8 +77,25 @@ public:
 	int GetBottomBumpCount();
 	int GetTopBumpCount();
 
+	uint32_t GetLastNavigateAge();
+
+	bool HandleBacklight();
+
+	void SetExternalBacklightControl(bool bEnable) { this->bExternalBacklightControl=bEnable; }
+
+	void SetBacklightDimDivisor(int iDivisor) { this->iBacklightDimDivisor=iDivisor; }
+
+	void SetBacklightScale(uint16_t scale) { this->uBacklightScale = scale; }
+
+
 private:
 	int iLoopSafety=10;
+
+	bool bExternalBacklightControl=false;
+
+	uint16_t uBacklightScale=256;
+
+	int iBacklightDimDivisor=500;
 
 	int iBottomBumpCount;
 	int iTopBumpCount;
@@ -157,8 +174,6 @@ private:
 	void ClearHistoryBuffer();
 
 	bool bNavigated=false;
-
-	bool HandleBacklight();
 
 	FlexMenuTransitionFilter<1,8,10> filterBacklight;
 
